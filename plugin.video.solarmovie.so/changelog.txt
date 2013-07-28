@@ -1,0 +1,91 @@
+[B]Version 0.1.3[/B]
+Example:
+if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):
+	contextmenuitems.append(('Find AirDates', 'XBMC.Container.Update(%s?mode=%s&title=%s)' % ('plugin://plugin.video.solarmovie.so/','SearchForAirDates',title)))
+if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.theanimehighway'):
+	contextmenuitems.append(('Find AirDates', 'XBMC.Container.Update(%s?mode=%s&name=%s)' % ('plugin://plugin.video.theanimehighway/','1801',title)))
+- Added Feature: Find AirDates.  This can be linked to from other addons too. You can set it to bring up a keyboard for title entry or send a &title=snowname.
+- Search Movie Title with 1Channel / Primewire. (setup for both plugin.video.1channel and plugin.video.primewire incase it changes.)
+- Search TV Title Title with 1Channel / Primewire. (setup for both plugin.video.1channel and plugin.video.primewire incase it changes.)
+
+[B]Version 0.1.2[/B]
+= Working: Movie >> (Genre|Year|Popular[NEW|HD|OTHER]) >> Hoster >> Play
+= Working: TV >> (Genre|Year|Popular[NEW|ALL TIME]) >> (Season >> Season:Episode|SeasonxEpisode) >> Hoster >> Play
+= Working: Settings | UrlResolver Settings | View News | View Changelog
+? Note: Some Hosters work better than others.
+- TV >> Year now displays on Player.
+- TV >> Season # >> Episode # >> Hoster >> Playable.
+- MainMenu >> (Local Changelog, Online Changelog, Latest News[Online])
+- TextWindows loadable from Url and Local File.
+- Added TV >> Season >> Episode Listings
+- Added TV >> Season Listings
+- Some Re-accuring problems with urlresolver and that annoying dialog popup message. Sometimes it takes clicking it then waiting then clicking it a 2nd time.
+- Title and Studio Labels setup for Player.
+
+[B]Version 0.1.1[/B]
+- Added: TV >> Popular (NEW|ALL TIME)
+- Added: Movie >> Popular (NEW|HD|OTHER)
+- Split Popular into subgroups
+
+[B]Version 0.1.0[/B]
+= Working: Movie List (Genre|Year|Popular), TV Show List (Genre|Year), Hoster List (Movie), Plays Movie
+- Player >> Seems to be working again without that error dialog. I can only hope it'll stay that way.
+- Movies >> Popular - working
+- Movies >> Latest is currently bugged. Not sure how to fix this one, atm.
+- Player >> problems with error dialog coming up even though the video plays.
+- Handling for Hoster Site Listings.
+- Initial setup for MetaData Handling... I may change how this is getting handled as it seems to fail for now.
+- Added View Types and Set View #. (Nothing in Settings window yet.)
+- Added Sort Methods.  Auto-Sorting currently bugged.
+- contextMenuItems >> Show Information
+- Listings for TV Shows -with- year and image.
+- Listings for Movies Titles -with- year and image.
+- Page Handling >> Next Page
+- Page Handling >> Viewing of multiple pages at once. (A default # will be set within the code for now.)
+- Parsing of much of the cruel-hearted ascii and such....
+- LineBreak removing and tons of ascii stuff added.
+- Keep having to change a lot of things around cause of these stupid ascii issues.
+- Had to change getURL method... twice.
+- Head-2-Desk'ing over darn darn and more darn(s)... ascii and troubling matters.
+- Added: Menu - SectionMenu >> Genre, Year
+- Added: Menu - MainMenu >> Movies, TV Shows, Resolver Settings, Settings
+- Setup for easier debug information "print"(s).
+- Setup for easier Artwork usage.
+- Setup for Paths/Folders.
+- Added List of Genres.
+- Testing use of _ infront of variables to see if they truely act as global variables.
+- Added my 'teh_tools.py' from my other project(s). Still has much in it for use in other projects, so I'll have to clean it up some later. 
+- trying to stick mainly with "t0mm0.common.addon" usage where possible.
+- Handling for Params and Settings.
+- Handling for Debugging via log file and notification()'s.
+- Added a few things to the Settings Window.
+- Initial setup for solarmovie.so domain.
+
+
+
+
+
+
+
+
+[B]To-DO List:[/B]
+- Favorites - Plugin
+- Favorites - Global
+- More Settings
+- Search - Movies
+- Search - TV Shows
+- MetaData
+- Plot Description - Movies
+- Plot Description - TV Shows
+- 
+- 
+- 
+- 
+- 
+- 
+
+
+
+
+
+

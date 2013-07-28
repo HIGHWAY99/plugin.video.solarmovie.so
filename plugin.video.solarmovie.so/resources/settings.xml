@@ -1,0 +1,7 @@
+<settings>
+	<category label="30100">
+		<setting id="enableMeta" 		type="bool" label="30203" default="false" visible="true"/>
+		<setting id="debug-enable" 	type="bool" label="30101" default="false" visible="true"/>
+		<setting id="debug-show" 		type="bool" label="30102" default="false" visible="true"/>
+	</category>
+</settings>
