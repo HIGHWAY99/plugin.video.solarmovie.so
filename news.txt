@@ -1,0 +1,48 @@
+
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Running some tests for news and folder on github.
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.3
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 10][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Added Feature: Find AirDates.  This can be linked to from other addons too. You can set it to bring up a keyboard for title entry or send a &title=snowname.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 9][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Ability to Search for a TV Show or Movie by Title with 1Channel/PrimeWire plugin via ContextMenuItem.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 8][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.3
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 7][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TV Episodes are now Playable.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 6][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TextWindow Setup for News and Change Logs
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TV >> (Season|Episode) Listings now Available.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.2
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Popular Listings now Available.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.1
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Plugin can now list movies and play for at least some hosters.
+
+[COLOR grey][Date: 2013.07.26][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Plugin can now list movies and tv show titles.
+
+[COLOR grey][Date: 2013.07.25][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.0
+
+
+
+
+
