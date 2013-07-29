@@ -821,7 +821,7 @@ def ParseDescription(plot): ## Cleans up the dumb number stuff thats ugly.
 		if ("&#xE0;"  in plot): plot=plot.replace('&#xE0;',"a")
 		if ("&#0421;" in plot): plot=plot.replace('&#0421;',"")
 		#if ("\xb7"  in plot): plot=plot.replace('\xb7',"-")
-		if ('&#' in plot) and (';' in plot): plot=unescape_(plot)
+		#if ('&#' in plot) and (';' in plot): plot=unescape_(plot)
 	return plot
 def unescape_(s):
 	p = htmllib.HTMLParser(None)

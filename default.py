@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.1.4
+### # Version:			#		v0.1.5
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -57,8 +57,15 @@ _setting={}
 _setting['debug-enable']=	_debugging			=tfalse(addst("debug-enable"))
 _setting['debug-show']	=	_shoDebugging		=tfalse(addst("debug-show"))
 _setting['enableMeta']	=	_enableMeta			=tfalse(addst("enableMeta"))
+_setting['meta.movie.domain']=ps('meta.movie.domain')
+_setting['meta.movie.search']=ps('meta.movie.search')
+_setting['meta.tv.domain']=ps('meta.tv.domain')
+_setting['meta.tv.search']=ps('meta.tv.search')
+_setting['meta.tv.page']=ps('meta.tv.page')
+_setting['meta.tv.fanart.url']=ps('meta.tv.fanart.url')
+_setting['meta.tv.fanart.url2']=ps('meta.tv.fanart.url2')
 ##### /\
-_artSun=art('sun'); _art404=art('404'); GENRES=ps('GENRES'); _default_section_=ps('default_section'); net=Net(); DB=_database_file; BASE_URL=_domain_url;
+_artSun=art('sun'); _art404=art('404'); _art150=art('thumb150'); GENRES=ps('GENRES'); _default_section_=ps('default_section'); net=Net(); DB=_database_file; BASE_URL=_domain_url;
 if (_debugging==True): print 'Addon Path: '+_addonPath
 if (_debugging==True): print 'Art Path: '+_artPath
 if (_debugging==True): print 'Addon Icon Path: '+_artIcon
@@ -168,14 +175,14 @@ def mGetItemPage(url):
 	if (html=='') or (html=='none') or (html==None) or (html==False): return ''
 	else:
 		html=HTMLParser.HTMLParser().unescape(html)
+		html=_addon.decode(html); html=_addon.unescape(html)
 		html=ParseDescription(html)
 		html=html.encode('ascii', 'ignore')
 		html=html.decode('iso-8859-1')
-		html=_addon.decode(html); html=_addon.unescape(html)
 		deb('Length of HTML fetched',str(len(html)))
 	return html
 
-def mGetDataTest(html,toGet):
+def mGetDataTest(html,toGet): ## For Testing Only
 	resultCnt=0; results={} #results=[]
 	debob(toGet)
 	for item in toGet:
@@ -184,11 +191,224 @@ def mGetDataTest(html,toGet):
 		results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
 		return results
 
-def mGetDataPlot(html,parseTag='<p id=\"plot_\d+\">(.+?)</p>'):
+def mGetDataPlot(html,parseTag='<p id=\"plot_\d+\">(.+?)</p>'): ## Working Temp-Fix
 	if ('<p id="plot_' in html):
 		try: return (re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
 		except: return ''
 	else: return ''
+
+def mGetDataGenre(html,parseTag='<a href=".+?watch-.+?-.+?s.html">[\n]\s+(.+?)</a>',ifTag='.html">',startTag='<div class="mediaDescription">',endTag='<div class="buttonsLine">'): ## Think I'll keep this one since it needs the outside part parsed out.
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		##deb('Genre',html); return html
+		try: results=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+		i=0; r=''
+		for result in results:
+			if (i==0): 	r=result.strip()
+			else: 			r=r+', '+result.strip()
+			i=i+1
+		deb('Genre',r)
+		return r
+	else: return ''
+
+def mGetDataCountry(html,parseTag='<a href=".+?s-from.+?.html">(.+?)</a>',ifTag='.html">',startTag='<div class="mediaDescription">',endTag='<div class="buttonsLine">'): ## Think I'll keep this one since it needs the outside part parsed out.
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		##deb('Country',html); return html
+		try: results=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+		i=0; r=''
+		for result in results:
+			if (i==0): 	r=result.strip()
+			else: 			r=r+', '+result.strip()
+			i=i+1
+		deb('Country',r)
+		return r
+	else: return ''
+
+def mGetDataDirector(html,parseTag='<a href="/watch-movies-by-.+?.html">[\n]\s+(.+?)</a>',ifTag='<h4>Director</h4>',startTag='<h4>Director</h4>',endTag='</div>'): ## Think I'll keep this one since it needs the outside part parsed out.
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		try: results=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+		i=0; r=''
+		for result in results:
+			if (i==0): 	r=result.strip()
+			else: 			r=r+', '+result.strip()
+			i=i+1
+		deb('Director',r)
+		return r
+	else: return ''
+
+def mGetDataCast(html,parseTag='<a href="/watch-movies-with-.+?.html">[\n]\s+(.+?)</a>',ifTag='<h4>Cast</h4>',startTag='<h4>Cast</h4>',endTag='</div>'): ## Think I'll keep this one since it needs the outside part parsed out.
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		try: results=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+		i=0; r=''
+		for result in results:
+			if (i==0): 	r=result.strip()
+			else: 			r=r+', '+result.strip()
+			i=i+1
+		deb('Cast',r)
+		return r
+	else: return ''
+
+def mGetDataKeywords(html,parseTag='<a href="/watch-movies-tagged-as-.+?.html">[\n]\s+(.+?)</a>',ifTag='<h4>Keywords</h4>',startTag='<h4>Keywords</h4>',endTag='</div>'): ## Think I'll keep this one since it needs the outside part parsed out.
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		try: results=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+		i=0; r=''
+		for result in results:
+			if (i==0): 	r=result.strip()
+			else: 			r=r+', '+result.strip()
+			i=i+1
+		deb('Keywords',r)
+		return r
+	else: return ''
+
+def mdGetTV(html,toGet):
+	resultCnt=0; results={} #results=[]
+	debob(toGet)
+	for item in toGet:
+		item=item.lower();parseMethod=''; parseTag=''; parseTag2=''; parseTag3=''; parsePreResult=''; rCheck=False
+		if (item=='result.url'): ### 
+			parsePreResult=_setting['meta.tv.page']
+			parseTag='<tr><td class="\D+">\d+</td>.+?href="/index.php.+?tab=series.+?id=(\d+)&.+?lid=7">'
+			parseMethod='re.compile.prefix'
+			if ('>English</td>' in html): rCheck=True
+		if (item=='result.id'): ### 
+			parseTag='<tr><td class="\D+">\d+</td>.+?href="/index.php.+?tab=series.+?id=(\d+)&lid=7">' ## &amp; 's were parsed out earlier. ##
+			parseMethod='re.compile'
+			if ('>English</td>' in html): rCheck=True
+		elif (item=='fanart'): ### 
+			parsePreResult=_setting['meta.tv.domain']
+			parseTag='<tr><td></td><td align=right><a href="(.+?)" target="_blank">View Full Size</a></td></tr>'
+			parseMethod='re.compile.group'
+			if ('" target="_blank">View Full Size</a></td></tr>' in html): rCheck=True
+		#else: rCheck=False
+		#
+		#
+		deb('rCheck',str(rCheck))
+		if (rCheck==True): ## Trying to do away with errors for results that dont contain the requested information.
+			if   (parseMethod=='re.compile2'): ## returns 2nd result
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[1].strip()
+				if (results[item]==''): re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile'): ## returns 1st result
+				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.fanart'): ## returns 1st result
+				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
+				html2=(html.split('<h1>Fan Art</h1>')[1]).split('</table>')[0]
+				if ('View Full Size' in html2): results[item]=parsePreResult+re.compile(parseTag, re.IGNORECASE | re.DOTALL).findall(html2)[0].strip()
+				else: results[item]=''
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.prefix'): ## returns 1st result
+				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
+				try: results[item]=parsePreResult+re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				except: results[item]=''
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.group'): ## returns a group of results
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html); resultCnt=resultCnt+1
+			elif (parseMethod=='split'):
+				results[item]=(((html.split(parseTag)[1])).split(parseTag2)[0]).strip(); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search2'): ## returns 2nd result
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(2); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search'): ## returns 1st result
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(1); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search.group'): ## returns a group of results
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(); resultCnt=resultCnt+1
+				#results[item]=match; resultCnt=resultCnt+1  ## Not sure which one to use yet. ##
+			else: 
+				results[item]=''; resultCnt=resultCnt+1
+		else: 
+			results[item]=''; resultCnt=resultCnt+1
+	if debugging==True: print results
+	return results
+
+def mdGetSplitFindGroup(html,ifTag='', parseTag='',startTag='',endTag=''): 
+	if (ifTag=='') or (parseTag=='') or (startTag=='') or (endTag==''): return ''
+	if (ifTag in html):
+		html=(((html.split(startTag)[1])).split(endTag)[0]).strip()
+		##deb('Test',html); return html
+		try: return re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		except: return ''
+	else: return ''
+
+def mdGetMovie(html,toGet):
+	resultCnt=0; results={} #results=[]
+	debob(toGet)
+	for item in toGet:
+		item=item.lower();parseMethod=''; parseTag=''; parseTag2=''; parseTag3=''; parsePreResult=''; rCheck=False
+		if (item=='result.poster'): ### 
+			parseTag='<div class="poster">[\n]\s+<a href=".+?" title=".+?"><img class="right_shadow" src="(.+?)" width="\d+" height="\d+" /></a>'
+			parseMethod='re.compile'
+			if ('<div class="poster">' in html): rCheck=True
+		elif (item=='result.url'): ### 
+			parsePreResult=_setting['meta.movie.domain']
+			parseTag='<div class="poster">[\n]\s+<a href="(.+?)" title=".+?"><img class="right_shadow" src=".+?" width="\d+" height="\d+" /></a>'
+			parseMethod='re.compile.prefix'
+			if ('<div class="poster">' in html): rCheck=True
+		elif (item=='og.image'): ### 
+			parseTag='<meta property="og:image" content="(.+?)" />'
+			parseMethod='re.compile'
+			if ('<meta property="og:image" content="' in html): rCheck=True
+		elif (item=='og.image2'): ### 
+			parseTag='<meta property="og:image" content="(.+?)" />'
+			parseMethod='re.compile2'
+			if ('<meta property="og:image" content="' in html): rCheck=True
+		elif (item=='og.plot'): ### 
+			parseTag='<meta property="og:description" content="(.+?)" />'
+			parseMethod='re.compile'
+			if ('<meta property="og:description" content="' in html): rCheck=True
+		#if (item=='fanart'): ### 
+		#	parseTag='<strong>IMDb rating:</strong>[\n]\s+(.+?)\s+\(.+? votes\)'
+		#	parseMethod='re.compile.group'
+		#	if ('<strong>IMDb rating:</strong>' in html): rCheck=True
+		#else: rCheck=False
+		#
+		#
+		deb('rCheck',str(rCheck))
+		if (rCheck==True): ## Trying to do away with errors for results that dont contain the requested information.
+			if   (parseMethod=='re.compile2'): ## returns 2nd result
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[1].strip()
+				if (results[item]==''): re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile'): ## returns 1st result
+				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.prefix'): ## returns 1st result
+				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
+				results[item]=parsePreResult+re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
+				resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.group'): ## returns a group of results
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html); resultCnt=resultCnt+1
+			elif (parseMethod=='split'):
+				results[item]=(((html.split(parseTag)[1])).split(parseTag2)[0]).strip(); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search2'): ## returns 2nd result
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(2); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search'): ## returns 1st result
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(1); resultCnt=resultCnt+1
+			elif (parseMethod=='re.search.group'): ## returns a group of results
+				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+				results[item]=match.group(); resultCnt=resultCnt+1
+				#results[item]=match; resultCnt=resultCnt+1  ## Not sure which one to use yet. ##
+			else: 
+				results[item]=''; resultCnt=resultCnt+1
+		else: 
+			results[item]=''; resultCnt=resultCnt+1
+	if debugging==True: print results
+	return results
 
 def mGetData(html,toGet):
 	#if (html=='') or (html=='none') or (html==None) or (html==False): 
@@ -199,81 +419,93 @@ def mGetData(html,toGet):
 	for item in toGet:
 		item=item.lower();parseMethod=''; parseTag=''; parseTag2=''; parseTag3=''; rCheck=False
 		if (item=='plot') or (item=='movieplot') or (item=='showplot'): ### 
-			parseTag='<p id=\"plot_\d+\">(.+?)</p>'
+			parseTag='<p id="plot_\d+">(.+?)</p>'
 			parseMethod='re.compile'
 			if ('<p id="plot_' in html): 
 				rCheck=True
 				print "found: '<p id=\"plot_'"
-			#rCheck=True
+		elif (item=='imdbrating'): ### 7.3
+			parseTag='<strong>IMDb rating:</strong>[\n]\s+(.+?)\s+\(.+? votes\)'
+			parseMethod='re.compile'
+			if ('<strong>IMDb rating:</strong>' in html): rCheck=True
 		##if (item=='description'): ### 
 		##	parseTag='<p id="plot_\d+">(.+?)</p>'
 		##	parseMethod='re.compile'
 		##	if ('<p id="plot_' in html): rCheck=True
 		##	#<meta name="description" content="Watch full The Heat movie produced in 2013. Genres are Comedy, Crime, Action." />
-		#elif (item=='latestepisodeplot'): ### 
-		#	parseTag='<p id="plot_\d+">(.+?)</p>'
-		#	parseMethod='re.compile2'
-		#	if ('<p id="plot_' in html): rCheck=True
-		#elif (item=='imdbid'): ### 0816711
-		#	parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href=".+?">(\d+)</a>'
-		#	parseMethod='re.compile'
-		#	if ('<strong>IMDb ID:</strong>' in html): rCheck=True
-		#elif (item=='imdburl'): ### http://anonym.to/?http%3A%2F%2Fwww.imdb.com%2Ftitle%2Ftt0816711%2F
-		#	parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">\d+</a>'
-		#	parseMethod='re.compile'
-		#	if ('<strong>IMDb ID:</strong>' in html): rCheck=True
-		#elif (item=='imdrating'): ### 7.3
-		#	parseTag='<strong>IMDb rating:</strong>[\n]\s+(.+?)\s+\(.+? votes\)'
-		#	parseMethod='re.compile'
-		#	if ('<strong>IMDb rating:</strong>' in html): rCheck=True
-		#elif (item=='imdvotes'): ### 2,814
-		#	parseTag='<strong>IMDb rating:</strong>[\n].+?\((.+?) votes\)'
-		#	parseMethod='re.compile'
-		#	if ('<strong>IMDb rating:</strong>' in html): rCheck=True
-		#elif (item=='duration'): ### 116 min
-		#	parseTag='<strong>Duration:</strong>[\n]\s+(.+?)<'
-		#	parseMethod='re.compile'
-		#	if ('<strong>Duration:</strong>' in html): rCheck=True
-		#elif (item=='duration2'):
-		#	parseTag='<strong>Duration:</strong>'
-		#	parseTag2='<'
-		#	parseMethod='strip'
-		#	if ('<strong>Duration:</strong>' in html): rCheck=True
-		#elif (item=='reelasedate'): ### June 21, 2013
-		#	parseTag='<strong>Release Date:</strong>[\n]\s+(.+?)\s+[\n]\s+</div>'
-		#	parseMethod='re.compile'
-		#	if ('<strong>Release Date:</strong>' in html): rCheck=True
-		#elif (item=='reelasedate2'):
-		#	parseTag='<strong>Release Date:</strong>'
-		#	parseTag2='<'
-		#	parseMethod='strip'
-		#	if ('<strong>Release Date:</strong>' in html): rCheck=True
-		#elif (item=='Votes'): ### 86
-		#	parseTag='<strong>Solar rating:</strong>[\n]\s+<span class="js-votes"[\n]\s+>(\d+\s+votes</span>'
-		#	parseMethod='re.compile'
-		#	if ('<strong>Solar rating:</strong>' in html) and ('<span class="js-votes"' in html) and ('votes</span>' in html): rCheck=True
-		#elif (item=='coverimage'): ### http://static.solarmovie.so/images/movies/0460681_150x220.jpg
-		#	parseTag='coverImage">.+?src="(.+?)"'
-		#	parseMethod='re.search'
-		#	if ('coverImage">' in html): rCheck=True
-		#elif (item=='season'): ### 
-		#	parseTag="toggleSeason\('(\d+)'\)"
-		#	parseMethod='re.search'
-		#	if ('toggleSeason' in html): rCheck=True
-		#elif (item=='seasons'): ### 
-		#	parseTag="toggleSeason\('(\d+)'\)"
-		#	parseMethod='re.search.group'
-		#	if ('toggleSeason' in html): rCheck=True
-		#elif (item=='episode'): ### 
-		#	parseTag='<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>'
-		#	parseMethod='re.compile'
-		#	if ('<span class="epname">' in html) and (' links</a>' in html): rCheck=True
-		#elif (item=='episodes'): ### 
-		#	parseTag='<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>'
-		#	parseMethod='re.compile.group'
-		#	##episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(html) #; if (_debugging==True): print episodes
-		#	##for ep_url, episode_name, season_number, episode_number, num_links in episodes:
-		#	if ('<span class="epname">' in html): rCheck=True
+		elif (item=='episodeplot'): ### 
+			parseTag='<p id="plot_\d+">(.+?)</p>'
+			parseMethod='re.compile2'
+			if ('<p id="plot_' in html): rCheck=True
+		elif (item=='latestepisodeplot'): ### 
+			parseTag='<p id="plot_\d+">(.+?)</p>'
+			parseMethod='re.compile2'
+			if ('<p id="plot_' in html): rCheck=True
+		elif (item=='imdbid'): ### 0816711
+			parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href=".+?">(\d+)</a>'
+			parseMethod='re.compile'
+			if ('<strong>IMDb ID:</strong>' in html): rCheck=True
+		elif (item=='imdburl'): ### http://anonym.to/?http%3A%2F%2Fwww.imdb.com%2Ftitle%2Ftt0816711%2F
+			parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">\d+</a>'
+			parseMethod='re.compile'
+			if ('<strong>IMDb ID:</strong>' in html): rCheck=True
+		elif (item=='imdbvotes'): ### 2,814
+			parseTag='<strong>IMDb rating:</strong>[\n]\s+.+?\s+\((.+?) votes\)'
+			parseMethod='re.compile'
+			if ('<strong>IMDb rating:</strong>' in html): rCheck=True
+		elif (item=='duration'): ### 116 min
+			parseTag='<strong>Duration:</strong>[\n]\s+(.+?)<'
+			parseMethod='re.compile'
+			if ('<strong>Duration:</strong>' in html): rCheck=True
+		elif (item=='duration2'):
+			parseTag='<strong>Duration:</strong>'
+			parseTag2='<'
+			parseMethod='strip'
+			if ('<strong>Duration:</strong>' in html): rCheck=True
+		elif (item=='premiered'): ### June 21, 2013
+			parseTag='<strong>Release Date:</strong>[\n]\s+(.+?)\s+[\n]\s+</div>'
+			parseMethod='re.compile'
+			if ('<strong>Release Date:</strong>' in html): rCheck=True
+		elif (item=='premiered2'):
+			parseTag='<strong>Release Date:</strong>'
+			parseTag2='<'
+			parseMethod='strip'
+			if ('<strong>Release Date:</strong>' in html): rCheck=True
+		elif (item=='reelasedate'): ### June 21, 2013
+			parseTag='<strong>Release Date:</strong>[\n]\s+(.+?)\s+[\n]\s+</div>'
+			parseMethod='re.compile'
+			if ('<strong>Release Date:</strong>' in html): rCheck=True
+		elif (item=='reelasedate2'):
+			parseTag='<strong>Release Date:</strong>'
+			parseTag2='<'
+			parseMethod='strip'
+			if ('<strong>Release Date:</strong>' in html): rCheck=True
+		elif (item=='Votes'): ### 86
+			parseTag='<strong>Solar rating:</strong>[\n]\s+<span class="js-votes"[\n]\s+>(\d+\s+votes</span>'
+			parseMethod='re.compile'
+			if ('<strong>Solar rating:</strong>' in html) and ('<span class="js-votes"' in html) and ('votes</span>' in html): rCheck=True
+		elif (item=='coverimage'): ### http://static.solarmovie.so/images/movies/0460681_150x220.jpg
+			parseTag='coverImage">.+?src="(.+?)"'
+			parseMethod='re.search'
+			if ('coverImage">' in html): rCheck=True
+		elif (item=='season'): ### 
+			parseTag="toggleSeason\('(\d+)'\)"
+			parseMethod='re.search'
+			if ('toggleSeason' in html): rCheck=True
+		elif (item=='seasons'): ### 
+			parseTag="toggleSeason\('(\d+)'\)"
+			parseMethod='re.search.group'
+			if ('toggleSeason' in html): rCheck=True
+		elif (item=='episode'): ### 
+			parseTag='<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>'
+			parseMethod='re.compile'
+			if ('<span class="epname">' in html) and (' links</a>' in html): rCheck=True
+		elif (item=='episodes'): ### 
+			parseTag='<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>'
+			parseMethod='re.compile.group'
+			##episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(html) #; if (_debugging==True): print episodes
+			##for ep_url, episode_name, season_number, episode_number, num_links in episodes:
+			if ('<span class="epname">' in html): rCheck=True
 		else: rCheck=False
 		#
 		### Year
@@ -306,40 +538,33 @@ def mGetData(html,toGet):
 		#
 		#
 		#
-		if (rCheck==True):
+		deb('rCheck',str(rCheck))
+		if (rCheck==True): ## Trying to do away with errors for results that dont contain the requested information.
 			if (parseMethod=='re.compile2'): ## returns 2nd result
-				#results.append((re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[1]).strip()); resultCnt=resultCnt+1
-				results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[1]).strip()
+				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[1].strip()
 				resultCnt=resultCnt+1
-			if (parseMethod=='re.compile'): ## returns 1st result
-				#results.append((re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()); resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile'): ## returns 1st result
 				#results[item]=(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip()
 				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0].strip()
 				resultCnt=resultCnt+1
-			if (parseMethod=='re.compile.group'): ## returns a group of results
-				results.append(re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)); resultCnt=resultCnt+1
+			elif (parseMethod=='re.compile.group'): ## returns a group of results
 				results[item]=re.compile(parseTag, re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html); resultCnt=resultCnt+1
-			if (parseMethod=='split'):
-				results.append((((html.split(parseTag)[1])).split(parseTag2)[0]).strip()); resultCnt=resultCnt+1
+			elif (parseMethod=='split'):
 				results[item]=(((html.split(parseTag)[1])).split(parseTag2)[0]).strip(); resultCnt=resultCnt+1
-			if (parseMethod=='re.search2'): ## returns 2nd result
+			elif (parseMethod=='re.search2'): ## returns 2nd result
 				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
-				results.append(match.group(2)); resultCnt=resultCnt+1
 				results[item]=match.group(2); resultCnt=resultCnt+1
-			if (parseMethod=='re.search'): ## returns 1st result
+			elif (parseMethod=='re.search'): ## returns 1st result
 				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
-				results.append(match.group(1)); resultCnt=resultCnt+1
 				results[item]=match.group(1); resultCnt=resultCnt+1
-			if (parseMethod=='re.search.group'): ## returns a group of results
+			elif (parseMethod=='re.search.group'): ## returns a group of results
 				match=re.search(parseTag, html, re.IGNORECASE | re.MULTILINE | re.DOTALL)
-				results.append(match.group()); resultCnt=resultCnt+1
 				results[item]=match.group(); resultCnt=resultCnt+1
-				#results.append(match); resultCnt=resultCnt+1  ## Not sure which one to use yet. ##
 				#results[item]=match; resultCnt=resultCnt+1  ## Not sure which one to use yet. ##
 			else: 
-				results[item]=None; resultCnt=resultCnt+1
+				results[item]=''; resultCnt=resultCnt+1
 		else: 
-			results[item]=None; resultCnt=resultCnt+1
+			results[item]=''; resultCnt=resultCnt+1
 		#
 		#
 		#elif (parseMethod==''):
@@ -432,7 +657,7 @@ def Menu_BrowseByGenre(section=_default_section_):
 	for genre in GENRES:
 		if section == 'movies': url=_domain_url+'/watch-'   +(genre.lower())+  '-movies.html'
 		else: 									url=_domain_url+'/tv/watch-'+(genre.lower())+'-tv-shows.html'
-		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'pageno': '1','pagecount': '3'}, {'title':  genre})
+		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'pageno': '1','pagecount': '3'}, {'title':  genre},img=_artSun,fanart=_artFanart)
 	_addon.end_of_directory()
 
 def Menu_BrowseByYear(section=_default_section_):
@@ -442,7 +667,7 @@ def Menu_BrowseByYear(section=_default_section_):
 	for year in range(thisyear, EarliestYear, -1):
 		if section == 'movies': url=_domain_url+   '/watch-movies-of-'+str(year)+'.html'
 		else: 									url=_domain_url+'/tv/watch-tv-shows-' +str(year)+'.html'
-		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': '3'}, {'title':  str(year)})
+		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': '3'}, {'title':  str(year)},img=_artSun,fanart=_artFanart)
 	_addon.end_of_directory()
 
 ##def listItems(section=_default_section_, url='', html='', episode=False, startPage='1', numOfPages='1', genre='', year='', stitle=''): # List: Movies or TV Shows
@@ -509,10 +734,52 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				episode_number=episode_number.strip()
 				episode_name=episode_name.strip()
 				if (_debugging==True): deb('name',name); deb('year',year)
-				try: _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name }, {'title':  showTitle+'  ('+year+')  '+season_number+'x'+episode_number+' - '+episode_name}, img=thumbnail, contextmenu_items=contextMenuItems)
+				labs={}; pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name }
+				labs['poster']=labs['image']=labs['thumbnail']=thumbnail
+				labs['year']=year
+				labs['Season']=season_number
+				labs['Episode']=episode_name
+				labs['EpisodeTitle']=episode_name
+				ihtml=mGetItemPage(_domain_url+item_url)
+				labs['Genre']=mGetDataGenre(ihtml)
+				labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating'] #.strip()
+				labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']
+				labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
+				labs['Country']=mGetDataCountry(ihtml)
+				labs['Director']=mGetDataDirector(ihtml)
+				labs['Cast']=mGetDataCast(ihtml)
+				labs['Keywords']=mGetDataKeywords(ihtml)
+				##labs['plot']=mGetData(ihtml,['plot'])['plot']
+				labs['TVShowPlot']=mGetData(ihtml,['plot'])['plot']
+				labs['EpisodePlot']=mGetData(ihtml,['episodeplot'])['episodeplot']
+				labs['plot']=labs['EpisodePlot']
+				if (labs['plot']==''): labs['plot']=labs['TVShowPlot']
+				labs['PlotOutline']=labs['TVShowPlot']
+				labs['Premiered']=mGetData(ihtml,['premiered2'])['premiered2']
+				if (labs['Premiered']==''): labs['Premiered']=mGetData(ihtml,['premiered'])['premiered']
+				labs['DateReleased']=labs['Release Date']=labs['Aired Date']=labs['Date Aired']=labs['Aired']=labs['Date Posted']=labs['Date']=labs['Premiered']
+				if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['	+labs['Genre']	+']'
+				if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+labs['Country']+']'
+				if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+labs['Director']+']'
+				if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+labs['Cast']+']'
+				if (labs['Premiered'] is not ''): 			labs['plot']=labs['plot']+'[CR]Premiered:  ['+labs['Premiered']+']'
+				if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
+				labs['TVShowTitle']=showTitle
+				labs['title']=cFL(showTitle+'  ('+cFL(year,'yellow')+')')
+				if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],'red')+']')
+				labs['title']=labs['title']+'[CR]'
+				if (season_number is not '') and (episode_number is not ''): labs['title']=labs['title']+'  '+cFL(season_number+cFL('x','grey')+episode_number,'white')
+				if (episode_name is not ''): labs['title']=labs['title']+' - '+cFL(episode_name,'grey')
+				#set_view('episodes',515,True)
+				#
+				try: _addon.add_directory(pars, labs, img=thumbnail, contextmenu_items=contextMenuItems)
 				except: 
-					uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+					labs['title']=showTitle+'  ('+year+')'
+					#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+					try: uname=name; name='[Unknown]'; _addon.add_directory(pars, labs, img=thumbnail, contextmenu_items=contextMenuItems)
+					except: t=''
 			else:
+				_enableMeta=False ### Temp Fix to keep people from accidently using it. ###
 				if (_enableMeta==True): ### Doesn't work currently. ###
 					metaget=metahandlers.MetaData()
 					meta=metaget.get_meta('tvshow', name, year=year)
@@ -530,9 +797,55 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 						#except: 
 						#	uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail)
 				else: ### Display without MetaData. ###
-					try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+					labs={}; pars={'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }; labs['fanart']=''
+					labs['poster']=labs['image']=labs['thumbnail']=thumbnail
+					labs['year']=year
+					ihtml=mGetItemPage(_domain_url+item_url)
+					labs['Genre']=mGetDataGenre(ihtml)
+					labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating'] #.strip()
+					labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']
+					labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
+					labs['Country']=mGetDataCountry(ihtml)
+					labs['Director']=mGetDataDirector(ihtml)
+					labs['Cast']=mGetDataCast(ihtml)
+					labs['Keywords']=mGetDataKeywords(ihtml)
+					labs['plot']=mGetData(ihtml,['plot'])['plot']
+					#
+					labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
+					drhtml=mGetItemPage(_setting['meta.tv.search']+labs['imdbid']) ## metadata >> movie >> results
+					#dbhtml_url=mdGetTV(drhtml,['result.url'])['result.url']
+					labs['thetvdbid']=mdGetTV(drhtml,['result.id'])['result.id']
+					if (labs['thetvdbid']=='') or (labs['thetvdbid']=='none') or (labs['thetvdbid']==None) or (labs['thetvdbid']==False): labs['fanart']=''
+					else: labs['fanart']=_setting['meta.tv.fanart.url']+labs['thetvdbid']+_setting['meta.tv.fanart.url2']
+					##_setting['meta.tv.page']
+					#if (dbhtml_url is not ''):
+					#	dbhtml=mGetItemPage(dbhtml_url) ## metadata >> movie >> results >> page
+					#	###dbhtml_fanart=mdGetMovie(drhtml,['result.url'])['result.url']
+					#	###dbhtml_fanart=mdGetSplitFindGroup(dbhtml,ifTag='<h3>Backdrops ', parseTag='',startTag='<h3>Backdrops ',endTag='')
+					#	#if (labs['plot']==''): labs['plot']=mdGetTV(dbhtml,['og.plot'])['og.plot']
+					#	#if (labs['image']=='http://static.solarmovie.so/images/movies/0000000_150x220.jpg'):  ## Default // No - Image. ##
+					#	#	labs['poster']=labs['image']=labs['thumbnail']=mdGetTV(dbhtml,['og.image'])['og.image']
+					#	labs['fanart']=mdGetTV(dbhtml,['fanart'])['fanart']
+					#	#if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=mdGetTV(dbhtml,['og.image'])['og.image']
+					if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=_artFanart
+					#
+					if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['	+labs['Genre']	+']'
+					if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+labs['Country']+']'
+					if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+labs['Director']+']'
+					if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+labs['Cast']+']'
+					if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
+					labs['TVShowTitle']=name
+					labs['title']=name+'  ('+year+')'
+					if (labs['Country'] is not ''): labs['title']=labs['title']+'  ['+labs['Country']+']'
+					#labs['title']=name+'  ('+year+')'
+					##labs['plot']=mGetData(ihtml,['plot'])['plot'] #).strip()
+					##labs['plot']=mGetDataPlot(ihtml) #+'[CR]Rating: '+labs['Rating']
+					try: _addon.add_directory(pars, labs, img=thumbnail, fanart=labs['fanart'], contextmenu_items=contextMenuItems)
+					#try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
 					except: 
-						uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+						#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+						try: uname=name; name='[Unknown]'; _addon.add_directory(pars, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+						except: t=''
 		if (chck=='Latest'): 		set_view('tvshows',515,True)
 		else: 										set_view('episodes',515,True)
 		_addon.end_of_directory(); return
@@ -569,12 +882,50 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			##debob(ihtml)
 			##plot=mGetData(ihtml,['plot'])['plot']
 			##plot=mGetDataTest(ihtml,['plot'])['plot']
-			plot=mGetDataPlot(ihtml)
-			if (plot==None) or (plot=='none') or (plot==False): plot=''
+			#plot=mGetDataPlot(ihtml)
+			#if (plot==None) or (plot=='none') or (plot==False): plot=''
 			#
 			#
+			labs={}; pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }
+			labs['poster']=labs['image']=labs['thumbnail']=thumbnail
+			labs['year']=year
+			labs['Genre']=mGetDataGenre(ihtml)
+			labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating'] #.strip()
+			labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']
+			labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
+			labs['Country']=mGetDataCountry(ihtml)
+			labs['Director']=mGetDataDirector(ihtml)
+			labs['Cast']=mGetDataCast(ihtml)
+			labs['Keywords']=mGetDataKeywords(ihtml)
+			labs['plot']=mGetData(ihtml,['plot'])['plot']
+			labs['PlotOutline']=labs['plot']
+			labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
+			drhtml=mGetItemPage(_setting['meta.movie.search']+labs['imdbid']) ## metadata >> movie >> results
+			#_setting['meta.movie.domain']=ps('meta.movie.domain')
+			#_setting['meta.movie.search']=ps('meta.movie.search')
+			dbhtml_url=mdGetMovie(drhtml,['result.url'])['result.url']
+			dbhtml=mGetItemPage(dbhtml_url) ## metadata >> movie >> results >> page
+			#dbhtml_fanart=mdGetMovie(drhtml,['result.url'])['result.url']
+			#dbhtml_fanart=mdGetSplitFindGroup(dbhtml,ifTag='<h3>Backdrops ', parseTag='',startTag='<h3>Backdrops ',endTag='')
+			if (labs['plot']==''): labs['plot']=mdGetMovie(dbhtml,['og.plot'])['og.plot']
+			if (labs['image']=='http://static.solarmovie.so/images/movies/0000000_150x220.jpg'):  ## Default // No - Image. ##
+				labs['poster']=labs['image']=labs['thumbnail']=mdGetMovie(dbhtml,['og.image'])['og.image']
+			labs['fanart']=mdGetMovie(dbhtml,['og.image2'])['og.image2']
+			if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=mdGetMovie(dbhtml,['og.image'])['og.image']
+			if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=_artFanart
+			if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['	+labs['Genre']	+']'
+			if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+labs['Country']+']'
+			if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+labs['Director']+']'
+			if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+labs['Cast']+']'
+			if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
+			labs['TVShowTitle']=name
+			labs['title']=name+'  ('+year+')'
+			if (labs['Country'] is not ''): labs['title']=labs['title']+'  ['+labs['Country']+']'
+			##labs['title']=name+'  ('+year+')'
+			##labs['plot']=mGetData(ihtml,['plot'])['plot'] #).strip()
+			##labs['plot']=mGetDataPlot(ihtml) #+'[CR]Rating: '+labs['Rating']
 			#
-			try: _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')', 'plot': plot}, img=thumbnail, contextmenu_items=contextMenuItems)
+			try: _addon.add_directory(pars, labs, img=thumbnail, fanart=labs['fanart'], contextmenu_items=contextMenuItems)
 			except: 
 				uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
 		set_view('movies',515); _addon.end_of_directory()
@@ -650,20 +1001,20 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 		##_addon.add_directory({'section': section, 'mode': 'BrowseLatest'},	 		{'title':  'Latest'})
 		##_addon.add_directory({'section': section, 'mode': 'BrowsePopular'}, 		{'title':  'Popular'})
 		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/tv/', 'pageno': '1','pagecount': '1'}, 		{'title':  'Latest'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Latest'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 'url': _domain_url+'/tv/', 'pageno': '1','pagecount': '1'}, 		{'title':  'Popular (ALL TIME)'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 'url': _domain_url+'/tv/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Popular (NEW)'})
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Latest'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 'url': _domain_url+'/tv/', 'pageno': '1','pagecount': '1'}, 		{'title':  'Popular (ALL TIME)'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 'url': _domain_url+'/tv/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Popular (NEW)'}, img=_art150,fanart=_artFanart)
 	else:	#################### Movie
 		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/#latest', 'pageno': '1','pagecount': '1'},	 		{'title':  'Latest'})
 		##_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 'url': _domain_url+'/#popular', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular'})
 		#_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular (ALL TIME)'})
 		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 		{'title':  'Latest'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Latest'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Popular (NEW)'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesHDPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular (HD)'})
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesOtherPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular (OTHER)'})
-	_addon.add_directory({'section': section, 'mode': 'BrowseGenre'},	 			{'title':  'Genres'})
-	_addon.add_directory({'section': section, 'mode': 'BrowseYear'}, 				{'title':  'Year'})
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Latest'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 	{'title':  'Popular (NEW)'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesHDPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular (HD)'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesOtherPopular', 'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 			{'title':  'Popular (OTHER)'}, img=_art150,fanart=_artFanart)
+	_addon.add_directory({'section': section, 'mode': 'BrowseGenre'},	 			{'title':  'Genres'}, img=_art150,fanart=_artFanart)
+	_addon.add_directory({'section': section, 'mode': 'BrowseYear'}, 				{'title':  'Year'}, img=_art150,fanart=_artFanart)
 	###_addon.add_directory({'section': section, 'mode': 'BrowseAtoZ'}, 			{'title':  'A-Z'})
 	#_addon.add_directory({'section': section, 'mode': 'GetSearchQuery'}, 		{'title':  'Search'})
 	###_addon.add_directory({'section': section, 'mode': 'GetTitles'}, 				{'title':  'Favorites'})
@@ -676,13 +1027,13 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 
 def Menu_MainMenu(): #The Main Menu
 	WhereAmI('@ the Main Menu')
-	_addon.add_directory({'mode': 'LoadCategories', 'section': 'movies'}, {'title':  cFL('M')+'ovies'},img=art('movies'))
-	_addon.add_directory({'mode': 'LoadCategories', 'section': 'tv'}, 		{'title':  cFL('T')+'V Shows'},img=art('television'))
-	_addon.add_directory({'mode': 'ResolverSettings'}, {'title':  cFL('R')+'esolver Settings'},is_folder=False)
-	_addon.add_directory({'mode': 'Settings'}, 				 {'title':  cFL('S')+'ettings'},img=_artSun,is_folder=False)
-	_addon.add_directory({'mode': 'TextBoxFile', 'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': 'changelog.txt'}, 				 																																 {'title': cFL('L')+'ocal Change Log'},					img=_artSun,is_folder=False)
-	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': 'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/changelog.txt'}, 		 {'title': cFL('L')+'atest Online Change Log'},	img=_artSun,is_folder=False)
-	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': 'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/news.txt'}, 				 {'title': cFL('L')+'atest Online News'},				img=_art404,is_folder=False)
+	_addon.add_directory({'mode': 'LoadCategories', 'section': 'movies'}, {'title':  cFL('M')+'ovies'},img=art('movies'),fanart=_artFanart)
+	_addon.add_directory({'mode': 'LoadCategories', 'section': 'tv'}, 		{'title':  cFL('T')+'V Shows'},img=art('television'),fanart=_artFanart)
+	_addon.add_directory({'mode': 'ResolverSettings'}, {'title':  cFL('R')+'esolver Settings'},img=art('turtle','.jpg'),is_folder=False,fanart=_artFanart)
+	_addon.add_directory({'mode': 'Settings'}, 				 {'title':  cFL('S')+'ettings'},img=_artSun,is_folder=False,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxFile', 'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': 'changelog.txt'}, 				 																																 {'title': cFL('L')+'ocal Change Log'},					img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': 'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/changelog.txt'}, 		 {'title': cFL('L')+'atest Online Change Log'},	img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': 'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/news.txt'}, 				 {'title': cFL('L')+'atest Online News'},				img=_art404,is_folder=False,fanart=_artFanart)
 	#
 	#
 	#

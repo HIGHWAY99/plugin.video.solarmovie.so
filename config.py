@@ -30,6 +30,13 @@ def ps(x):
 		,'default_art_ext': 		'.png'
 		,'default_cFL_color': 	'goldenrod'
 		,'default_section': 		'movies'
+		,'meta.movie.domain': 	'http://www.themoviedb.org'
+		,'meta.movie.search': 	'http://www.themoviedb.org/search?query=TT'
+		,'meta.tv.domain': 			'http://www.thetvdb.com'
+		,'meta.tv.search': 			'http://www.thetvdb.com/index.php?seriesname=&fieldlocation=2&language=7&genre=&year=&network=&zap2it_id=&tvcom_id=&order=translation&addedBy=&searching=Search&tab=advancedsearch&imdb_id=TT'
+		,'meta.tv.page': 				'http://www.thetvdb.com/index.php?tab=series&lid=7&id='
+		,'meta.tv.fanart.url': 	'http://www.thetvdb.com/banners/fanart/original/'
+		,'meta.tv.fanart.url2': '-1.jpg'
 #		,'': 
 #		,'': 
 	}[x]

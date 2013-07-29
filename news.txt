@@ -1,5 +1,26 @@
 
 
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Some Sweet new Looks and Feels.
+### Fixes: infoLabels, Thumbnail, Plot Description.
+### New: Fanart, Added more Graphics over-all.
+### Note: Things will be slightly slower than before with data being fetched 
+### ### from the additional pages.
+### Note: Look for the weird turtle!  This is what happens when 
+### ### modules/scripts don't come with a fancy little icon.png... 
+### ### I have to come up with one, and this one so-- made me laugh.
+### Note: If your wondering about favorites and caching, I'm simply 
+### ### trying to make sure that I got things as sorted as possible 
+### ### with MetaData first, so I don't have to deal with clearing 
+### ### data left and right, not alone data tables. I haven't decided 
+### ### yet rather to use cache again or a sql .db file which be much 
+### ### more troublesome during testing and I'd have to learn how to 
+### ### use it via python a bit. I'm considering working on a search 
+### ### feature soon, though. Hope you look forward to upcoming versions.
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.5
+
 [COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 5][/COLOR]
 [COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.4
 

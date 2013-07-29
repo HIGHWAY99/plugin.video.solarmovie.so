@@ -1,5 +1,11 @@
+[B]Version 0.1.5[/B]
+- metadata(my hard way of doing things) >> TV Shows ( thetvdb.com ) >> (ID | Fanart)
+- metadata(my hard way of doing things) >> Movies ( themoviedb.org ) >> (Plot | Image | Fanart)
+- infoLabel data Fixes made. infoLabels, such as plot description, now working for Movies, TV Show Titles, and somewhat for TV Latest Episodes.
+
+
 [B]Version 0.1.4[/B]
-- Messed at some point in my data fetching function and lost descriptions. Made temp fix for that fixed up what issues it was throwing for tv shows/movies too new to have a plot description.
+- Messed up at some point in my data fetching function and lost descriptions. Made temp fix for that fixed up what issues it was throwing for tv shows/movies too new to have a plot description.
 - TV >> Latest -Episodes- (Parsing Fixed) >> Play
 - Movies >> Latest >> Play
 - Added a configurable function.  Feeding the html to it, it checks the list of objects you request and parses them out with many differant get-Methods.
