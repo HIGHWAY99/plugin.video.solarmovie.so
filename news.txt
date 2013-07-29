@@ -1,6 +1,24 @@
 
 
-[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.4
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Many things to tell you about...
+### Note: It's a good idea to have MetaData in the settings window turned off for now.
+### Working on better handling of dependencies.
+### Config.py added.
+### Many functions added to make my life much easier.
+### Added Plot description to Movies. (TV Shows to come later.)
+### Added Latest Movie Listings and Latest TV Episode Listings.
+### Plot Data bugged for a moment but made a Temp fix til I can better fix the main function.
+### Plot Data returns blank now instead of erroring for those without any plot description.
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.4
+### I really hope you look forward to this version when it gets released.
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 2][/COLOR]
 [COLOR red][B]News:[/B][/COLOR]  Running some tests for news and folder on github.
 
 [COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 1][/COLOR]

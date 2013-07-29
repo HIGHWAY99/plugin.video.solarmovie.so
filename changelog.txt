@@ -1,3 +1,15 @@
+[B]Version 0.1.4[/B]
+- Messed at some point in my data fetching function and lost descriptions. Made temp fix for that fixed up what issues it was throwing for tv shows/movies too new to have a plot description.
+- TV >> Latest -Episodes- (Parsing Fixed) >> Play
+- Movies >> Latest >> Play
+- Added a configurable function.  Feeding the html to it, it checks the list of objects you request and parses them out with many differant get-Methods.
+- Added a functions to fetch the item page and filter stuff out quite a bit for easier data-fetching later.
+- Added art404 varaible | Fixes in set_view() | Added ease-to-use [TAG]text[/TAG] functions.
+- Cleanup of some code in default.py | Some added Functions in default.py and teh_tools.py | Lots of notation commenting
+- Working on better handling of dependencies. | Added t0mm0_common_addon.py and t0mm0_common_net.py to folder as well as storageserverdummy.py and StorageServer.py
+- Studing "t0mm0.common.addon" further to better my coding.
+- Adding of config.py.  Attempted yet again to study global file setting better, and failing for the most part, thus resorting to function handling as usual.
+
 [B]Version 0.1.3[/B]
 Example:
 if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):

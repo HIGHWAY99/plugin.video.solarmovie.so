@@ -76,12 +76,13 @@ __settings__		=	xbmcaddon.Addon(id=plugin_id)
 __home__				=	__settings__.getAddonInfo('path')
 addonPath				=	__settings__.getAddonInfo('path')
 artPath					=	addonPath+'/art/'	#special://home/addons/plugin.video.theanimehighway/art
-if __settings__.getSetting("enable-debug") == "true":debugging=True				#if (debugging==True): 
+if __settings__.getSetting("debug-enable") == "true":debugging=True				#if (debugging==True): 
 else: debugging=False
-if __settings__.getSetting("show-debug") == "true": shoDebugging=True			#if (showDebugging==True): 
+if __settings__.getSetting("debug-show") == "true": shoDebugging=True			#if (showDebugging==True): 
 else: shoDebugging=False
+_debugging=debugging; _shoDebugging=shoDebugging
 params=get_params()
-ICON = os.path.join(__home__, 'icon.jpg')
+ICON = os.path.join(__home__, 'icon.png')
 fanart = os.path.join(__home__, 'fanart.jpg')
 ### ############################################################################################################
 ### ############################################################################################################
@@ -638,10 +639,14 @@ def checkForPartNo(url,partInfo=''):
 	return partInfo
 
 ### ############################################################################################################
+def aSortMeth(sM,h=int(sys.argv[1])):
+	xbmcplugin.addSortMethod(handle=h, sortMethod=sM)
+
 def set_view(content='none',view_mode=50,do_sort=False):
 	if (debugging==True): print 'view mode: ',view_mode
+	h=int(sys.argv[1])
 	if content=='none': test=''
-	else: xbmcplugin.setContent(int(sys.argv[1]), content)
+	else: xbmcplugin.setContent(h, content)
 	#types:									# set_view()
 	# 50		CommonRootView
 	# 51		FullWidthList
@@ -651,41 +656,39 @@ def set_view(content='none',view_mode=50,do_sort=False):
 	# 505		WideIconView
 	# 
 	# 
-	# 
-	# 
-	# 
 	# set content type so library shows more views and info
 	xbmc.executebuiltin("Container.SetViewMode(%s)" % view_mode)
 	# set sort methods - probably we don't need all of them
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_NONE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_TITLE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_TITLE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_SORT_TITLE_IGNORE_THE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RATING)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_DATE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_PROGRAM_COUNT)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_GENRE)
+	#aSortMeth(xbmcplugin.SORT_METHOD_NONE)
+	aSortMeth(xbmcplugin.SORT_METHOD_UNSORTED)
+	aSortMeth(xbmcplugin.SORT_METHOD_TITLE)
+	aSortMeth(xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE)
+	aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_TITLE)
+	aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_SORT_TITLE_IGNORE_THE)
+	aSortMeth(xbmcplugin.SORT_METHOD_LABEL)
+	aSortMeth(xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+	aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_RATING)
+	aSortMeth(xbmcplugin.SORT_METHOD_DATE)
+	aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+	#aSortMeth(xbmcplugin.SORT_METHOD_PROGRAM_COUNT)
+	aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_RUNTIME)
+	aSortMeth(xbmcplugin.SORT_METHOD_GENRE)
 	#
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_FILE)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RATING)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_STUDIO)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_STUDIO_IGNORE_THE)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_PLAYLIST_ORDER)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_EPISODE)
-	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_DURATION)
-	#xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_BITRATE)
+	aSortMeth(xbmcplugin.SORT_METHOD_FILE)
+	#aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_RUNTIME)
+	#aSortMeth(xbmcplugin.SORT_METHOD_VIDEO_RATING)
+	#aSortMeth(xbmcplugin.SORT_METHOD_STUDIO)
+	#aSortMeth(xbmcplugin.SORT_METHOD_STUDIO_IGNORE_THE)
+	#aSortMeth(xbmcplugin.SORT_METHOD_PLAYLIST_ORDER)
+	aSortMeth(xbmcplugin.SORT_METHOD_EPISODE)
+	aSortMeth(xbmcplugin.SORT_METHOD_DURATION)
+	#aSortMeth(xbmcplugin.SORT_METHOD_BITRATE)
 	#
 	if (do_sort == True):
-		xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)#xbmcplugin.SORT_METHOD_LABEL
+		#aSortMeth(h, xbmcplugin.SORT_METHOD_TITLE)#xbmcplugin.SORT_METHOD_LABEL
+		xbmcplugin.addSortMethod(h, xbmcplugin.SORT_METHOD_TITLE)#xbmcplugin.SORT_METHOD_LABEL
 	#
-	####xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_TRACKNUM)
+	####xbmcplugin.addSortMethod(handle=h, sortMethod=xbmcplugin.SORT_METHOD_TRACKNUM)
 #	#SORT_METHOD_NONE, SORT_METHOD_UNSORTED, SORT_METHOD_VIDEO_TITLE,
 #	#                        SORT_METHOD_TRACKNUM, SORT_METHOD_FILE, SORT_METHOD_TITLE
 #	#                        SORT_METHOD_TITLE_IGNORE_THE, SORT_METHOD_LABEL
@@ -1463,6 +1466,44 @@ def askSelection(option_list=[],txtHeader=''):
 	#	return None
 	#else: return index
 	return index
+
+def tfalse(r,d=False): ## Get True / False
+	if   (r.lower()=='true' ): return True
+	elif (r.lower()=='false'): return False
+	else: return d
+
+## ### This is already in default.py for the plugin.video.solarmovie.so addon / plugin.
+##def cFL(t,c='white'): ### For Coloring Text ###
+##	return '[COLOR '+c+']'+t+'[/COLOR]'
+
+def iFL(t): ### For Italic Text ###
+	return '[I]'+t+'[/I]'
+def bFL(t): ### For Bold Text ###
+	return '[B]'+t+'[/B]'
+def _FL(t,c,e=''): ### For Custom Text Tags ###
+	if (e==''): d=''
+	else: d=' '+e
+	return '['+c.upper()+d+']'+t+'[/'+c.upper()+']'
+
+def WhereAmI(t): ### for Writing Location Data to log file ###
+	if (_debugging==True): print 'Where am I:  '+t
+def deb(s,t): ### for Writing Debug Data to log file ###
+	if (_debugging==True): print s+':  '+t
+def debob(t): ### for Writing Debug Object to log file ###
+	if (_debugging==True): print t
+
+def nolines(t):
+	it=t.splitlines()
+	t=''
+	for L in it:
+		t=t+L
+	t=((t.replace("\r","")).replace("\n",""))
+	return t
+
+
+
+
+
 
 
 
