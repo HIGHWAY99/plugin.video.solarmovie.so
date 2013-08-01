@@ -1,5 +1,34 @@
 
 
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.7
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.6
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  
+### More handling for Metadata on Episodes and passing of data from TV Show Titles to Season to Episode listings. This allows for Plot/Description/Overview of episode as well as episode screenshot and Name fixing.
+### More Label Coloring
+### Favorites for TV and Movies each.
+### Search feature works better now when activated from 1ch/Primewire's Subscription page... it now removes the text [TAGS]. and (YEAR) data to get down to the name.
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Added a normal Search feature, 
+### ### which can be made accessable from other addons.
+### ### ### For TV Shows
+### ### if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):
+### ### 	contextmenuitems.append(('Search Solarmovie.so', 'XBMC.Container.Update(%s?mode=%s&section=%s&title=%s)' % ('plugin://plugin.video.solarmovie.so/','Search','tv',title)))
+### ### ### For Movies
+### ### if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):
+### ### 	contextmenuitems.append(('Search Solarmovie.so', 'XBMC.Container.Update(%s?mode=%s&section=%s&title=%s)' % ('plugin://plugin.video.solarmovie.so/','Search','movies',title)))
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.6
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.5
+
 [COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 2][/COLOR]
 [COLOR red][B]News:[/B][/COLOR]  Some Sweet new Looks and Feels.
 ### Fixes: infoLabels, Thumbnail, Plot Description.

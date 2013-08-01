@@ -512,25 +512,36 @@ def _pbhookb_frodo(numblocks, blocksize, filesize, dlg, start_time):
         dlg.close()
         raise StopDownloading('Stopped Downloading')
 
+def filename_filter_out_year(name=''):
+	years=re.compile(' \((\d+)\)').findall('__'+name+'__')
+	for year in years:
+		name=name.replace(' ('+year+')','')
+	name=name.strip()
+	return name
+
 def filename_filter_colorcodes(name=''):
-	if ('[/color]' 			in name): name=name.replace('[/color]','')
-	if ('[/COLOR]' 			in name): name=name.replace('[/COLOR]','')
-	if ('[color lime]' 	in name): name=name.replace('[color lime]','')
-	if ('[COLOR lime]' 	in name): name=name.replace('[COLOR lime]','')
-	if ('[b]' in name): name=name.replace('[b]','')
-	if ('[B]' in name): name=name.replace('[B]','')
-	if ('[/b]' in name): name=name.replace('[/b]','')
-	if ('[/B]' in name): name=name.replace('[/B]','')
-	if ('[cr]' in name): name=name.replace('[cr]','')
-	if ('[CR]' in name): name=name.replace('[CR]','')
-	if ('[i]' in name): name=name.replace('[i]','')
-	if ('[I]' in name): name=name.replace('[I]','')
-	if ('[/i]' in name): name=name.replace('[/i]','')
-	if ('[/I]' in name): name=name.replace('[/I]','')
-	if ('[uppercase]' in name): name=name.replace('[uppercase]','')
-	if ('[UPPERCASE]' in name): name=name.replace('[UPPERCASE]','')
-	if ('[lowercase]' in name): name=name.replace('[lowercase]','')
-	if ('[LOWERCASE]' in name): name=name.replace('[LOWERCASE]','')
+	if ('[/color]' 				in name): name=name.replace('[/color]','')
+	if ('[/COLOR]' 				in name): name=name.replace('[/COLOR]','')
+	if ('[color lime]' 		in name): name=name.replace('[color lime]','')
+	if ('[COLOR lime]' 		in name): name=name.replace('[COLOR lime]','')
+	if ('[COLOR green]' 	in name): name=name.replace('[COLOR green]','')
+	if ('[COLOR yellow]' 	in name): name=name.replace('[COLOR yellow]','')
+	if ('[COLOR red]' 		in name): name=name.replace('[COLOR red]','')
+	if ('[b]' 						in name): name=name.replace('[b]','')
+	if ('[B]' 						in name): name=name.replace('[B]','')
+	if ('[/b]' 						in name): name=name.replace('[/b]','')
+	if ('[/B]' 						in name): name=name.replace('[/B]','')
+	if ('[cr]' 						in name): name=name.replace('[cr]','')
+	if ('[CR]' 						in name): name=name.replace('[CR]','')
+	if ('[i]' 						in name): name=name.replace('[i]','')
+	if ('[I]' 						in name): name=name.replace('[I]','')
+	if ('[/i]' 						in name): name=name.replace('[/i]','')
+	if ('[/I]' 						in name): name=name.replace('[/I]','')
+	if ('[uppercase]' 		in name): name=name.replace('[uppercase]','')
+	if ('[UPPERCASE]' 		in name): name=name.replace('[UPPERCASE]','')
+	if ('[lowercase]' 		in name): name=name.replace('[lowercase]','')
+	if ('[LOWERCASE]' 		in name): name=name.replace('[LOWERCASE]','')
+	name=name.strip()
 	#if ('' in name): name=name.replace('','')
 	#if ('' in name): name=name.replace('','')
 	#if ('' in name): name=name.replace('','')
@@ -807,7 +818,7 @@ def clean_filename(filename):
 
 def ParseDescription(plot): ## Cleans up the dumb number stuff thats ugly.
 	if ('&#' in plot) and (';' in plot):
-		if ("&amp;"  in plot): plot=plot.replace('&amp;','&')&amp;#x27;
+		if ("&amp;"  in plot): plot=plot.replace('&amp;','&')#&amp;#x27;
 		if ("&#8211;" in plot): plot=plot.replace("&#8211;",";") #unknown
 		if ("&#8216;" in plot): plot=plot.replace("&#8216;","'")
 		if ("&#8217;" in plot): plot=plot.replace("&#8217;","'")
@@ -1318,9 +1329,20 @@ def check_url_v(_url):
 ### >>> r.status_code
 ### 404    # requests.codes.NOT_FOUND
 
+def thetvdb_com_episodes2(show_id):
+	if (debugging==True): print 'thetvdb.com show ID: '+show_id
+	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
+	print 'thetvdb_com_episodes:  '+'http://www.thetvdb.com/?tab=seasonall&id='+show_id
+	itable=(link.split('<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" id="listtable">')[1]).split('</table>')[0]
+	iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td>(.+?)</tr>').findall(itable)
+	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
+	return iresults
+
+
 def thetvdb_com_episodes(show_id):
 	if (debugging==True): print 'thetvdb.com show ID: '+show_id
 	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
+	print 'thetvdb_com_episodes:  '+'http://www.thetvdb.com/?tab=seasonall&id='+show_id
 	itable=(link.split('<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" id="listtable">')[1]).split('</table>')[0]
 	iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?"><img src="(.+?)" width=.+? height=.+?>.+?</td></tr>').findall(itable)
 	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
@@ -1447,7 +1469,8 @@ def episode__AirDates(show_name,show_id='none',getFirst=False):
 	#
 
 def search_for_airdates(r=''):
-	if (r==None) or (r==''): r=showkeyboard('','Search for Show:')
+	if (r==None) or (r=='') or (r=='none') or (r==False): r=showkeyboard('','Search for Show:')
+	else: r=filename_filter_out_year(filename_filter_colorcodes(r))
 	if (r==False) or (r==None) or (r==''): return
 	rr=episode__AirDates(r)
 
@@ -1509,6 +1532,9 @@ def nolines(t):
 
 ### ############################################################################################################
 ### ############################################################################################################
+
+
+
 
 
 

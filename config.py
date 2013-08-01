@@ -29,6 +29,11 @@ def ps(x):
 		,'GENRES': 							['Action', 'Adult', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Game-Show', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 'Reality-TV', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Talk-Show', 'Thriller', 'War', 'Western']
 		,'default_art_ext': 		'.png'
 		,'default_cFL_color': 	'goldenrod'
+		,'cFL_color': 					'goldenrod'
+		,'cFL_color2': 					'yellow'
+		,'cFL_color3': 					'red'
+		,'cFL_color4': 					'grey'
+		,'cFL_color5': 					'white'
 		,'default_section': 		'movies'
 		,'meta.movie.domain': 	'http://www.themoviedb.org'
 		,'meta.movie.search': 	'http://www.themoviedb.org/search?query=TT'
@@ -37,11 +42,115 @@ def ps(x):
 		,'meta.tv.page': 				'http://www.thetvdb.com/index.php?tab=series&lid=7&id='
 		,'meta.tv.fanart.url': 	'http://www.thetvdb.com/banners/fanart/original/'
 		,'meta.tv.fanart.url2': '-1.jpg'
+		,'meta.tv.poster.url': 	'http://www.thetvdb.com/banners/posters/'
+		,'meta.tv.poster.url2': '-1.jpg'
+		,'domain.search.movie': 'http://www.solarmovie.so/movie/search/'
+		,'domain.search.tv': 		'http://www.solarmovie.so/tv/search/'
+		,'domain.url.tv': 			'/tv'
+		,'domain.url.movie': 		''
+		,'changelog.local': 		'changelog.txt'
+		,'changelog.url': 			'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/changelog.txt'
+		,'news.url': 						'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/news.txt'
+		,'listSeasons.match.img': 				'coverImage">.+?src="(.+?)"'
+		,'listSeasons.match.seasons': 		"toggleSeason\('(\d+)'\)"
+		,'listSeasons.prefix.seasons': 		'[COLOR goldenrod]S[/COLOR]eason '
+		,'setview.seasons': 							515
+		,'setview.episodes': 							515
+		,'setview.movies': 								515
+		,'setview.tv': 										515
+		,'setview.tv.latestepisodes': 		515
+		,'domain.thumbnail.default': 			'http://static.solarmovie.so/images/movies/0000000_150x220.jpg'
+		,'rating.max': 										'10'
+		,'special.home.addons': 					"special://home/addons/"
+		,'cMI.favorites.tv.add.url': 			'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&dbid=%s)'
+		,'cMI.favorites.tv.add.name': 		'Favorites - Add'
+		,'cMI.favorites.tv.add.mode': 		'FavoritesAdd'
+		,'cMI.favorites.movie.add.url': 	'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s)'
+		,'cMI.airdates.find.name': 				'Find AirDates'
+		,'cMI.airdates.find.url': 				'XBMC.RunPlugin(%s?mode=%s&title=%s)'
+		,'cMI.airdates.find.mode': 				'SearchForAirDates'
+		,'cMI.showinfo.name': 						'Show Information'
+		,'cMI.showinfo.url': 							'XBMC.Action(Info)'
+		,'cMI.1ch.search.folder': 				'plugin.video.1channel'
+		,'cMI.1ch.search.name': 					'Search 1Channel'
+		,'cMI.1ch.search.url': 						'XBMC.Container.Update(%s?mode=7000&section=%s&query=%s)'
+		,'cMI.1ch.search.plugin': 				'plugin://plugin.video.1channel/'
+		,'cMI.1ch.search.section': 				'movies'
+		,'cMI.1ch.search.section.tv': 		'tv'
+		,'cMI.primewire.search.folder': 	'plugin.video.primewire'
+		,'cMI.primewire.search.name': 		'Search PrimeWire.ag'
+		,'cMI.primewire.search.url': 			'XBMC.Container.Update(%s?mode=7000&section=%s&query=%s)'
+		,'cMI.primewire.search.plugin': 	'plugin://plugin.video.primewire/'
+		,'cMI.primewire.search.section': 	'movies'
+		,'cMI.primewire.search.section.tv':	'tv'
+		,'LI.movies.match.items': 				'class="coverImage" title="(.+?)".+?href="(.+?)".+?src="(.+?)".+?<a title=".+?\(([\d]+)\)'
+		,'LI.movies.latest.split1': 			'<h2>Latest Movies</h2>'
+		,'LI.movies.latest.split2': 			'<h2>'
+		,'LI.movies.latest.check': 				'Latest'
+		,'LI.movies.popular.new.split1': 	'<h2>Most Popular New Movies</h2>'
+		,'LI.movies.popular.new.split2': 	'<h2>'
+		,'LI.movies.popular.new.check': 	'NewPopular'
+		,'LI.movies.popular.hd.split1': 	'<h2>Most Popular Movies in HD</h2>'
+		,'LI.movies.popular.hd.split2': 	'<h2>'
+		,'LI.movies.popular.hd.check': 		'HDPopular'
+		,'LI.movies.popular.other.split1':'<h2>Other Popular Movies</h2>'
+		,'LI.movies.popular.other.split2':'<h2>'
+		,'LI.movies.popular.other.check': 'OtherPopular'
+		,'section.movie': 								'movies'
+		,'section.tv': 										'tv'
+		,'LI.tv.latest.match.items': 			'__(.+?) s(\d+)e(\d+) (.+?)__'
+		,'LI.tv.latest.check': 						'Latest'
+		,'LI.tv.latest.split1': 					'<h2>Most Popular New TV Shows</h2>'
+		,'LI.tv.latest.split2': 					'<h3>'
+		,'LI.tv.popular.all.check': 			'Popular'
+		,'LI.tv.popular.all.split1': 			'<h2>Most Popular TV Shows</h2>'
+		,'LI.tv.popular.all.split2': 			'<h2>'
+		,'LI.tv.popular.new.check': 			'NewPopular'
+		,'LI.tv.popular.new.split1': 			'<h2>Latest TV Shows</h2>'
+		,'LI.tv.popular.new.split2': 			'<h3>'
+		,'LI.tv.match.items': 						'class="coverImage" title="(.+?)".+?href="(.+?)".+?src="(.+?)".+?<a title=".+?\(([\d]+)\)'
+		,'LI.nextpage.name': 							'  >  Next...'
+		,'LI.nextpage.match': 						'<li class="next"><a href=.+?page=([\d]+)"'
+		,'LI.nextpage.check': 						'<li class="next"><a href="http://www.solarmovie.so/'
+		,'LI.page.param': 								'?page='
+		,'LI.page.find': 									'<li><a href=.+?page=([\d]+)"'
+		,'BrowseByYear.tv.url1': 					'/tv/watch-tv-shows-'
+		,'BrowseByYear.tv.url2': 					'.html'
+		,'BrowseByYear.movie.url1': 			'/watch-movies-of-'
+		,'BrowseByYear.movie.url2': 			'.html'
+		,'BrowseByGenre.tv.url1': 				'/tv/watch-'
+		,'BrowseByGenre.tv.url2': 				'-tv-shows.html'
+		,'BrowseByGenre.movie.url1': 			'/watch-'
+		,'BrowseByGenre.movie.url2': 			'-movies.html'
+		,'BrowseByYear.thisyear': 				2013
+		,'BrowseByYear.earliestyear': 		1930
+		,'BrowseByYear.range.by': 				-1
+		,'Hosters.icon.url': 							'http://www.google.com/s2/favicons?domain='
+		,'LLinks.compile.hosters': 				'<tr id=.+?href="(.+?)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
+		,'LLinks.compile.imdb.url_id': 		'<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">(\d+)</a>'
+		,'LLinks.compile.show.plot': 			'<p id="plot_\d+">(.+?)</p>'
+		,'LLinks.compile.show.title_year': '<title>Watch Full (.+?) \((.+?)\) .+?</title>'
+		,'LLinks.compile.show_episode.info': '<title>Watch (.+?) Online for Free - (.+?) - .+? - (\d+)x(\d+) - SolarMovie</title>'
+##		,'LLinks.compile.': 							
+#		,'': 		''
 #		,'': 
 #		,'': 
 	}[x]
 _art_DefaultExt  ='.png'
 _cFL_DefaultColor='goldenrod'
+
+### Known Domains: 
+### http://www.solarmovie.so
+### http://www.solarmovie.eu
+### http://solarmovies.com
+### 
+### 
+### 
+### 
+### 
+### 
+### 
+### 
 
 ### ############################################################################################################
 ### ############################################################################################################
