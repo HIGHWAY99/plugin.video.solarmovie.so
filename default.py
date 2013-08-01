@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.1.6
+### # Version:			#		v0.1.7
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -1096,6 +1096,7 @@ def fav__list(section):
 					labs2['PlotOutline']=labs2['plot']=plot
 					labs2['genre']=genre
 					labs2['country']=country
+					contextMenuItems.append((ps('cMI.favorites.tv.remove.name'), 	 ps('cMI.favorites.tv.remove.url') % (sys.argv[0],ps('cMI.favorites.tv.remove.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(img),urllib.quote_plus(fanart),urllib.quote_plus(country),urllib.quote_plus(plot),urllib.quote_plus(genre),urllib.quote_plus(url),dbid )))
 					try: _addon.add_directory(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems)
 					except: deb('Error Listing Item',name+'  ('+year+')')
 				elif (section==ps('section.movie')):
@@ -1107,6 +1108,7 @@ def fav__list(section):
 					labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
 					#labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')  ['+cFL(country,ps('cFL_color3'))+']',ps('cFL_color'))
 					labs2['image']=img; labs2['fanart']=fanart
+					contextMenuItems.append((ps('cMI.favorites.tv.remove.name'), 	 ps('cMI.favorites.movie.remove.url') % (sys.argv[0],ps('cMI.favorites.tv.remove.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(img),urllib.quote_plus(fanart),urllib.quote_plus(country),urllib.quote_plus(plot),urllib.quote_plus(genre),urllib.quote_plus(url) )))
 					try: _addon.add_directory(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems)
 					except: deb('Error Listing Item',name+'  ('+year+')')
 			if   (section==ps('section.tv')): 		set_view('tvshows',ps('setview.tv')			,True)
@@ -1129,7 +1131,8 @@ def fav__list(section):
 
 def fav__remove(section,name,year):
 	WhereAmI('@ Favorites - Remove')
-	deb('fav__remove()',secction,name+'  ('+year+')'); saved_favs=cache.get('favs_'+section+'__'); tf=False
+	deb('fav__remove() '+section,name+'  ('+year+')')
+	saved_favs=cache.get('favs_'+section+'__'); tf=False
 	if saved_favs:
 		favs=eval(saved_favs)
 		if favs:

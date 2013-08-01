@@ -1,3 +1,6 @@
+[B]Version 0.1.7[/B]
+- Quick Additions of adding ContextMenuItems for Removing Favorites.
+
 [B]Version 0.1.6[/B]
 - Favorites >> ( TV | Movie ) -- Addition of database ID for TV side of things and empty placeholder for Movie.
 - TV >> Season -- Displayed Label Coloring.
