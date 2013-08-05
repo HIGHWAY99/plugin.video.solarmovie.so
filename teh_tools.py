@@ -21,6 +21,7 @@ cache = StorageServer.StorageServer(plugin_id)
 #import SimpleDownloader as downloader
 from t0mm0.common.net import Net as net
 from t0mm0.common.addon import Addon
+from config 			import *
 ### ############################################################################################################
 ### ############################################################################################################
 ### ### Common Imports ### 
@@ -84,6 +85,12 @@ _debugging=debugging; _shoDebugging=shoDebugging
 params=get_params()
 ICON = os.path.join(__home__, 'icon.png')
 fanart = os.path.join(__home__, 'fanart.jpg')
+
+_addon=Addon(ps('_addon_id'), sys.argv);
+def addst(r,s=''): return _addon.get_setting(r)   ## Get Settings
+def addpr(r,s=''): return _addon.queries.get(r,s) ## Get Params
+def cFL(t,c=ps('default_cFL_color')): ### For Coloring Text ###
+	return '[COLOR '+c+']'+t+'[/COLOR]'
 ### ############################################################################################################
 ### ############################################################################################################
 url=None; urlbac=None; name=None; name2=None; type2=None; favcmd=None; mode=None; scr=None; imgfan=None; show=None; category=None
@@ -625,6 +632,14 @@ def showkeyboard(txtMessage="",txtHeader="",passwordField=False):
 		return keyboard.getText()
 	else:
 		return False # return ''
+
+def dialogbox_number(Header="",n='',type=0):
+	#Types:		#0 : ShowAndGetNumber		#1 : ShowAndGetDate		#2 : ShowAndGetTime		#3 : ShowAndGetIPAddress	dialog = xbmcgui.Dialog()
+	dlg=xbmcgui.Dialog()
+	if (n==''): r=dlg.numeric(1,Header)
+	else: 			r=dlg.numeric(1,Header,n)
+	return r
+
 
 ### ############################################################################################################
 def checkForPartNo(url,partInfo=''):
@@ -1291,6 +1306,9 @@ def _get_dir(mypath, dirname): #...creates sub-directories if they are not found
 #def _cleanfilename(name):
 #	valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 #	return ''.join(c for c in name if c in valid_chars)
+#def _cleanFilename(name):
+#	valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+#	return ''.join(c for c in name if c in valid_chars)
 
 def _time2ms(time):
 	hour,minute,seconds = time.split(';')[0].split(':')
@@ -1338,8 +1356,20 @@ def thetvdb_com_episodes2(show_id):
 	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
 	return iresults
 
-
 def thetvdb_com_episodes(show_id):
+	if (debugging==True): print 'thetvdb.com show ID: '+show_id
+	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
+	itable=(link.split('<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" id="listtable">')[1]).split('</table>')[0]
+	iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?">(<img src=".+?" width=10 height=10>)* &nbsp;</td></tr>', re.IGNORECASE | re.DOTALL).findall(itable)
+	#iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?"><img src="(.+?)" width=.+? height=.+?>.+?</td></tr>', re.IGNORECASE | re.DOTALL).findall(itable)
+	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
+	print iresults
+	return iresults
+	#
+	#
+	#
+
+def thetvdb_com_episodes1(show_id):
 	if (debugging==True): print 'thetvdb.com show ID: '+show_id
 	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
 	print 'thetvdb_com_episodes:  '+'http://www.thetvdb.com/?tab=seasonall&id='+show_id
@@ -1451,6 +1481,7 @@ def episode__AirDates(show_name,show_id='none',getFirst=False):
 	if (rEpisodes==[]): 
 		if (debugging==True): print 'AirDates >> rEpisodes is empty'
 		return
+	rEpisodes=sorted(rEpisodes, key=lambda item: item[4]+item[5]+item[6], reverse=True)
 	dialogSelect = xbmcgui.Dialog(); option_list = []
 	for rMatch in rEpisodes:
 		dateColor='tan'
@@ -1523,9 +1554,53 @@ def nolines(t):
 	t=((t.replace("\r","")).replace("\n",""))
 	return t
 
+def checkImgUrl(img):
+	img=xbmc.translatePath(img)#; deb('Local Image',img)
+	if (check_ifUrl_isHTML(img)==True): return img
+	else: return ''
+def checkImgLocal(img):
+	img=xbmc.translatePath(img)#; deb('Local Image',img)
+	if (os.path.isfile(img)): return img
+	else: return ''
+
+### ############################################################################################################
+### ############################################################################################################
 
 
+def Library_SaveTo_Movies(url,iconimage,name,year):
+  library=xbmc.translatePath(_addon.get_profile())
+  foldername=xbmc.translatePath(os.path.join(library, 'Movies'))
+  if os.path.exists(foldername)==False: os.mkdir(os.path.join(library, 'Movies'))
+  strm='%s?mode=%s&section=%s&url=%s&iconimage=%s&title=%s&showtitle=%s&year=%s&showyear=%s'% (sys.argv[0],'PlayLibrary',ps('section.movie'),urllib.quote_plus(url),urllib.quote_plus(iconimage),urllib.quote_plus(name),urllib.quote_plus(name),year,year)
+  filename=name+'  ('+year+')'
+  filename=clean_filename(filename+'.strm')
+  file    =xbmc.translatePath(os.path.join(foldername,filename))
+  ##print file
+  a=open(file, "w"); a.write(strm); a.close()
+  myNote('Library Movie:',filename)
 
+def Library_SaveTo_Episode(url,iconimage,name,year,country,season_number,episode_number,episode_title):
+  library=xbmc.translatePath(_addon.get_profile())
+  foldermain=xbmc.translatePath(os.path.join(library, 'TV'))
+  if os.path.exists(foldermain)==False: os.mkdir(foldermain)
+  foldername=xbmc.translatePath(os.path.join(foldermain,name+'  ('+year+')'))
+  if os.path.exists(foldername)==False: os.mkdir(foldername)
+  folderseason=xbmc.translatePath(os.path.join(foldername, 'Season '+season_number))
+  if os.path.exists(folderseason)==False: os.mkdir(folderseason)
+  strm='%s?mode=%s&section=%s&url=%s&iconimage=%s&title=%s&showtitle=%s&year=%s&showyear=%s&country=%s&season=%s&episode=%s&episodetitle=%s'% (sys.argv[0],'PlayLibrary',ps('section.tv'),urllib.quote_plus(url),urllib.quote_plus(iconimage),urllib.quote_plus(name),urllib.quote_plus(name),year,year,country,season_number,episode_number,episode_title)
+  #
+  #
+  filename=name+'  ('+year+')  S'+season_number+'E'+episode_number
+  filename=clean_filename(filename+'.strm')
+  file    =xbmc.translatePath(os.path.join(folderseason,filename))
+  ##print file
+  a=open(file, "w"); a.write(strm); a.close()
+  myNote('Library TV:',filename)
+
+
+def myNote( header='',msg='',delay=5000,image='http://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/US_99_%281961%29.svg/40px-US_99_%281961%29.svg.png'):
+	header=cFL(header,ps('cFL_color')); msg=cFL(msg,ps('cFL_color2'))
+	_addon.show_small_popup(title=header,msg=msg,delay=delay,image=image)
 
 
 

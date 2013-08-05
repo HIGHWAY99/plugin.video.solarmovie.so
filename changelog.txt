@@ -1,3 +1,23 @@
+[B]Version 0.1.8[/B]
+- Fix: Latest Watched -- Now links to Get-Links instead of Get-Seasons.
+- Library >> TV >> Play From Library -- Feature works. I still need to work on label fixes for the player.
+- Library >> TV >> Add Library -- Feature works.
+- Library >> Movies >> Play From Library -- Feature works.
+### Feature Requested on IRC Chat, #XBMCHUB @ irc.freenode.net.
+### Thanks to author of SimplyMovies for their good example of how Library stuff works.
+- Library >> Movies >> Add Library -- Feature works.
+- Disabled "unicodedata" import, and made a quick & dirty fix to remove_accents() to deal with stuff elsewhere that used it. This should finally take care of that nasty unicode bunch of issues that had been plagueing me for ages.
+- Partial work on an Advanced Search Feature.  Yes, some options do work in it, atm.  This feature brings up a menu and lets you select which type of information you want to change and loops back to the list of search options again until you click cancel or do-search.
+- Forgot to make meantion of a bit of graphics updates. FYI, those with the 'primal' skin (which I got installed but don't use myself), you'll get to use the genre graphics from it... else my 1ch PrimeWire theme graphics... else 1ch Glossy_Black theme graphics... else the graphic set as '_artSun'.
+- Settings -- Added a feature to let the user set the a Category-Type name or whatever text they want for the differant groups of Favorites. ( example: 'Current Series', 'Other Series', and 'Toons and Anime' )
+- Settings -- Added the option to hide Empty Favorites #(s) options from the Menu Lists.
+- A lot of code cleanup, some code compression.
+- Updated Settings Window -- Hid the Metadata option.  Added the additional Empty Favorites #(s).
+- I've edited listItems() to only show "tv" / "movies" depending on which section they are in, to prevent items of the other section type from being displayed with possibly bad links or being routed to the wrong plugin function next.  This helped for "Latest Watched", but should also allow for more easily doing stuff like other people's Favorites or Watch List. I'll think on adding some functionality for that another time.
+- Noticed that "Latest Watched" had TV Shows in it too, not just movies. So, I've now added it to the TV section as well.
+- Favorites -- Multi Groupings. This means you can save favorites to multiple groups. This is currently setup for 2 movie groups and 3 tv show groups. ( Example: Favorites, Favorites 2, Favorites 3 )  This should be nice when you want to save many TV Show favorites of differant types, such as general, family, anime, or *adult*.
+- ( Movie | TV) >> BrowseByCountry (catches flag icons from the net).
+
 [B]Version 0.1.7[/B]
 - Quick Additions of adding ContextMenuItems for Removing Favorites.
 
@@ -121,14 +141,7 @@ if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.t
 
 
 [B]To-DO List:[/B]
-- Favorites - Plugin
-- Favorites - Global
 - More Settings
-- Search - Movies
-- Search - TV Shows
-- MetaData
-- Plot Description - Movies
-- Plot Description - TV Shows
 - 
 - 
 - 

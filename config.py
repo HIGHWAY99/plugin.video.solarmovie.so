@@ -26,7 +26,10 @@ def ps(x):
 		,'_domain_url': 				"http://www.solarmovie.so"
 		,'_database_name': 			"solarmovieso"
 		,'_addon_path_art': 		"art"
+		,'special.home.addons': 'special:'+os.sep+os.sep+'home'+os.sep+'addons'+os.sep
+		,'special.home': 				'special:'+os.sep+os.sep+'home'
 		,'GENRES': 							['Action', 'Adult', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Game-Show', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 'Reality-TV', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Talk-Show', 'Thriller', 'War', 'Western']
+		,'COUNTRIES': 					['Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Aruba','Australia','Austria','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Bermuda','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Bulgaria','Cambodia','Cameroon','Canada','Chad','Chile','China','Colombia','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Czechoslovakia','Democratic Republic of the Congo','Denmark','Dominican Republic','East Germany','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Federal Republic of Yugoslavia','Finland','France','Georgia','Germany','Ghana','Greece','Guatemala','Haiti','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran','Ireland','Isle of Man','Israel','Italy','Jamaica','Japan','Kazakhstan','Kenya','Kuwait','Latvia','Lebanon','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Malaysia','Maldives','Malta','Mexico','Moldova','Monaco','Mongolia','Morocco','Namibia','Nepal','Netherlands','Netherlands Antilles','New Zealand','Nicaragua','Nigeria','North Korea','Norway','Occupied Palestinian Territory','Pakistan','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Puerto Rico','Qatar','Republic of Macedonia','Romania','Russia','Rwanda','Senegal','Serbia','Serbia and Montenegro','Singapore','Slovakia','Slovenia','South Africa','South Korea','Soviet Union','Spain','Sri Lanka','Sweden','Switzerland','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Trinidad and Tobago','Tunisia','Turkey','U.S. Virgin Islands','UK','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','USA','Venezuela','Vietnam','West Germany','Yugoslavia','Zaire','Zambia','Zimbabwe']
 		,'default_art_ext': 		'.png'
 		,'default_cFL_color': 	'goldenrod'
 		,'cFL_color': 					'goldenrod'
@@ -35,6 +38,8 @@ def ps(x):
 		,'cFL_color4': 					'grey'
 		,'cFL_color5': 					'white'
 		,'default_section': 		'movies'
+		,'section.movie': 			'movies'
+		,'section.tv': 					'tv'
 		,'meta.movie.domain': 	'http://www.themoviedb.org'
 		,'meta.movie.search': 	'http://www.themoviedb.org/search?query=TT'
 		,'meta.tv.domain': 			'http://www.thetvdb.com'
@@ -61,15 +66,14 @@ def ps(x):
 		,'setview.tv.latestepisodes': 		515
 		,'domain.thumbnail.default': 			'http://static.solarmovie.so/images/movies/0000000_150x220.jpg'
 		,'rating.max': 										'10'
-		,'special.home.addons': 					"special://home/addons/"
-		,'cMI.favorites.tv.add.url': 			'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&dbid=%s)'
-		,'cMI.favorites.tv.add.name': 		'Favorites - Add'
+		,'cMI.favorites.tv.add.url': 			'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&dbid=%s&subfav=%s)'
+		,'cMI.favorites.tv.add.name': 		'Add Favorite'
 		,'cMI.favorites.tv.add.mode': 		'FavoritesAdd'
-		,'cMI.favorites.movie.add.url': 	'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s)'
-		,'cMI.favorites.tv.remove.url': 	'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&dbid=%s)'
-		,'cMI.favorites.tv.remove.name': 	'Favorites - Remove'
+		,'cMI.favorites.movie.add.url': 	'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&subfav=%s)'
+		,'cMI.favorites.tv.remove.url': 	'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&dbid=%s&subfav=%s)'
+		,'cMI.favorites.tv.remove.name': 	'Remove Favorite'
 		,'cMI.favorites.tv.remove.mode': 	'FavoritesRemove'
-		,'cMI.favorites.movie.remove.url': 'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s)'
+		,'cMI.favorites.movie.remove.url': 'XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&year=%s&img=%s&fanart=%s&country=%s&plot=%s&genre=%s&url=%s&subfav=%s)'
 		,'cMI.airdates.find.name': 				'Find AirDates'
 		,'cMI.airdates.find.url': 				'XBMC.RunPlugin(%s?mode=%s&title=%s)'
 		,'cMI.airdates.find.mode': 				'SearchForAirDates'
@@ -100,8 +104,7 @@ def ps(x):
 		,'LI.movies.popular.other.split1':'<h2>Other Popular Movies</h2>'
 		,'LI.movies.popular.other.split2':'<h2>'
 		,'LI.movies.popular.other.check': 'OtherPopular'
-		,'section.movie': 								'movies'
-		,'section.tv': 										'tv'
+		,'LI.tv.latest.watched.check':		'LatestWatched'
 		,'LI.tv.latest.match.items': 			'__(.+?) s(\d+)e(\d+) (.+?)__'
 		,'LI.tv.latest.check': 						'Latest'
 		,'LI.tv.latest.split1': 					'<h2>Most Popular New TV Shows</h2>'
@@ -131,10 +134,31 @@ def ps(x):
 		,'BrowseByYear.range.by': 				-1
 		,'Hosters.icon.url': 							'http://www.google.com/s2/favicons?domain='
 		,'LLinks.compile.hosters': 				'<tr id=.+?href="(.+?)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
+		,'LLinks.compile.hosters2': 			'<tr id=.+?href="(/link/show/\d+/)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
 		,'LLinks.compile.imdb.url_id': 		'<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">(\d+)</a>'
 		,'LLinks.compile.show.plot': 			'<p id="plot_\d+">(.+?)</p>'
 		,'LLinks.compile.show.title_year': '<title>Watch Full (.+?) \((.+?)\) .+?</title>'
 		,'LLinks.compile.show_episode.info': '<title>Watch (.+?) Online for Free - (.+?) - .+? - (\d+)x(\d+) - SolarMovie</title>'
+		,'AdvSearch.menu.0': 		'0.) Do Search >>'
+		,'AdvSearch.menu.1': 		'1.) Title       '
+		,'AdvSearch.menu.2': 		'2.) Description '
+		,'AdvSearch.menu.3': 		'3.) Actor       '
+		,'AdvSearch.menu.4': 		'4.) Country[N/A]'
+		,'AdvSearch.menu.5': 		'5.) Year (From) '
+		,'AdvSearch.menu.6': 		'6.) Year (To)   '
+		,'AdvSearch.menu.7': 		'7.) Genre  [N/A]'
+		,'AdvSearch.menu.8': 		'8.) Cancel      '
+		,'AdvSearch.url.tv': 		'http://www.solarmovie.so/advanced-search/?'
+		,'AdvSearch.url.movie': 'http://www.solarmovie.so/advanced-search/?'
+		,'AdvSearch.tags.0': 		'is_series'
+		,'AdvSearch.tags.1': 		'title'
+		,'AdvSearch.tags.2': 		'actor'
+		,'AdvSearch.tags.3': 		'description'
+		,'AdvSearch.tags.4': 		'country'
+		,'AdvSearch.tags.5': 		'year_from'
+		,'AdvSearch.tags.6': 		'year_to'
+		,'AdvSearch.tags.7': 		'genre'
+		,'AdvSearch.tags.8': 		''
 ##		,'LLinks.compile.': 							
 #		,'': 		''
 #		,'': 
@@ -166,7 +190,7 @@ _cFL_DefaultColor='goldenrod'
 ### ############################################################################################################
 ### Other Settings ###
 GENRES = ['Action', 'Adult', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Game-Show', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 'Reality-TV', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Talk-Show', 'Thriller', 'War', 'Western']
-
+COUNTRIES = ['Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Aruba','Australia','Austria','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Bermuda','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Bulgaria','Cambodia','Cameroon','Canada','Chad','Chile','China','Colombia','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Czechoslovakia','Democratic Republic of the Congo','Denmark','Dominican Republic','East Germany','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Federal Republic of Yugoslavia','Finland','France','Georgia','Germany','Ghana','Greece','Guatemala','Haiti','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran','Ireland','Isle of Man','Israel','Italy','Jamaica','Japan','Kazakhstan','Kenya','Kuwait','Latvia','Lebanon','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Malaysia','Maldives','Malta','Mexico','Moldova','Monaco','Mongolia','Morocco','Namibia','Nepal','Netherlands','Netherlands Antilles','New Zealand','Nicaragua','Nigeria','North Korea','Norway','Occupied Palestinian Territory','Pakistan','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Puerto Rico','Qatar','Republic of Macedonia','Romania','Russia','Rwanda','Senegal','Serbia','Serbia and Montenegro','Singapore','Slovakia','Slovenia','South Africa','South Korea','Soviet Union','Spain','Sri Lanka','Sweden','Switzerland','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Trinidad and Tobago','Tunisia','Turkey','U.S. Virgin Islands','UK','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','USA','Venezuela','Vietnam','West Germany','Yugoslavia','Zaire','Zambia','Zimbabwe']
 
 ### ############################################################################################################
 ### ############################################################################################################

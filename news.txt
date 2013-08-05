@@ -1,5 +1,32 @@
 
 
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.9
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.8
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Fix: TV >> Latest Watched.
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Library Feature.
+
+[COLOR grey][Date: 2013.08.04][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Fans of Code Lyoko and the 
+### live-action season that fallowed, Code Lyoko Evolution... feel 
+### free to check out: 
+### https://github.com/HIGHWAY99/plugin.video.codelyokoevolution/releases
+
+[COLOR grey][Date: 2013.08.04][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  *WAVES* Bye-Bye, to the "import unicodedata".
+
+[COLOR grey][Date: 2013.08.01][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Code Clean-up.
+
+[COLOR grey][Date: 2013.08.01][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Multi-Category Favorites.
+
 [COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 6][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.8
 

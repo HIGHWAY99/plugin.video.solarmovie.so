@@ -1,13 +1,22 @@
 <settings>
 	<category label="30100">
-		<setting id="enableMeta" 		type="bool" label="30203" default="false" visible="true"/>
+		<setting id="enableMeta" 		type="bool" label="30203" default="false" visible="false"/>
 		<setting id="debug-enable" 	type="bool" label="30101" default="false" visible="true"/>
 		<setting id="debug-show" 		type="bool" label="30102" default="false" visible="true"/>
+		<setting id="label-empty-favorites" 		type="bool" label="Show Labels in List: Empty Favorites" default="false" visible="true"/>
 	</category>
-	<category label="Movie">
-		<setting label="Clear Favorites" type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=movies)"/>
+	<category label="Movies">
+		<setting type="text" default=""  id="fav.movies.1.name" label="Favorites 1: Name" />
+		<setting type="text" default="2" id="fav.movies.2.name" label="Favorites 2: Name" />
+		<setting label="Clear Favorites"   type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=movies&subfav=)"/>
+		<setting label="Clear Favorites 2" type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=movies&subfav=2)"/>
 	</category>
 	<category label="TV">
-		<setting label="Clear Favorites" type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv)"/>
+		<setting type="text" default=""  id="fav.tv.1.name" label="Favorites 1: Name" />
+		<setting type="text" default="2" id="fav.tv.2.name" label="Favorites 2: Name" />
+		<setting type="text" default="3" id="fav.tv.3.name" label="Favorites 3: Name" />
+		<setting label="Clear Favorites"   type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=)"/>
+		<setting label="Clear Favorites 2" type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=2)"/>
+		<setting label="Clear Favorites 3" type="action" 	action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=3)"/>
 	</category>
 </settings>
