@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.1.8
+### # Version:			#		v0.1.9
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -52,6 +52,7 @@ _setting['debug-enable']=	_debugging			=tfalse(addst("debug-enable")); _setting[
 _setting['meta.movie.domain']=ps('meta.movie.domain'); _setting['meta.movie.search']=ps('meta.movie.search')
 _setting['meta.tv.domain']   =ps('meta.tv.domain');    _setting['meta.tv.search']   =ps('meta.tv.search')
 _setting['meta.tv.page']=ps('meta.tv.page'); _setting['meta.tv.fanart.url']=ps('meta.tv.fanart.url'); _setting['meta.tv.fanart.url2']=ps('meta.tv.fanart.url2'); _setting['label-empty-favorites']=tfalse(addst('label-empty-favorites'))
+CurrentPercent=0; CancelDownload=False
 
 ##### /\ ##### Settings #####
 ##### Variables #####
@@ -86,7 +87,7 @@ _param['by']=addpr('by',''); _param['letter']=addpr('letter',''); _param['showti
 _param['pars']=addpr('pars',''); _param['labs']=addpr('labs',''); _param['name']=addpr('name',''); _param['thetvdbid']=addpr('thetvdbid','')
 _param['plot']=addpr('plot',''); _param['tomode']=addpr('tomode',''); _param['country']=addpr('country','')
 _param['thetvdb_series_id']=addpr('thetvdb_series_id',''); _param['dbid']=addpr('dbid',''); _param['user']=addpr('user','')
-_param['subfav']=addpr('subfav',''); _param['episodetitle']=addpr('episodetitle','')
+_param['subfav']=addpr('subfav',''); _param['episodetitle']=addpr('episodetitle',''); _param['special']=addpr('special',''); _param['studio']=addpr('studio','')
 
 #_param['']=_addon.queries.get('','')
 #_param['']=_addon.queries.get('','')
@@ -135,7 +136,176 @@ def PlayVideo(url, infoLabels, listitem):
 	_addon.resolve_url(stream_url)
 	#xbmc.sleep(7000)
 
-def PlayTrailer(url):
+def DownloadStop():  ## Testing ## Doesn't work yet.
+	global CancelDownload
+	CancelDownload=True
+	global CancelDownload
+	eod()
+	#download_method=addst('download_method') ### 'Progress|ProgressBG|Hidden'
+	#if   (download_method=='Progress'):
+	#	dp=xbmcgui.DialogProgress()   ## For Frodo and earlier.
+	#	dp.close()
+	#elif (download_method=='ProgressBG'):
+	#	dp=xbmcgui.DialogProgressBG() ## Only works on daily build of XBMC.
+	#	dp.close()
+	#elif (download_method=='Test'):
+	#	t=''
+	#elif (download_method=='Hidden'):
+	#	t=''
+	#else: deb('Download Error','Incorrect download method.'); myNote('Download Error','Incorrect download method.'); return
+	#try:		t=''
+	#except: t=''
+
+def DownloadStatus(numblocks, blocksize, filesize, dlg, download_method, start_time, section, url, img, LabelName, ext, LabelFile):
+	if (CancelDownload==True):
+		try:
+			if   (download_method=='Progress'): ## For Frodo and earlier.
+				dlg.close()
+			elif (download_method=='ProgressBG'): ## Only works on daily build of XBMC.
+				dlg.close()
+			elif (download_method=='Test'): t=''
+			elif (download_method=='Hidden'): t=''
+		except: t=''
+	try:
+		percent = min(numblocks * blocksize * 100 / filesize, 100)
+		currently_downloaded = float(numblocks) * blocksize / (1024 * 1024)
+		kbps_speed = numblocks * blocksize / (time.time() - start_time)
+		if kbps_speed > 0:	eta = (filesize - numblocks * blocksize) / kbps_speed
+		else:								eta = 0
+		kbps_speed /= 1024
+		total = float(filesize) / (1024 * 1024)
+		#if   (download_method=='Progress'): ## For Frodo and earlier.
+		#	line1 = '%.02f MB of %.02f MB' % (currently_downloaded, total)
+		#	line1 +='  '+percent+'%'
+		#	line2 = 'Speed: %.02f Kb/s ' % kbps_speed
+		#	line3 = 'ETA: %02d:%02d' % divmod(eta, 60)
+		#	dlg.update(percent, line1, line2, line3)
+		#elif (download_method=='ProgressBG'): ## Only works on daily build of XBMC.
+		#	line1  ='%.02f MB of %.02f MB' % (currently_downloaded, total)
+		#	line1 +='  '+percent+'%'
+		#	line2  ='Speed: %.02f Kb/s ' % kbps_speed
+		#	line2 +='ETA: %02d:%02d' % divmod(eta, 60)
+		#	dlg.update(percent, line1, line2)
+		#elif (download_method=='Test'):
+		#	mbs = '%.02f MB of %.02f MB' % (currently_downloaded, total)
+		#	spd = 'Speed: %.02f Kb/s ' % kbps_speed
+		#	est = 'ETA: %02d:%02d' % divmod(eta, 60)
+		#	Header=		ext+'  '+mbs+'  '+percent+'%'
+		#	Message=	est+'  '+spd
+		#elif (download_method=='Hidden'): t=''
+		#if (time.time()==start_time) or (int(str(time.time())[-5:1]) == 0): # and (int(str(time.time())[-5:2]) < 10):
+		#if (int(time.strptime(time.time(),fmt='%S')) == 0):
+		#if (str(percent) in ['0','1','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','91','92','93','94','95','96','97','98','99','100']):
+		#if (str(percent) == '0' or '1' or '5' or '10' or '15' or '20' or '25' or '30' or '35' or '40' or '45' or '50' or '55' or '60' or '65' or '70' or '75' or '80' or '85' or '90' or '91' or '92' or '93' or '94' or '95' or '96' or '97' or '98' or '99' or '100'):
+		#if ('.' in str(percent)): pCheck=int(str(percent).split('.')[0])
+		#else: pCheck=percent
+		#pCheck=int(str(percent)[1:])
+		#if (CurrentPercent is not pCheck):
+		#	global CurrentPercent
+		#	CurrentPercent=pCheck
+		#	myNote(header=Header,msg=Message,delay=100,image=img)
+		##myNote(header=Header,msg=Message,delay=1,image=img)
+	except:
+		percent=100
+		if   (download_method=='Progress'): ## For Frodo and earlier.
+			t=''
+			dlg.update(percent)
+		elif (download_method=='ProgressBG'): ## Only works on daily build of XBMC.
+			t=''
+			dlg.update(percent)
+		elif (download_method=='Test'): t=''
+		#myNote(header='100%',msg='Download Completed',delay=15000,image=img)
+		elif (download_method=='Hidden'): t=''
+	if   (download_method=='Progress'): ## For Frodo and earlier.
+		line1 = '%.02f MB of %.02f MB' % (currently_downloaded, total)
+		line1 +='  '+str(percent)+'%'
+		line2 = 'Speed: %.02f Kb/s ' % kbps_speed
+		line3 = 'ETA: %02d:%02d' % divmod(eta, 60)
+		dlg.update(percent, line1, line2, line3)
+	elif (download_method=='ProgressBG'): ## Only works on daily build of XBMC.
+		line1  ='%.02f MB of %.02f MB' % (currently_downloaded, total)
+		line1 +='  '+str(percent)+'%'
+		line2  ='Speed: %.02f Kb/s ' % kbps_speed
+		line2 +='ETA: %02d:%02d' % divmod(eta, 60)
+		dlg.update(percent, line1, line2)
+	elif (download_method=='Test'):
+		mbs = '%.02f MB of %.02f MB' % (currently_downloaded, total)
+		spd = 'Speed: %.02f Kb/s ' % kbps_speed
+		est = 'ETA: %02d:%02d' % divmod(eta, 60)
+		Header=		ext+'  '+mbs+'  '+str(percent)+'%'
+		Message=	est+'  '+spd
+	elif (download_method=='Hidden'): t=''
+	if   (download_method=='Progress'): ## For Frodo and earlier.
+		try:
+			if dlg.iscanceled(): ## used for xbmcgui.DialogProgress() but causes an error with xbmcgui.DialogProgressBG()
+				dlg.close()
+				#deb('Download Error','Download canceled.'); myNote('Download Error','Download canceled.')
+				#raise StopDownloading('Stopped Downloading')
+		except: t=''
+	elif (download_method=='ProgressBG'): ## Only works on daily build of XBMC.
+		try:
+			if (dlg.isFinished()): 
+				dlg.close()
+		except: t=''
+
+def DownloadRequest(section, url,img,LabelName):
+	if (LabelName=='') and     (_param['title'] is not ''): LabelName==_param['title']
+	if (LabelName=='') and (_param['showtitle'] is not ''): LabelName==_param['showtitle']
+	LabelFile=clean_filename(LabelName)
+	deb('LabelName',LabelName)
+	if (LabelName==''): deb('Download Error','Missing Filename String.'); myNote('Download Error','Missing Filename String.'); return
+	if (section==ps('section.tv')):	FolderDest=xbmc.translatePath(addst("download_folder_tv"))
+	else:														FolderDest=xbmc.translatePath(addst("download_folder_movies"))
+	if os.path.exists(FolderDest)==False: os.mkdir(FolderDest)
+	if os.path.exists(FolderDest):
+		### param >> url:  /link/show/1466546/
+		match=re.search( '/.+?/.+?/(.+?)/', url) ## Example: http://www.solarmovie.so/link/show/1052387/ ##
+		videoId=match.group(1); deb('Solar ID',videoId); url=BASE_URL + '/link/play/' + videoId + '/' ## Example: http://www.solarmovie.so/link/play/1052387/ ##
+		html=net.http_GET(url).content; match=re.search( '<iframe.+?src="(.+?)"', html, re.IGNORECASE | re.MULTILINE | re.DOTALL); link=match.group(1); link=link.replace('/embed/', '/file/'); deb('hoster link',link)
+		try: stream_url = urlresolver.HostedMediaFile(link).resolve()
+		except: stream_url=''
+		ext=Download_PrepExt(stream_url,'.flv')
+		t=1; c=1
+		if os.path.isfile(xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext))):
+			t=LabelFile
+			while t==LabelFile:
+				if os.path.isfile(xbmc.translatePath(os.path.join(FolderDest,LabelFile+'['+str(c)+']'+ext)))==False:
+					LabelFile=LabelFile+'['+str(c)+']'
+				c=c+1
+		start_time = time.time()
+		deb('start_time',str(start_time))
+		download_method=addst('download_method') ### 'Progress|ProgressBG|Hidden'
+		urllib.urlcleanup()
+		if   (download_method=='Progress'):
+			dp=xbmcgui.DialogProgress(); dialogType=12 ## For Frodo and earlier.
+			dp.create('Downloading', LabelFile+ext)
+			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		elif (download_method=='ProgressBG'):
+			dp=xbmcgui.DialogProgressBG(); dialogType=13 ## Only works on daily build of XBMC.
+			dp.create('Downloading', LabelFile+ext)
+			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		elif (download_method=='Test'):
+			dp=xbmcgui.DialogProgress()
+			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		elif (download_method=='Hidden'):
+			dp=xbmcgui.DialogProgress()
+			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		else: deb('Download Error','Incorrect download method.'); myNote('Download Error','Incorrect download method.'); return
+		#
+		#urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		#
+		myNote('Download Complete',LabelFile+ext,15000)
+		#
+		### xbmc.translatePath(os.path.join(FolderDest,localfilewithpath+ext))
+		_addon.resolve_url(url)
+		_addon.resolve_url(stream_url)
+		#
+		#
+	else:	deb('Download Error','Unable to create destination path.'); myNote('Download Error','Unable to create destination path.'); return
+
+
+
+def PlayTrailer(url): ### Not currently used ###
 	sources=[]; url=url.decode('base-64'); WhereAmI('@ PlayVideo:  %s' % url)
 	try: 
 		hosted_media=urlresolver.HostedMediaFile(url=url); sources.append(hosted_media); source=urlresolver.choose_source(sources)
@@ -465,12 +635,23 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 	match=re.compile(ps('LLinks.compile.hosters'), re.MULTILINE | re.DOTALL | re.IGNORECASE).findall(html)
 	if (len(match) > 0):
 		count=1
+		match=sorted(match, key=lambda item: (item[3],item[2],item[1]))
 		for url, host, quality, age in match:
 			host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
 			if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
-				img=ps('Hosters.icon.url')+host; My_infoLabels['quality']=quality; My_infoLabels['age']=age; My_infoLabels['host']=host; _addon.add_directory({'section': section, 'img': _param['img'], 'mode': 'PlayVideo', 'url': url, 'quality': quality, 'age': age, 'infoLabels': My_infoLabels, 'listitem': listitem}, {'title':  name}, img=img, is_folder=False); count=count+1 
-		eod()
-	else: return
+				img=ps('Hosters.icon.url')+host; My_infoLabels['quality']=quality; My_infoLabels['age']=age; My_infoLabels['host']=host
+				pars={'section': section, 'img': _param['img'], 'mode': 'PlayVideo', 'url': url, 'quality': quality, 'age': age, 'infoLabels': My_infoLabels, 'listitem': listitem}
+				contextMenuItems=[]; 
+				#contextMenuItems.append(('Show Information', 			'XBMC.Action(Info)'))
+				pars2=pars; pars2['mode']='Download'
+				pars2['studio']=My_infoLabels['Studio']
+				pars2['ShowTitle']=My_infoLabels['ShowTitle']
+				pars2['Title']=My_infoLabels['Title']
+				#deb('plugin url for download',_addon.build_plugin_url(pars2))
+				contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
+				_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems); count=count+1
+		set_view('list',addst('links-view')); eod()
+	else: set_view('list',addst('links-view')); eod(); return
 	### ################################################################
 
 
@@ -656,8 +837,8 @@ def Menu_BrowseByCountry(section=_default_section_):
 		if (' and ' in country): print img
 		if (section==ps('section.movie')): 	url=_domain_url+'/movies-from-'			+name2path(country)+'.html'
 		else: 															url=_domain_url+'/tv/tv-shows-from-'+name2path(country)+'.html'
-		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'country': country,'bycountry': country,'pageno': '1','pagecount': '3'}, {'title':  country},img=img,fanart=_artFanart)
-	eod()
+		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'country': country,'bycountry': country,'pageno': '1','pagecount': addst('pages')}, {'title':  country},img=img,fanart=_artFanart)
+	set_view('list',addst('default-view')); eod()
 
 def Menu_BrowseByGenre(section=_default_section_):
 	url=''; WhereAmI('@ the Genre Menu')#print 'Browse by genres screen'
@@ -683,8 +864,8 @@ def Menu_BrowseByGenre(section=_default_section_):
 		if (img==''): img=_artSun
 		if section == ps('section.movie'): 	url=_domain_url+ps('BrowseByGenre.movie.url1')+(genre.lower())+ps('BrowseByGenre.movie.url2')
 		else: 															url=_domain_url+ps('BrowseByGenre.tv.url1')		+(genre.lower())+ps('BrowseByGenre.tv.url2')
-		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'bygenre': genre,'pageno': '1','pagecount': '3'}, {'title':  genre},img=img,fanart=_artFanart)
-	eod()
+		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'bygenre': genre,'pageno': '1','pagecount': addst('pages')}, {'title':  genre},img=img,fanart=_artFanart)
+	set_view('list',addst('default-view')); eod()
 
 def Menu_BrowseByYear(section=_default_section_):
 	url=''; WhereAmI('@ the Year Menu'); EarliestYear=(ps('BrowseByYear.earliestyear') - 1) #1929 #1930 ### This is set to 1 year earlier so that it will display too ### 
@@ -701,15 +882,15 @@ def Menu_BrowseByYear(section=_default_section_):
 		if (img==''): img=_artSun
 		if section == ps('section.movie'): 	url=_domain_url+ps('BrowseByYear.movie.url1')	+str(year)+ps('BrowseByYear.movie.url2')
 		else: 															url=_domain_url+ps('BrowseByYear.tv.url1')		+str(year)+ps('BrowseByYear.tv.url2')
-		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': '3'}, {'title':  str(year)},img=img,fanart=_artFanart)
-	eod()
+		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': addst('pages')}, {'title':  str(year)},img=img,fanart=_artFanart)
+	set_view('list',addst('default-view')); eod()
 
 ##def listItems(section=_default_section_, url='', html='', episode=False, startPage='1', numOfPages='1', genre='', year='', stitle=''): # List: Movies or TV Shows
 def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', genre='', year='', stitle='', season='', episode='', html='', chck=''): # List: Movies or TV Shows
 	if (url==''): return
 	#if (chck=='Latest'): url=url+chr(35)+'latest'
 	WhereAmI('@ the Item List -- url: %s' % url)
-	last=2; start=int(startPage); end=(start+int(numOfPages)); html=''; html_last=''; nextpage=startPage
+	start=int(startPage); end=(start+int(numOfPages)); html=''; html_last=''; nextpage=startPage; deb('page start',str(start)); deb('page end',str(end))
 	try: html_=net.http_GET(url).content
 	except: 
 		try: html_=getURL(url)
@@ -720,13 +901,23 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	if (html_=='') or (html_=='none') or (html_==None): 
 		deb('Error','Problem with page'); deadNote('Results:  '+section,'No results were found.')
 		return
+	try:		last=int(re.compile('<li><a href="http://.+?page=\d+">(\d+)</a></li>[\n]\s+<li class="next">', re.IGNORECASE | re.DOTALL).findall(html_))[0]
+	except:	last=2
+	deb('number of pages',str(last))
+	print min(last,end)
 	if ('<h1>Nothing was found by your request</h1>' in html_):
 		deadNote('Results:  '+section,'Nothing was found by your request'); eod(); return
 	pmatch=re.findall(ps('LI.page.find'), html_)
 	if pmatch: last=pmatch[-1]
+	if ('?' in url):	urlSplitter='&page='; deb('urlSplitter',urlSplitter) ## Quick fix for urls that already have '?' in it.
+	else:							urlSplitter='?page='; deb('urlSplitter',urlSplitter)
 	for page in range(start,min(last,end)):
-		if (int(startPage)> 1): pageUrl=url+ps('LI.page.param')+startPage
+		if (int(page)> 1): #if (int(startPage)> 1):
+			if ('&page=' in url): pageUrl=url.replace('&page=','&pagenull=')+'&page='+str(page) ## Quick fix.
+			if ('?page=' in url): pageUrl=url.replace('?page=','?pagenull=')+'&page='+str(page) ## Quick fix.
+			else: pageUrl=url+urlSplitter+str(page) #ps('LI.page.param')+startPage
 		else: pageUrl=url
+		deb('item listings for',pageUrl)
 		try: 
 			try: html_last=net.http_GET(pageUrl).content
 			except: 
@@ -743,8 +934,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		if (int(nextpage) > end) or (end < last): ## Do Show Next Page Link ##
 			if (_debugging==True): print 'A next-page is being added.'
 			_addon.add_directory({'mode': 'GetTitles', 'url': url, 'pageno': nextpage, 'pagecount': numOfPages}, {'title': ps('LI.nextpage.name')}, img=art('icon-next'))
-	##	### _addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': 'Next...'})
-	##html=nolines(html)
+	###	### _addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': 'Next...'})
+	###html=nolines(html)
 	html=ParseDescription(html); html=remove_accents(html) #if (_debugging==True): print html
 	if (section==ps('section.tv')) and (season=='') and (episode==''): ## TV Show
 		deb('listItems >> ',section); deb('listItems >> chck',chck)
@@ -868,8 +1059,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 							#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
 							try: uname=name; name='[Unknown]'; _addon.add_directory(pars, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
 							except: t=''
-		if (chck==ps('LI.tv.latest.check')): 		set_view('episodes' ,ps('setview.tv.latestepisodes'),True)
-		else: 																	set_view('tvshows'	,ps('setview.tv'),True)
+		if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')): 		set_view('episodes' ,addst('episode-view'),True) #set_view('episodes' ,ps('setview.tv.latestepisodes'),True)
+		else: 																																							set_view('tvshows'	,addst('tvshows-view'),True) #set_view('tvshows'	,ps('setview.tv'),True)
 		eod(); return
 	#elif (section==ps('section.tv')) and (episode==''): ## Season
 	#	set_view('seasons',515); _addon.end_of_directory(); return
@@ -936,82 +1127,85 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
 				except: 
 					uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
-		set_view('movies',ps('setview.movies')); eod(); return
+		set_view('movies',addst('movies-view')); eod(); return #set_view('movies',ps('setview.movies')); eod(); return
 	else: ### Possibly a combination of the two for watch lists and the such. ###
 		#
-		eod(); return
+		set_view('videos',addst('default-view')); eod(); return
 	eod()
 
 def listEpisodes(section, url, img='', season=''): #_param['img']
 	xbmcplugin.setContent( int( sys.argv[1] ), 'episodes' ); WhereAmI('@ the Episodes List for TV Show -- url: %s' % url); html=net.http_GET(url).content
-	if (html=='') or (html=='none') or (html==None):
-		if (_debugging==True): print 'Html is empty.'
-		return
-	if (img==''):
-		match=re.search( 'coverImage">.+?src="(.+?)"', html, re.IGNORECASE | re.MULTILINE | re.DOTALL); img=match.group(1)
-	episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(html) #; if (_debugging==True): print episodes
-	if not episodes: 
-		if (_debugging==True): print 'couldn\'t find episodes'
-		return
-	if (_param['thetvdb_series_id']=='') or (_param['thetvdb_series_id']=='none') or (_param['thetvdb_series_id']==None) or (_param['thetvdb_series_id']==False): thetvdb_episodes=None
-	else: thetvdb_episodes=thetvdb_com_episodes2(_param['thetvdb_series_id'])
-	#print 'thetvdb_episodes',thetvdb_episodes
+	metadata_tv_episodes=tfalse(addst("metadata_tv_episodes")); metadata_tv_ep_plot=tfalse(addst("metadata_tv_ep_plot"))
+	if (html=='') or (html=='none') or (html==None): deb('Html','is empty.' ); return
+	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
+	if (img==''): match=re.search( 'coverImage">.+?src="(.+?)"', html, re.IGNORECASE | re.MULTILINE | re.DOTALL); img=match.group(1)
+	###if (season=='') or (season.lower()=='all'):	
+	###try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
+	##if (int(season) > 2):
+	##	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(['+season+']*)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>').findall(html)
+	##	except:	episodes=''
+	##else: 
+	#episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
+	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) link', re.DOTALL).findall(html)
+	except:	episodes=''
+	###else:
+	###	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
+	###	#try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(['+season+'])/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
+	###	except:	episodes=''
+	if (not episodes) or (episodes==None) or (episodes==False): deb('Episodes','couldn\'t find episodes'); eod(); return
+	if (metadata_tv_episodes==False) or (_param['thetvdb_series_id']=='') or (_param['thetvdb_series_id']=='none') or (_param['thetvdb_series_id']==None) or (_param['thetvdb_series_id']==False): thetvdb_episodes=None
+	else: 
+		if (season=='0') or (season=='') or (season.lower()=='all'):	thetvdb_episodes=thetvdb_com_episodes2(_param['thetvdb_series_id'])
+		else:																				thetvdb_episodes=thetvdb_com_episodes3(_param['thetvdb_series_id'],season)
 	woot=False
+	print episodes
 	for ep_url, episode_name, season_number, episode_number, num_links in episodes:
-		labs={}; s_no=season_number; e_no=episode_number
-		if (int(episode_number) > -1) and (int(episode_number) < 10): episode_number='0'+episode_number
-		labs['thumbnail']=img; labs['fanart']=_param['fanart']
-		labs['EpisodeTitle']=episode_name
-		#labs['ShowTitle']=''
-		labs['title']=season_number+'x'+episode_number+' - '+episode_name+'  [[I]'+num_links+' Links [/I]]'
-		ep_url=_domain_url+ep_url; episode_name=messupText(episode_name,True,True,True,True)
-		if (thetvdb_episodes==None) or (_param['thetvdb_series_id']==None) or (_param['thetvdb_series_id']==False) or (_param['thetvdb_series_id'] is not '') or (_param['thetvdb_series_id']=='none'): t=''
-		if (thetvdb_episodes):
-			#for thetvdb_episode in thetvdb_episodes:
-			for db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage in thetvdb_episodes:
-				db_ep_url=ps('meta.tv.domain')+db_ep_url
-				db_ep_url2=ps('meta.tv.domain')+db_ep_url2
-				### iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?"><img src="(.+?)" width=.+? height=.+?>.+?</td></tr>').findall(itable)
-				### db_ep_url, db_sxe_no, db_epurl2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage
-				if (db_sxe_no.strip()==(s_no+' x '+e_no)):
-					if ('Episode #' in episode_name): episode_name=db_ep_name.strip()
-					labs['Premeired']=labs['DateAired']=labs['Date']=db_dateYear+'-'+db_dateMonth+'-'+db_dateDay
-					labs['year']=db_dateYear; labs['month']=db_dateMonth; labs['day']=db_dateDay
-					(db_thumb,labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2.strip(),img)
-					if (check_ifUrl_isHTML(db_thumb)==True): labs['thumbnail']=db_thumb
+		if (season==''): t=''
+		elif (season==season_number) or (season.lower()=='all') or (season==''):
+			labs={}; s_no=season_number; e_no=episode_number
+			if (int(episode_number) > -1) and (int(episode_number) < 10): episode_number='0'+episode_number
+			labs['thumbnail']=img; labs['fanart']=_param['fanart']
+			labs['EpisodeTitle']=episode_name #; labs['ShowTitle']=''
+			episode_name=messupText(episode_name,_html=True,_ende=True,_a=False,Slashes=False)
+			#labs['title']=season_number+'x'+episode_number+' - '+episode_name+'  [[I]'+num_links+' Links [/I]]'
+			labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
+			ep_url=_domain_url+ep_url; episode_name=messupText(episode_name,True,True,True,True)
+			if (metadata_tv_episodes==False): t=''
+			#elif (season=='0') (s_no=='0') or (season=='') or (season.lower()=='all'): t=''
+			elif (thetvdb_episodes) and (thetvdb_episodes is not None) and (thetvdb_episodes is not '') and (thetvdb_episodes is not 'none'):
+				#for thetvdb_episode in thetvdb_episodes:
+				for db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage in thetvdb_episodes:
+					if (db_sxe_no.strip()==(s_no+' x '+e_no)):
+						v=(db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage)
+						db_ep_url=ps('meta.tv.domain')+db_ep_url; db_ep_url2=ps('meta.tv.domain')+db_ep_url2
+						if ('Episode #' in episode_name): episode_name=db_ep_name.strip()
+						labs['Premeired']=labs['DateAired']=labs['Date']=db_dateYear+'-'+db_dateMonth+'-'+db_dateDay; labs['year']=db_dateYear; labs['month']=db_dateMonth; labs['day']=db_dateDay
+						deb('db_hasImage',db_hasImage)
+						if ('img' in db_hasImage):	(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2,img)
+						else:												(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = (img,'','')
+						#(db_thumb,labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2.strip(),img)
+						#if (check_ifUrl_isHTML(db_thumb)==True): labs['thumbnail']=db_thumb
+						labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
+						####################
+						if (metadata_tv_ep_plot==False):	labs['PlotOutline']=labs['plot']=''
+						else:
+							try:		ep_html=mGetItemPage(db_ep_url2)
+							except:	ep_html=''
+							deb('thetvdb - episode - url',db_ep_url2); deb('Length of ep_html',str(len(ep_html)))
+							if (ep_html is not None) or (ep_html is not False) or (ep_html is not '') or (ep_html is not 'none'):
+								labs['PlotOutline']=labs['plot']=mdGetTV(ep_html,['thetvdb.episode.overview1'])['thetvdb.episode.overview1']
+						####################
+						thetvdb_episodes.remove(v)
 					#
-					#labs['title']=season_number+'x'+episode_number+' - '+db_ep_name.strip()+'  [[I]'+num_links+' Links [/I]]'
-					labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
-					#cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
-					#' - '+db_ep_name.strip()+'  [[I]'+num_links+' Links [/I]]'
-					#cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))
-					#
-					ep_html=mGetItemPage(db_ep_url2); deb('thetvdb - episode - url',db_ep_url2)
-					deb('Length of ep_html',str(len(ep_html)))
-					if (ep_html is not None) or (ep_html is not False) or (ep_html is not '') or (ep_html is not 'none'):
-						labs['PlotOutline']=labs['plot']=mdGetTV(ep_html,['thetvdb.episode.overview1'])['thetvdb.episode.overview1']
-						#(ep_html,{'thetvdb.episode.overview'})['thetvdb.episode.overview']
-					#if (episode_number=='01'): print ep_html
-					#if (woot==False): print ep_html; woot=True
-					#
+				#
 			#
+			contextMenuItems=[]; labs['season']=season_number; labs['episode']=episode_number
+			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
+			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_param['showtitle']), urllib.quote_plus(_param['year']), urllib.quote_plus(ep_url), urllib.quote_plus(labs['thumbnail']), urllib.quote_plus(season_number), urllib.quote_plus(episode_number), urllib.quote_plus(episode_name) )))
+			deb('Episode Name',labs['title']); deb('episode thumbnail',labs['thumbnail'])
+			if (season==season_number) or (season==''): _addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
 		#
-		#
-		#
-		contextMenuItems=[]; labs['season']=season_number; labs['episode']=episode_number
-		##
-		##labs['title']=cFL(showTitle+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-		##if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],ps('cFL_color3'))+']',ps('cFL_color'))
-		##labs['title']=labs['title']+'[CR]'
-		##if (season_number is not '') and (episode_number is not ''): labs['title']=labs['title']+'  '+cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))
-		##if (episode_name is not ''): labs['title']=labs['title']+' - '+cFL(episode_name,ps('cFL_color4'))
-		##
-		contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
-		contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_param['showtitle']), urllib.quote_plus(_param['year']), urllib.quote_plus(ep_url), urllib.quote_plus(labs['thumbnail']), urllib.quote_plus(season_number), urllib.quote_plus(episode_number), urllib.quote_plus(episode_name) )))
-		deb('Episode Name',labs['title'])
-		deb('episode thumbnail',labs['thumbnail'])
-		if (season==season_number) or (season==''): _addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
-	set_view('episodes',ps('setview.episodes')); eod()
+	set_view('episodes',addst('episode-view')); eod() #set_view('episodes',ps('setview.episodes')); eod()
 
 def listSeasons(section, url, img=''): #_param['img']
 	xbmcplugin.setContent(int(sys.argv[1]),'seasons'); WhereAmI('@ the Seasons List for TV Show -- url: %s' % url); html=net.http_GET(url).content
@@ -1031,15 +1225,15 @@ def listSeasons(section, url, img=''): #_param['img']
 		if (Aimg==''): Aimg=checkImgUrl('http://icons.iconarchive.com/icons/aaron-sinuhe/series-season-folder/256/season-'+imgName+'-icon.png')
 		if (Aimg==''): Aimg=img
 		season_name=messupText(season_name,False,False,True,True)
-		_addon.add_directory({'mode': 'GetEpisodes', 'title': _param['title'], 'showtitle': _param['showtitle'], 'year': _param['year'], 'section': section, 'img': img, 'url': url, 'season': season_name, 'thetvdb_series_id': _param['thetvdb_series_id'], 'fanart': _param['fanart']}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=_param['fanart'])
-	set_view('seasons',ps('setview.seasons')); _addon.end_of_directory()
+		_addon.add_directory({'mode': 'GetEpisodes', 'url': url+'season-'+season_name+'/', 'title': _param['title'], 'showtitle': _param['showtitle'], 'year': _param['year'], 'section': section, 'img': img, 'season': season_name, 'thetvdb_series_id': _param['thetvdb_series_id'], 'fanart': _param['fanart']}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=_param['fanart'])
+	set_view('seasons',addst('season-view')); eod() #set_view('seasons',ps('setview.seasons')); eod()
 
 def Menu_LoadCategories(section=_default_section_): #Categories
 	WhereAmI('@ the Category Menu')
 	### ###################################################################################################################################################################################################################################
 	### ###################################################################################################################################################################################################################################
-	_addon.add_directory({'section': section, 'mode': 'Search'},	 						{'title':  cFL('S',ps('cFL_color'))+'earch'}, 		fanart=_artFanart,img=art('icon-search'))
-	_addon.add_directory({'section': section, 'mode': 'AdvancedSearch'},	 		{'title':  cFL('A',ps('cFL_color'))+'dvanced Search'}, 		fanart=_artFanart,img=art('icon-search'))
+	_addon.add_directory({'section': section, 'mode': 'Search', 				'pageno': '1', 'pagecount': addst('pages')},			{'title':  cFL('S',ps('cFL_color'))+'earch'}, 		fanart=_artFanart,img=art('icon-search'))
+	_addon.add_directory({'section': section, 'mode': 'AdvancedSearch', 'pageno': '1', 'pagecount': addst('pages')},	 		{'title':  cFL('A',ps('cFL_color'))+'dvanced Search'}, 		fanart=_artFanart,img=art('icon-search'))
 	### ###################################################################################################################################################################################################################################
 	if  ( section == 'tv'): ## TV Show ####################################################################################################################################################################################################
 		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatestWatched', 'url': _domain_url+'/latest-watched-movies.html', 'pageno': '1','pagecount': '1'}, 			{'title':  cFL('L',ps('cFL_color'))+'atest Watched'}, 		img=_art150,fanart=_artFanart)
@@ -1079,7 +1273,7 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 	###_addon.add_directory({'section': section, 'mode': 'BrowseAtoZ'}, 			{'title':  'A-Z'})
 	#_addon.add_directory({'section': section, 'mode': 'GetSearchQuery'}, 		{'title':  'Search'})
 	###_addon.add_directory({'section': section, 'mode': 'GetTitles'}, 				{'title':  'Favorites'})
-	eod()
+	set_view('list',addst('default-view')); eod()
 	### http://www.solarmovie.so/latest-movies.html
 	### 
 	### 
@@ -1089,12 +1283,13 @@ def Menu_MainMenu(): #The Main Menu
 	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.movie')},{'title':  cFL('M',ps('cFL_color'))+'ovies'}  ,img=art('movies')				,fanart=_artFanart)
 	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.tv')}, 	{'title':  cFL('T',ps('cFL_color'))+'V Shows'},img=art('television')		,fanart=_artFanart)
 	_addon.add_directory({'mode': 'ResolverSettings'}, {'title':  cFL('U',ps('cFL_color'))+'rl-Resolver Settings'},is_folder=False		,img=art('turtle','.jpg')	,fanart=_artFanart)
-	_addon.add_directory({'mode': 'Settings'}, 				 {'title':  cFL('P',ps('cFL_color'))+'lugin Settings'}					,is_folder=False		,img=_artSun							,fanart=_artFanart)
+	_addon.add_directory({'mode': 'Settings'}, 				 {'title':  cFL('P',ps('cFL_color'))+'lugin Settings'}			,is_folder=False		,img=_artSun							,fanart=_artFanart)
+	#_addon.add_directory({'mode': 'DownloadStop'}, 		 {'title':  cFL('S',ps('cFL_color'))+'top Current Download'},is_folder=False		,img=_artDead							,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxFile', 'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': ps('changelog.local')}, {'title': cFL('L',ps('cFL_color'))+'ocal Change Log'},					img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': ps('changelog.url')}, 	{'title': cFL('L',ps('cFL_color'))+'atest Online Change Log'},	img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',  'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': ps('news.url')}, 				{'title': cFL('L',ps('cFL_color'))+'atest Online News'},				img=_art404										,is_folder=False,fanart=_artFanart)
 	### ############ 
-	eod()
+	set_view('list',addst('default-view')); eod()
 	### ############ 
 	### _addon.show_countdown(9000,'Testing','Working...') ### Time seems to be in seconds.
 
@@ -1168,9 +1363,9 @@ def fav__list(section,subfav=''):
 					except: deb('Error Listing Item',name+'  ('+year+')')
 			if   (section==ps('section.tv')): 		set_view('tvshows',ps('setview.tv')			,True)
 			elif (section==ps('section.movie')): 	set_view('movies' ,ps('setview.movies')	,True)
-		else: sunNote('Favorites:  '+section,'No favorites found *'); return
-	else: sunNote('Favorites:  '+section,'No favorites found **'); return
-	eod()
+		else: sunNote('Favorites:  '+section,'No favorites found *'); set_view('list',addst('default-view')); eod(); return
+	else: sunNote('Favorites:  '+section,'No favorites found **'); set_view('list',addst('default-view')); eod(); return
+	set_view('list',addst('default-view')); eod()
 ##### /\ ##### Favorites #####
 ### ############################################################################################################
 ### ############################################################################################################
@@ -1182,7 +1377,7 @@ def doSearchNormal (section,title=''):
 	if (title==''):
 		title=showkeyboard(txtMessage=title,txtHeader="Title:  ("+section+")")
 		if (title=='') or (title=='none') or (title==None) or (title=='False'): return
-	_param['url']=SearchPrefix+title; deb('Searching for',_param['url']); listItems(section, _param['url'], _param['pageno'], _param['pagecount'], _param['genre'], _param['year'], _param['title'])
+	_param['url']=SearchPrefix+title; deb('Searching for',_param['url']); listItems(section, _param['url'], _param['pageno'], addst('pages'), _param['genre'], _param['year'], _param['title'])
 
 def doSearchAdvanced (section,title=''):
 	txtHeader='Advanced Search'; options={}; r= -1
@@ -1196,7 +1391,7 @@ def doSearchAdvanced (section,title=''):
 	options[ps('AdvSearch.tags.7')]				=''						### &q[genre][]=2&q[genre][]=13
 	#########################
 	options['startPage']		='1'
-	options['numOfPages']		='1'
+	options['numOfPages']		=addst('pages') #'1'
 	#########################
 	if   (section==ps('section.tv')   ): options[ps('AdvSearch.tags.0')]='1'; options['url']=ps('AdvSearch.url.tv')
 	elif (section==ps('section.movie')): options[ps('AdvSearch.tags.0')]='0'; options['url']=ps('AdvSearch.url.movie')
@@ -1261,8 +1456,10 @@ def doSearchAdvanced (section,title=''):
 		#elif (r==7): ### Change Genre
 		elif (r==8): ### Cancel Advanced Search
 			eod(); return
-		#
-		#
+		#elif (r== -1): ### escape // right click or such.
+		#	eod(); return
+		## 
+		## 
 	#
 	#
 	#
@@ -1316,10 +1513,22 @@ def check_mode(mode=''):
 	elif (mode=='LibrarySaveTV'):  				Library_SaveTo_TV(_param['section'], _param['url'],_param['img'],_param['showtitle'],_param['showyear'],_param['country'],_param['season'],_param['episode'],_param['episodetitle'])
 	elif (mode=='LibrarySaveEpisode'):  	Library_SaveTo_Episode(_param['url'],_param['img'],_param['title'],_param['showyear'],_param['country'],_param['season'],_param['episode'],_param['episodetitle'])
 	elif (mode=='PlayLibrary'): 					PlayLibrary(_param['section'], _param['url'], showtitle=_param['showtitle'], showyear=_param['showyear'])
+	elif (mode=='Download'): 							print _param; DownloadRequest(_param['section'], _param['url'],_param['img'],_param['studio']); eod()
+	elif (mode=='DownloadStop'): 					DownloadStop(); eod()
 	else: deadNote(header='Mode:  "'+mode+'"',msg='[ mode ] not found.'); initDatabase(); Menu_MainMenu()
+
+# {'showyear': '', 'infoLabels': "
+# {'Plot': '', 'Episode': '11', 'Title': u'Transformers Prime', 'IMDbID': '2961014', 'host': 'filenuke.com', 
+# 'IMDbURL': 'http://anonym.to/?http%3A%2F%2Fwww.imdb.com%2Ftitle%2Ftt2961014%2F', 
+# 'ShowTitle': u'Transformers Prime', 'quality': 'HDTV', 'Season': '3', 'age': '25 days', 
+# 'Studio': u'Transformers Prime  (2010):  3x11 - Persuasion', 'Year': '2010', 'IMDb': '2961014', 
+# 'EpisodeTitle': u'Persuasion'}", 'thetvdbid': '', 'year': '', 'special': '', 'plot': '', 
+# 'img': 'http://static.solarmovie.so/images/movies/1659175_150x220.jpg', 'title': '', 'fanart': '', 'dbid': '', 'section': 'tv', 'pagesource': '', 'listitem': '<xbmcgui.ListItem object at 0x14C799B0>', 'episodetitle': '', 'thumbnail': '', 'thetvdb_series_id': '', 'season': '', 'labs': '', 'pageurl': '', 'pars': '', 'user': '', 'letter': '', 'genre': '', 'by': '', 'showtitle': '', 'episode': '', 'name': '', 'pageno': 0, 'pagecount': 1, 'url': '/link/show/1466546/', 'country': '', 'subfav': '', 'mode': 'Download', 'tomode': ''}
 
 ##### /\ ##### Modes #####
 ### ############################################################################################################
+deb('param >> studio',_param['studio'])
+deb('param >> season',_param['season'])
 deb('param >> section',_param['section'])
 deb('param >> img',_param['img'])
 deb('param >> showyear',_param['showyear'])

@@ -1,3 +1,30 @@
+[B]Version 0.1.9[/B]
+### If the progressBG part causes the plugin to not run at all, please let me know and I'll look into another method.
+### I'm hoping this feature will allow people with Nightly Release and such (those above Frodo stable release) to use ProgressBG method.
+### I'm going to leave this option open though in case anyone wants to use it or play around with fixing it.
+### Canceling Downloads seems to be major issues atm.  This is both on Progress and ProgressBG.
+### Progress and ProgressBG should both download where possible.
+### Testing is for my use, and Hidden isn't completely tested, but should download.
+### 4 Methods setup: DialogProgress | DialogProgressBG | Test (for my use in making another method) | Hidden.
+- Links Listing >> Download Video -- Needs pleanty of testing and some more work yet.
+### There is still the option to dissable the metadata on Episodes in the settings window, if want to.
+### Things seem to be working, well enough for now, with Episodes and Episode MetaData.
+- I Also a quick fix to catch the  episodes with only a Single "Link" that was getting missed by the call for "Links</a>"
+- OK, I did a fix to where Seasons goto the individual Season page instead of the Main Show Page. This seems to fix things for shows like Doctor who or at least limits the prob to the season with the messed up stuff in it.
+### If anyone has a suggestion to fix this little issue, please let me know on #xbmchub @ irc.freenode.net (user: HIGHWAY99).
+### Weird enough, it seems to work fine on Hell's Kitchen which has 11+ seasons.
+### Can be laggy yet on episode listings for shows that have a HUGE number of seasons/episodes, such as doctor who with 7+ seaons.
+- Fixed the annoyingly huge lag issue I had for a while with Episode Listings.
+- Settings >> Added option to dissable Metadata for default Episode Listings' Plot Description.
+- Settings >> Added option to dissable Metadata for default Episode Listings.
+- Item Listings >> Page Number Handling for End Page, Last Page, and Next Page given a major overhaul and super Fix!
+- Settings >> Configured Number of Pages for Item Listings is now used.
+- Settings >> Configured Enable Setting for View-Modes.
+- Settings >> Configured Value Settings for View-Modes.
+- Setup a Dummy-Proofing sysytem in Settings to keep people with buggy mice or who are click-happy or even lagged... from accidental clicking of "Clear Favorites".  Once you've filled them with nice shows, it's a drag to loose them on accident.  PS: Razor Naga mice migt be a nice idea, but man does it suck once they go bad... so easily.
+- Addon / Plugin - Settings >> Added Several Settings for upcoming changes.  Not currently active yet.
+- Quick Fix: setview to episodes for tv >> lateast watched .
+
 [B]Version 0.1.8[/B]
 - Fix: Latest Watched -- Now links to Get-Links instead of Get-Seasons.
 - Library >> TV >> Play From Library -- Feature works. I still need to work on label fixes for the player.
@@ -141,13 +168,15 @@ if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.t
 
 
 [B]To-DO List:[/B]
+- 
+- 
+- 
+- Register-User Perks
+- Account Info
+### https://twitter.com/solarmovie
+### https://mobile.twitter.com/solarmovie
+- Find a quick, easy, and simple method to fetch Twitter Time-Lines for solarmovie
 - More Settings
-- 
-- 
-- 
-- 
-- 
-- 
 
 
 

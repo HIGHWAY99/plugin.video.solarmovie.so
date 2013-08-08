@@ -1,5 +1,13 @@
 
 
+[COLOR grey][Date: 2013.08.06][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Settings Window given a lot of new 
+### content, much of which now works.
+
+[COLOR grey][Date: 2013.08.06][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Page Handling (Start,Current, End, 
+### Last, Next) given a major Fix. Sorry for not noticing it sooner.
+
 [COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 4][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.9
 

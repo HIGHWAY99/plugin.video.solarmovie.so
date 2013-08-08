@@ -554,6 +554,23 @@ def filename_filter_colorcodes(name=''):
 	#if ('' in name): name=name.replace('','')
 	return name
 
+def Download_PrepExt(url,ext='.flv'):
+	if    '.zip' in url: ext='.zip' #Compressed Files
+	elif  '.rar' in url: ext='.rar'
+	elif   '.z7' in url: ext='.z7'
+	elif  '.png' in url: ext='.png' #images
+	elif  '.jpg' in url: ext='.jpg'
+	elif  '.gif' in url: ext='.gif'
+	elif  '.mp4' in url: ext='.mp4' #Videos
+	elif '.mpeg' in url: ext='.mpeg'
+	elif  '.avi' in url: ext='.avi'
+	elif  '.flv' in url: ext='.flv'
+	elif  '.wmv' in url: ext='.wmv'
+	elif  '.mp3' in url: ext='.mp3' #others
+	elif  '.txt' in url: ext='.txt'
+	#else: 							 ext='.flv' #Default File Extention ('.flv')
+	return ext
+
 def download_file_prep(url,name='none',name2='none',show='none',filext='none'):
 	#
 	if filext=='none':
@@ -669,10 +686,10 @@ def aSortMeth(sM,h=int(sys.argv[1])):
 	xbmcplugin.addSortMethod(handle=h, sortMethod=sM)
 
 def set_view(content='none',view_mode=50,do_sort=False):
+	if (debugging==True): print 'content type: ',content
 	if (debugging==True): print 'view mode: ',view_mode
 	h=int(sys.argv[1])
-	if content=='none': test=''
-	else: xbmcplugin.setContent(h, content)
+	if (content is not 'none'): xbmcplugin.setContent(h, content)
 	#types:									# set_view()
 	# 50		CommonRootView
 	# 51		FullWidthList
@@ -683,7 +700,8 @@ def set_view(content='none',view_mode=50,do_sort=False):
 	# 
 	# 
 	# set content type so library shows more views and info
-	xbmc.executebuiltin("Container.SetViewMode(%s)" % view_mode)
+	if (tfalse(addst("auto-view"))==True):
+		xbmc.executebuiltin("Container.SetViewMode(%s)" % view_mode)
 	# set sort methods - probably we don't need all of them
 	#aSortMeth(xbmcplugin.SORT_METHOD_NONE)
 	aSortMeth(xbmcplugin.SORT_METHOD_UNSORTED)
@@ -1347,6 +1365,17 @@ def check_url_v(_url):
 ### >>> r.status_code
 ### 404    # requests.codes.NOT_FOUND
 
+def thetvdb_com_episodes3(show_id,season):
+	if (debugging==True): print 'thetvdb.com show ID: '+show_id
+	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
+	print 'thetvdb_com_episodes:  '+'http://www.thetvdb.com/?tab=seasonall&id='+show_id
+	itable=(link.split('<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" id="listtable">')[1]).split('</table>')[0]
+	if (season=='') or (season.lower()=='all'):	iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td>(.+?)</tr>').findall(itable)
+	else:																				iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(['+season+'][\s][x][\s]\d+)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td>(.+?)</tr>').findall(itable)
+	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
+	#return iresults
+	return sorted(iresults, key=lambda item: item[1], reverse=True)
+
 def thetvdb_com_episodes2(show_id):
 	if (debugging==True): print 'thetvdb.com show ID: '+show_id
 	link=getURL('http://www.thetvdb.com/?tab=seasonall&id='+show_id)
@@ -1363,7 +1392,7 @@ def thetvdb_com_episodes(show_id):
 	iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?">(<img src=".+?" width=10 height=10>)* &nbsp;</td></tr>', re.IGNORECASE | re.DOTALL).findall(itable)
 	#iresults=re.compile('<tr><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?"><a href="(.+?)">(.+?)</a></td><td class=".+?">(.+?)-(.+?)-(.+?)</td><td class=".+?"><img src="(.+?)" width=.+? height=.+?>.+?</td></tr>', re.IGNORECASE | re.DOTALL).findall(itable)
 	### <tr><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">1 x 2</a></td><td class="even"><a href="/?tab=episode&seriesid=72454&seasonid=4166&id=86048&amp;lid=7">The Kidnapping of a Company President's Daughter Case</a></td><td class="even">1996-01-15</td><td class="even"><img src="/images/checkmark.png" width=10 height=10> &nbsp;</td></tr>
-	print iresults
+	#print iresults
 	return iresults
 	#
 	#
@@ -1399,10 +1428,12 @@ def Episode__get_S_Ep_No(episode_title):
 	return (season_number,episode_number)
 
 def Episode__get_thumb(the_url,show_img):
+	deb('the_url',the_url)
 	if ('/?tab=episode&' in the_url) and ('&seriesid=' in the_url) and ('&id=' in the_url):
 		id_series=(re.compile('&seriesid=(\d+)&').findall(the_url+'&')[0]).strip()
 		id_episode=(re.compile('&id=(\d+)&').findall(the_url+'&')[0]).strip()
 		episode_thumbnail='http://www.thetvdb.com/banners/episodes/'+id_series+'/'+id_episode+'.jpg'
+		deb('Episode__get_thumb','| '+id_series+' | '+id_episode+' | '+episode_thumbnail+' |')
 	else: 
 		episode_thumbnail=show_img; id_series=''; id_episode=''
 	return (episode_thumbnail,id_series,id_episode)
@@ -1601,6 +1632,17 @@ def Library_SaveTo_Episode(url,iconimage,name,year,country,season_number,episode
 def myNote( header='',msg='',delay=5000,image='http://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/US_99_%281961%29.svg/40px-US_99_%281961%29.svg.png'):
 	header=cFL(header,ps('cFL_color')); msg=cFL(msg,ps('cFL_color2'))
 	_addon.show_small_popup(title=header,msg=msg,delay=delay,image=image)
+
+### ############################################################################################################
+### ############################################################################################################
+
+def twitter_timeline(person):
+	HTML=getURL('http://mobile.twitter.com/'+person) ### HTML=getURL('http://twitter.com/'+person)
+	#
+	#
+
+
+
 
 
 
