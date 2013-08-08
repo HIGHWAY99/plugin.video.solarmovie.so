@@ -1,32 +1,170 @@
 
 
-<<<<<<< 
-=======
-[COLOR grey][Date: 2013.08.02][/COLOR][COLOR black][Post: 1][/COLOR]
-[COLOR red][B]News:[/B][/COLOR]  Added "Recent Anime" to "WatchDub.com" 's Browsable Methods.
+[COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.0
 
->>>>>>> v0.0.8
+[COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.9b
+
+[COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Quick Fix: Play videos.
+
+[COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.9
+
+[COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Download Feature for Testers.
+
+[COLOR grey][Date: 2013.08.06][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Settings Window given a lot of new 
+### content, much of which now works.
+
+[COLOR grey][Date: 2013.08.06][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Page Handling (Start,Current, End, 
+### Last, Next) given a major Fix. Sorry for not noticing it sooner.
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.9
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.8
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Fix: TV >> Latest Watched.
+
+[COLOR grey][Date: 2013.08.05][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Library Feature.
+
+[COLOR grey][Date: 2013.08.04][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Fans of Code Lyoko and the 
+### live-action season that fallowed, Code Lyoko Evolution... feel 
+### free to check out: 
+### https://github.com/HIGHWAY99/plugin.video.codelyokoevolution/releases
+
+[COLOR grey][Date: 2013.08.04][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  *WAVES* Bye-Bye, to the "import unicodedata".
+
+[COLOR grey][Date: 2013.08.01][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Code Clean-up.
+
+[COLOR grey][Date: 2013.08.01][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Multi-Category Favorites.
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 6][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.8
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.7
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Added Remove command for Favorites.
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.6
+
+[COLOR grey][Date: 2013.07.31][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  
+### More handling for Metadata on Episodes and passing of data from TV Show Titles to Season to Episode listings. This allows for Plot/Description/Overview of episode as well as episode screenshot and Name fixing.
+### More Label Coloring
+### Favorites for TV and Movies each.
+### Search feature works better now when activated from 1ch/Primewire's Subscription page... it now removes the text [TAGS]. and (YEAR) data to get down to the name.
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Added a normal Search feature, 
+### ### which can be made accessable from other addons.
+### ### ### For TV Shows
+### ### if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):
+### ### 	contextmenuitems.append(('Search Solarmovie.so', 'XBMC.Container.Update(%s?mode=%s&section=%s&title=%s)' % ('plugin://plugin.video.solarmovie.so/','Search','tv',title)))
+### ### ### For Movies
+### ### if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.solarmovie.so'):
+### ### 	contextmenuitems.append(('Search Solarmovie.so', 'XBMC.Container.Update(%s?mode=%s&section=%s&title=%s)' % ('plugin://plugin.video.solarmovie.so/','Search','movies',title)))
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.6
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.5
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Some Sweet new Looks and Feels.
+### Fixes: infoLabels, Thumbnail, Plot Description.
+### New: Fanart, Added more Graphics over-all.
+### Note: Things will be slightly slower than before with data being fetched 
+### ### from the additional pages.
+### Note: Look for the weird turtle!  This is what happens when 
+### ### modules/scripts don't come with a fancy little icon.png... 
+### ### I have to come up with one, and this one so-- made me laugh.
+### Note: If your wondering about favorites and caching, I'm simply 
+### ### trying to make sure that I got things as sorted as possible 
+### ### with MetaData first, so I don't have to deal with clearing 
+### ### data left and right, not alone data tables. I haven't decided 
+### ### yet rather to use cache again or a sql .db file which be much 
+### ### more troublesome during testing and I'd have to learn how to 
+### ### use it via python a bit. I'm considering working on a search 
+### ### feature soon, though. Hope you look forward to upcoming versions.
+
+[COLOR grey][Date: 2013.07.29][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.5
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.4
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Many things to tell you about...
+### Note: It's a good idea to have MetaData in the settings window turned off for now.
+### Working on better handling of dependencies.
+### Config.py added.
+### Many functions added to make my life much easier.
+### Added Plot description to Movies. (TV Shows to come later.)
+### Added Latest Movie Listings and Latest TV Episode Listings.
+### Plot Data bugged for a moment but made a Temp fix til I can better fix the main function.
+### Plot Data returns blank now instead of erroring for those without any plot description.
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.4
+### I really hope you look forward to this version when it gets released.
+
+[COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Running some tests for news and folder on github.
 
 [COLOR grey][Date: 2013.07.28][/COLOR][COLOR black][Post: 1][/COLOR]
-[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.0.7
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.1.3
 
-[COLOR grey][Date: 2013.07.25][/COLOR][COLOR black][Post: 2][/COLOR]
-[COLOR red][B]News:[/B][/COLOR]  Setup the Extras2 Links, which are mostly for Special Features, to display in a Sub-Menu linked from the Main-Menu whenever Extras2 is dissabled in the Settings Window. This should help to save space on the Main-Menu, and allow for a greater ammount of Extras // Special Features to be added at a later time.
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 10][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Added Feature: Find AirDates.  This can be linked to from other addons too. You can set it to bring up a keyboard for title entry or send a &title=snowname.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 9][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Ability to Search for a TV Show or Movie by Title with 1Channel/PrimeWire plugin via ContextMenuItem.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 8][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.3
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 7][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TV Episodes are now Playable.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 6][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TextWindow Setup for News and Change Logs
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 5][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  TV >> (Season|Episode) Listings now Available.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.2
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Popular Listings now Available.
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.1
+
+[COLOR grey][Date: 2013.07.27][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Plugin can now list movies and play for at least some hosters.
+
+[COLOR grey][Date: 2013.07.26][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Plugin can now list movies and tv show titles.
 
 [COLOR grey][Date: 2013.07.25][/COLOR][COLOR black][Post: 1][/COLOR]
-[COLOR red][B]News:[/B][/COLOR]  Attempted to work my class_itmOBJ() into the innerworkings of videolinks.py for a videolinks2.py, but the class objects seems to act as one object rather than being able to set varibles as a new copy of the object. if you got an idea on how to deal with that please let me know. I had it setup to test with my 501-mode method episode listings linking to it to do a more urlresolver method style select list, but i had to end up using more of a simple array to fix it to work at all. So, I'm sending videolinks2.py back to the drawing board for now. I may in the future work on a vidoelinks3.py to do more of a select dialog method for video urls after the episode list. I haven't decided yet.  On videolinks2.py, it basically wanted to set all entries as with the same information.
-
->>>>>>> v0.0.7
-
-[COLOR grey][Date: 2013.07.14][/COLOR][COLOR black][Post: 2][/COLOR]
-[COLOR red][B]News:[/B][/COLOR]  Testing news feature.
-
-[COLOR grey][Date: 2013.07.14][/COLOR][COLOR black][Post: 1][/COLOR]
-[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.0.6i
-
-[COLOR grey][Date: 2013.07.13][/COLOR][COLOR black][Post: 1][/COLOR]
-[COLOR red][B]News:[/B][/COLOR]  After being down/messed-up a couple days or so, the website for anime44.co.uk (AnimeZone) seems to be back up and working again.
-
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.1.0
 
 
 
