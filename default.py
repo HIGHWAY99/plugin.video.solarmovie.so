@@ -649,6 +649,7 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 				pars2['Title']=My_infoLabels['Title']
 				#deb('plugin url for download',_addon.build_plugin_url(pars2))
 				contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
+				pars['mode']='PlayVideo'
 				_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems); count=count+1
 		set_view('list',addst('links-view')); eod()
 	else: set_view('list',addst('links-view')); eod(); return
