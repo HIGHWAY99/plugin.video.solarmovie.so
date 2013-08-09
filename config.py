@@ -18,9 +18,9 @@ from t0mm0.common.addon import Addon
 ### Plugin Settings ###
 def ps(x):
 	return {
-		'__plugin__': 					"[COLOR goldenrod]S[/COLOR]olarmovie.so"
+		'__plugin__': 					"[COLOR grey][COLOR goldenrod]S[/COLOR]olar[COLOR yellow]M[/COLOR]ovie.so[/COLOR]"
 		,'__authors__': 				"[COLOR white]The[COLOR tan]Highway[/COLOR][/COLOR]"
-		,'__credits__': 				"anilkuj of plugin.video.soloremovie (solarmovie.eu) for much initial work, TheHighway of plugin.video.theanimehighway for teh_tools.py"
+		,'__credits__': 				"anilkuj of plugin.video.soloremovie (solarmovie.eu) for much initial work, TheHighway of plugin.video.theanimehighway for teh_tools.py.  Mikey1234 of SimplyMovies.  Bstrdsmkr of 1 Channel.  Those that worked on UrlResolver.  Those of #XBMCHUB on irc.freenode.net.  And of course,  XBMCHub.com itself."
 		,'_addon_id': 					"plugin.video.solarmovie.so"
 		,'_plugin_id': 					"plugin.video.solarmovie.so"
 		,'_domain_url': 				"http://www.solarmovie.so"
@@ -37,9 +37,15 @@ def ps(x):
 		,'cFL_color3': 					'red'
 		,'cFL_color4': 					'grey'
 		,'cFL_color5': 					'white'
+		,'cFL_color6': 					'blanchedalmond'
 		,'default_section': 		'movies'
 		,'section.movie': 			'movies'
+		,'section.trailers':		'trailers'
+		,'section.trailers.popular':			'trailerspopular'
+		,'section.trailers.releasedate':	'trailersreleasedate'
+		,'section.users':				'users'
 		,'section.tv': 					'tv'
+		,'Trailers.GENRES': 		['All','Action', 'Adult', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Game-Show', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 'Reality-TV', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Talk-Show', 'Thriller', 'War', 'Western']
 		,'meta.movie.domain': 	'http://www.themoviedb.org'
 		,'meta.movie.search': 	'http://www.themoviedb.org/search?query=TT'
 		,'meta.tv.domain': 			'http://www.thetvdb.com'
@@ -53,6 +59,7 @@ def ps(x):
 		,'domain.search.tv': 		'http://www.solarmovie.so/tv/search/'
 		,'domain.url.tv': 			'/tv'
 		,'domain.url.movie': 		''
+		,'LatestThreads.url':		'http://www.solarmovie.so/'
 		,'changelog.local': 		'changelog.txt'
 		,'changelog.url': 			'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/changelog.txt'
 		,'news.url': 						'https://raw.github.com/HIGHWAY99/plugin.video.solarmovie.so/master/news.txt'
@@ -92,6 +99,8 @@ def ps(x):
 		,'cMI.primewire.search.section': 	'movies'
 		,'cMI.primewire.search.section.tv':	'tv'
 		,'LI.movies.match.items': 				'class="coverImage" title="(.+?)".+?href="(.+?)".+?src="(.+?)".+?<a title=".+?\(([\d]+)\)'
+		,'LI.movies.match.items2': 				'class="coverImage" title="(.+?)"[\n]\s+href="(.+?)">.+?src="(http://static\.solarmovie\.so/images/movies/\d+_\d+x\d+\.jpg)".+?<a\stitle=".+?\(([\d]+)\)'
+		,'LI.movies.match.items3': 				'class="coverImage" title="(.+?)"[\n]\s+href="(.+?)">.+?src="(http://static\.solarmovie\.so/images/movies/\d+_\d+x\d+\.jpg)".+?<a\stitle=".+?\(([\d]+)\)'
 		,'LI.movies.latest.split1': 			'<h2>Latest Movies</h2>'
 		,'LI.movies.latest.split2': 			'<h2>'
 		,'LI.movies.latest.check': 				'Latest'

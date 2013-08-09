@@ -1,3 +1,18 @@
+[B]Version 0.2.0[/B]
+### https://github.com/HIGHWAY99/plugin.video.solarmovie.so/wiki
+- Might have forgotten to meantion, but I've been working a ton on the plugin's Wiki pages. So please check them out.
+### ### Favorites - Uses the same listing methods as Uploads.
+### ### Uploads - I made a new listing method for these pages.  This new method displays both Movies and TV Episodes together, for pages that use this less-information style of listing.  There is currently less metadata and information displayed.
+### ### Watch List (TV Shows) - Uses the same as Watch List (Movies), just with 'tv' marked as the section.
+### ### Watch List (Movies) - Uses the old default listItems() method, but with a 2nd parse string included now.
+### For a moment the areas include: 
+- Users >> Moderators|Linkers|Uploaders|Users >> Person >> Once you have chosen a person yo ucan then select what area of their recorded data you wish to browse.
+- Users >> Choose From Moderators, Linkers, Uploaders, or Users to Sort Users by.
+- Users - New Section to this plugin to address the Browsing of Users for sake of future posible features and browsing methods.
+- Latest Threads -- This allows you to check out the Latest Threads sectcion of the main page @ http://www.solarmovie.so/
+- Play Trailer -- For use with the "Coming Soon" section.
+- New section: "Coming Soon" for upcoming movie listings.
+
 [B]Version 0.1.9b[/B]
 - Quick Fix: Play Video was wanting to download cause of setting in ListLink, is now fixed to play videos again.
 
@@ -173,7 +188,8 @@ if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.t
 [B]To-DO List:[/B]
 - 
 - 
-- 
+- Users >> Person >> Blogs -- Not sure what might be done with these pages.
+- Users >> Person >> Account -- Maybe display the info to a Text Window.
 - Register-User Perks
 - Account Info
 ### https://twitter.com/solarmovie

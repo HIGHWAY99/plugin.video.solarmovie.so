@@ -32,7 +32,7 @@
 		<setting id="links-view"   	 type="number" label="Links"              	 default="50"   enable="!eq(-6,false)"/>
 	</category>
 	<category label="Downloads">
-		<setting id="download_method"    	 type="labelenum" label="Number of Pages" values="Progress|ProgressBG|Test|Hidden"             default="Progress"/>
+		<setting id="download_method"    	 type="labelenum" label="Number of Pages" values="Progress|ProgressBG|Test|Hidden"             default="Hidden"/>
 		<setting id="download_folder_movies" 	type="folder" label="Download Folder (Movies)"      default="" visible="true"/>
 		<setting id="download_folder_tv" 			type="folder" label="Download Folder (TV)    "      default="" visible="true"/>
 	</category>

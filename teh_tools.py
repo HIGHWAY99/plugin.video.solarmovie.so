@@ -7,7 +7,7 @@
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
-__plugin__	=	"[COLOR yellow]S[/COLOR]olarmovie.so"
+__plugin__	=	"[COLOR grey][COLOR goldenrod]S[/COLOR]olar[COLOR yellow]M[/COLOR]ovie.so[/COLOR]"
 __authors__	=	"The Highway"
 plugin_id		=	"plugin.video.solarmovie.so"
 ### ############################################################################################################
@@ -1024,6 +1024,10 @@ class TextBox2: ## Usage Example: TextBox_FromUrl().load('https://raw.github.com
 		self.load_window()
 		self.set_header(HEADER_MESSAGE2)
 		self.set_text(text)
+	def load_string(self, text_string='', HEADER_MESSAGE2=''):
+		self.load_window()
+		self.set_header(HEADER_MESSAGE2)
+		self.set_text(text_string)
 	def load_window(self, sleeptime=500):
 		xbmc.executebuiltin("ActivateWindow(%d)" % ( self.WINDOW, ))				# activate the text viewer window
 		self.win = xbmcgui.Window(self.WINDOW)															# get window

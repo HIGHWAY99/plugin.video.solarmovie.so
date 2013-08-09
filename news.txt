@@ -1,5 +1,54 @@
 
 
+[COLOR grey][Date: 2013.08.09][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.1
+
+[COLOR grey][Date: 2013.08.09][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.2.0
+
+[COLOR grey][Date: 2013.08.09][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Wiki Pages
+### https://github.com/HIGHWAY99/plugin.video.solarmovie.so/wiki
+
+[COLOR grey][Date: 2013.08.09][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  A new Users Section!
+### It's so early in the morning yet, but I'm still going at it 
+### hard, finding more features to add.  Thus, attempting to claim 
+### my rightful spot among the fore-runners of xbmc video plugins 
+### and their authors.
+### It has been my purpose to use this, as well as my other plugins, 
+### as a learning experience.  Although, I can't help but admit that 
+### I also want to both meet and in some ways best the most popular 
+### of video plugin/addons for the XBMC comunity. I personally do 
+### Love and enjoy 1Channel (for PrimeWire.ag) and Simply Movies 
+### video plugins, as well as the UrlResolver.  But, I can't help 
+### but to try to do just as well as UrlResolver with my other 
+### projects that use videolinks.py and with TheAnimeHighway and 
+### SolarMovie.so, I personally think I have finally have a little 
+### bosting rights.  Minus the lack of a proper repository to host 
+### an auto-updating method for it, I most definately kept up with 
+### and out done the others in the ammmount of features I've 
+### included among other things.  Now, I just need advertising, 
+### testers, and some feed back.  Feel free to check out my wiki 
+### for plugin.video.solarmovie.so:  
+### https://github.com/HIGHWAY99/plugin.video.solarmovie.so/wiki
+### I've put a lot of work into this wiki.
+### I'm currently waiting on http://www.solarmovie.so/ to complete
+### it's updated registry method so I can create an account and 
+### hopefully find a tad bit more features to add for you great 
+### fans and users.
+
+[COLOR grey][Date: 2013.08.08][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Latest Threads
+### This allows you to check out the Latest Threads sectcion of the 
+### main page @ http://www.solarmovie.so/
+
+[COLOR grey][Date: 2013.08.08][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Whats NEW!
+### * See a list of Movies coming soon, including Premeire Date, 
+### how long until then, Director, Year, Poster-image, and Plot.
+### * Play Trailers (when available).
+
 [COLOR grey][Date: 2013.08.07][/COLOR][COLOR black][Post: 5][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.0
 
