@@ -12,7 +12,10 @@ __authors__	=	"The Highway"
 plugin_id		=	"plugin.video.solarmovie.so"
 ### ############################################################################################################
 ### ############################################################################################################
-import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,urlresolver,urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,requests,datetime
+import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,requests
+import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
+import urlresolver
+import copy
 try: import json
 except ImportError: import simplejson as json
 try: import StorageServer

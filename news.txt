@@ -1,5 +1,11 @@
 
 
+[COLOR grey][Date: 2013.08.11][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.2
+
+[COLOR grey][Date: 2013.08.11][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.2.1
+
 [COLOR grey][Date: 2013.08.09][/COLOR][COLOR black][Post: 4][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.1
 

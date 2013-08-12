@@ -45,6 +45,9 @@ def ps(x):
 		,'section.trailers.releasedate':	'trailersreleasedate'
 		,'section.users':				'users'
 		,'section.tv': 					'tv'
+		,'img.comingsoon': 			'http://mirror.its.dal.ca/xbmc/addons/frodo/plugin.video.trailer.addict/icon.png'
+		,'img.usersection': 		'http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png'
+		,'img.userdefault': 		'http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png'
 		,'Trailers.GENRES': 		['All','Action', 'Adult', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Game-Show', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 'Reality-TV', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Talk-Show', 'Thriller', 'War', 'Western']
 		,'meta.movie.domain': 	'http://www.themoviedb.org'
 		,'meta.movie.search': 	'http://www.themoviedb.org/search?query=TT'

@@ -1,3 +1,14 @@
+[B]Version 0.2.1[/B]
+### shows information on pages such as: http://www.solarmovie.so/profile/MasterofMovies120/
+- "Users" section >> * >> Person >> "Account"
+- Added: Listing for Latest Searches.
+### Contact information should be found @ http://www.solarmovie.so/contacts.html
+### Rules should be found @ http://www.solarmovie.so/rules.html
+- Added: Terms of Service ( Mostly a copy from http://www.solarmovie.so/terms.html )
+- Added: Privacy Policy ( Mostly a copy from http://www.solarmovie.so/privacy-policy.html )
+- Fix: setview working correctly for Favorites List.
+- Removed extra -Comin Soon- from Movies Category list.
+
 [B]Version 0.2.0[/B]
 ### https://github.com/HIGHWAY99/plugin.video.solarmovie.so/wiki
 - Might have forgotten to meantion, but I've been working a ton on the plugin's Wiki pages. So please check them out.
@@ -189,7 +200,6 @@ if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.t
 - 
 - 
 - Users >> Person >> Blogs -- Not sure what might be done with these pages.
-- Users >> Person >> Account -- Maybe display the info to a Text Window.
 - Register-User Perks
 - Account Info
 ### https://twitter.com/solarmovie

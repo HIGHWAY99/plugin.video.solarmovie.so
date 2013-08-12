@@ -2,16 +2,23 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.0
+### # Version:			#		v0.2.1
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
 ##### Imports #####
-import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,urlresolver
-import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime,requests
-#import unicodedata
-#import zipfile ### Removed because it caused videos to not play. ###
+import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,requests
+import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
+import urlresolver
+import copy
+###
+#import cookielib
+#import base64
+#import threading
+###
+#import unicodedata ### I don't want to use unless I absolutely have to. ### 
+#import zipfile ### Removed because it caused videos to not play. ### 
 import HTMLParser, htmlentitydefs
 try: 		import StorageServer
 except: import storageserverdummy as StorageServer
@@ -491,6 +498,7 @@ def Trailers_Genres(section, url):
 	elif ('date' in url):			pathB='date/'
 	else: eod(); return
 	TrailersGNERES=ps('Trailers.GENRES')
+	ItemCount=len(TrailersGNERES) # , total_items=ItemCount
 	for genre in TrailersGNERES:
 		img=''; imgName=genre #; pre='http://icons.iconarchive.com/icons/sirubico/movie-genre/128/'
 		if (img==''): img=checkImgLocal(os.path.join(ps('special.home'),'addons','skin.primal','extras','moviegenresposter',imgName+'.jpg'))
@@ -501,7 +509,7 @@ def Trailers_Genres(section, url):
 		if (img==''): img=_artSun
 		if (genre.lower()=='all'):	url=pathA+pathB+('')+pathC
 		else:												url=pathA+pathB+(genre.lower())+pathC
-		_addon.add_directory({'section': section,'mode': 'TrailersList','url': url,'genre': genre,'bygenre': genre }, {'title':  genre},img=img,fanart=_artFanart)
+		_addon.add_directory({'section': section,'mode': 'TrailersList','url': url,'genre': genre,'bygenre': genre }, {'title':  genre},img=img,fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
 
 
@@ -815,6 +823,7 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 	if (len(match) > 0):
 		count=1
 		match=sorted(match, key=lambda item: (item[3],item[2],item[1]))
+		ItemCount=len(match) # , total_items=ItemCount
 		for url, host, quality, age in match:
 			host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
 			if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
@@ -829,7 +838,7 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 				#deb('plugin url for download',_addon.build_plugin_url(pars2))
 				contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
 				pars['mode']='PlayVideo'
-				_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems); count=count+1
+				_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount); count=count+1
 		set_view('list',addst('links-view')); eod()
 	else: set_view('list',addst('links-view')); eod(); return
 	### ################################################################
@@ -891,6 +900,7 @@ def Library_SaveTo_TV(section,url,img,name,year,country,season_number,episode_nu
 
 def Menu_BrowseByCountry(section=_default_section_):
 	url=''; WhereAmI('@ the Genre Menu')#print 'Browse by genres screen'
+	ItemCount=len(COUNTRIES) # , total_items=ItemCount
 	for country in COUNTRIES:
 		#img='http://www.photius.com/flags/thumbnails/af-t.gif'
 		gif=name2pathU(country)
@@ -902,12 +912,13 @@ def Menu_BrowseByCountry(section=_default_section_):
 		if (' and ' in country): print img
 		if (section==ps('section.movie')): 	url=_domain_url+'/movies-from-'			+name2path(country)+'.html'
 		else: 															url=_domain_url+'/tv/tv-shows-from-'+name2path(country)+'.html'
-		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'country': country,'bycountry': country,'pageno': '1','pagecount': addst('pages')}, {'title':  country},img=img,fanart=_artFanart)
+		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'country': country,'bycountry': country,'pageno': '1','pagecount': addst('pages')}, {'title':  country},img=img,fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
 
 def Menu_BrowseByGenre(section=_default_section_):
 	url=''; WhereAmI('@ the Genre Menu')#print 'Browse by genres screen'
 	browsebyImg=checkImgLocal(art('genre','.jpg'))
+	ItemCount=len(GENRES) # , total_items=ItemCount
 	for genre in GENRES:
 		img=''; imgName=genre #; pre='http://icons.iconarchive.com/icons/sirubico/movie-genre/128/'
 		if (img==''): img=checkImgLocal(os.path.join(ps('special.home'),'addons','skin.primal','extras','moviegenresposter',imgName+'.jpg'))
@@ -929,7 +940,7 @@ def Menu_BrowseByGenre(section=_default_section_):
 		if (img==''): img=_artSun
 		if section == ps('section.movie'): 	url=_domain_url+ps('BrowseByGenre.movie.url1')+(genre.lower())+ps('BrowseByGenre.movie.url2')
 		else: 															url=_domain_url+ps('BrowseByGenre.tv.url1')		+(genre.lower())+ps('BrowseByGenre.tv.url2')
-		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'bygenre': genre,'pageno': '1','pagecount': addst('pages')}, {'title':  genre},img=img,fanart=_artFanart)
+		_addon.add_directory({'section': section,'mode': 'GetTitles','url': url,'genre': genre,'bygenre': genre,'pageno': '1','pagecount': addst('pages')}, {'title':  genre},img=img,fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
 
 def Menu_BrowseByYear(section=_default_section_):
@@ -937,6 +948,7 @@ def Menu_BrowseByYear(section=_default_section_):
 	try: thisyear=int(datetime.date.today().strftime("%Y"))
 	except: thisyear=ps('BrowseByYear.thisyear')
 	browsebyImg=checkImgLocal(art('year','.gif'))
+	ItemCount=len(range(thisyear, EarliestYear, ps('BrowseByYear.range.by'))) # , total_items=ItemCount
 	for year in range(thisyear, EarliestYear, ps('BrowseByYear.range.by')):
 		img=''; imgName=str(year)
 		#if (img==''): img=checkImgUrl('http://www.iconarchive.com/download/i67121/aaron-sinuhe/series-season-folder/season-'+imgName+'.ico')
@@ -947,7 +959,7 @@ def Menu_BrowseByYear(section=_default_section_):
 		if (img==''): img=_artSun
 		if section == ps('section.movie'): 	url=_domain_url+ps('BrowseByYear.movie.url1')	+str(year)+ps('BrowseByYear.movie.url2')
 		else: 															url=_domain_url+ps('BrowseByYear.tv.url1')		+str(year)+ps('BrowseByYear.tv.url2')
-		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': addst('pages')}, {'title':  str(year)},img=img,fanart=_artFanart)
+		_addon.add_directory({'section': section,'mode': 'GetTitles', 'url': url,'year': year,'pageno': '1','pagecount': addst('pages')}, {'title':  str(year)},img=img,fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
 
 ##def listItems(section=_default_section_, url='', html='', episode=False, startPage='1', numOfPages='1', genre='', year='', stitle=''): # List: Movies or TV Shows
@@ -1010,6 +1022,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		iitems=re.compile(ps('LI.tv.match.items'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.')
+		ItemCount=len(iitems) # , total_items=ItemCount
 		for name, item_url, thumbnail, year in iitems:
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1'); name=name.strip() #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
@@ -1058,11 +1071,11 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					if (episode_name is not ''): labs['title']=labs['title']+' - '+cFL(episode_name,ps('cFL_color4'))
 					pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name, 'fanart': labs['fanart'] }
 					#set_view('episodes',515,True)
-					try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
+					try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
 					except: 
 						labs['title']=showTitle+'  ('+year+')'
 						#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
-						try: uname=name; name='[Unknown]'; _addon.add_directory(pars, labs, img=thumbnail, contextmenu_items=contextMenuItems)
+						try: uname=name; name='[Unknown]'; _addon.add_directory(pars, labs, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 						except: t=''
 			else:
 				_enableMeta=False ### Temp Fix to keep people from accidently using it. ###
@@ -1071,16 +1084,16 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					if (meta['imdb_id']=='') and (meta['tvdb_id']==''):
 						meta=metaget.get_meta('tvshow', name)
 						#try: 
-						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems)
+						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems, total_items=ItemCount)
 						#except: 
 						#	uname=name; name='[Unknown]'
-						#	try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems)
-						#	except: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail)
+						#	try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems, total_items=ItemCount)
+						#	except: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, total_items=ItemCount)
 					else:
 						#try: 
-						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 						#except: 
-						#	uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail)
+						#	uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, total_items=ItemCount)
 				else: ### Display without MetaData. ###
 					labs={}; pars={'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }; labs['fanart']=''
 					labs['poster']=labs['image']=labs['thumbnail']=thumbnail; labs['year']=year
@@ -1118,11 +1131,11 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.2.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), labs['thetvdbid'],'2' )))
 					contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.3.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), labs['thetvdbid'],'3' )))
 					if ('/tv/' in pars['url']):
-						try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
-						#try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+						try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
+						#try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 						except: 
 							#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
-							try: uname=name; name='[Unknown]'; _addon.add_directory(pars, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+							try: uname=name; name='[Unknown]'; _addon.add_directory(pars, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 							except: t=''
 		if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')): 		set_view('episodes' ,addst('episode-view'),True) #set_view('episodes' ,ps('setview.tv.latestepisodes'),True)
 		else: 																																							set_view('tvshows'	,addst('tvshows-view'),True) #set_view('tvshows'	,ps('setview.tv'),True)
@@ -1148,6 +1161,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			#iitems=re.compile(ps('LI.movies.match.items3'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.'); return
+		ItemCount=len(iitems) # , total_items=ItemCount
+		#iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
 		for name, item_url, thumbnail, year in iitems:
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1') #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
@@ -1193,9 +1208,9 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			### contextMenuItems.append(('Favorites - Add', 'XBMC.RunPlugin(%s?mode=%s&title=%s&year=%s&img=%s&fanart=%s&pars=%s&labs=%s)' % (sys.argv[0],'FavoritesAdd',urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),pars,labs )))
 			### ps('Favorites - '+cFL('Add','green'))
 			if ('/tv/' not in pars['url']):
-				try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
+				try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
 				except: 
-					uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
+					uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 		set_view('movies',addst('movies-view')); eod(); return #set_view('movies',ps('setview.movies')); eod(); return
 	else: ### Possibly a combination of the two for watch lists and the such. ###
 		#
@@ -1215,6 +1230,7 @@ def Trailers_List(section, url, genre):
 	if ('class="js-tab"' in html): html=html.split('class="js-tab"')[0]
 	Trailers=html.split('<div class="movieListSingleFilm">')
 	#print Trailers
+	ItemCount=len(Trailers) # , total_items=ItemCount
 	for Trailer in Trailers:
 		if ('<img' in Trailer):
 			Trailer=Trailer.strip()
@@ -1256,7 +1272,7 @@ def Trailers_List(section, url, genre):
 			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 			deb('Trailer',labs['title']+' | '+labs['img']+' | '+pars['url'])
 			pars['mode']='PlayTrailer'
-			if (pars['url'] is not ''): _addon.add_directory(pars, labs, img=labs['img'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, is_folder=False)
+			if (pars['url'] is not ''): _addon.add_directory(pars, labs, img=labs['img'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, is_folder=False, total_items=ItemCount)
 			#
 		#
 	#if (Trailers==''): eod(); return
@@ -1277,25 +1293,75 @@ def UsersList(section, url):
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	deb('html length',str(len(html)))
 	matches=re.compile('<a class="userPic nohover">[\n]\s+<img src="(http.+?\.\D+)" /></a>[\n][\n]\s+<dl\sclass="ratingBoxStatus">[\n]\s+<dt>[\n]\s+<a\shref="(/profile/[0-9A-Za-z]+/)">([0-9A-Za-z]+)</a>,[\n]\s+<span\sclass="commentDate">joined:\s(.+?\sago)</span>[\n]\s+</dt>[\n]\s+</dl>[\n]\s+<div class="carmaRatingGroup">[\n]\s+<div class="ratingCell">(.+?)</div>', re.DOTALL).findall(html)
-	if (not matches): return;
-	nextpage=re.compile('<li class="next"><a href="(http.+?solarmovie\.so/\D+/.+?page=\d+)"></a></li>', re.DOTALL).findall(html)[0]
-	_addon.add_directory({ 'section':section, 'mode': 'listUsers', 'url': nextpage }, {'title': ps('LI.nextpage.name')}, img=art('icon-next'), fanart=_artFanart)
+	if (not matches): return
+	try:		nextpage=re.compile('<li class="next"><a href="(http.+?solarmovie\.so/\D+/.+?page=\d+)"></a></li>', re.DOTALL).findall(html)[0]
+	except:	nextpage=''
+	if (nextpage is not ''): _addon.add_directory({ 'section':section, 'mode': 'listUsers', 'url': nextpage }, {'title': ps('LI.nextpage.name')}, img=art('icon-next'), fanart=_artFanart)
+	ItemCount=len(matches) # , total_items=ItemCount
 	for img, path, person, joined, rating in matches:
 		pars={'section':section, 'mode': 'UsersChooseSection', 'url': _domain_url+path }
 		title=cFL(person+'  ('+cFL(joined,ps('cFL_color2'))+')'+'  ['+cFL(rating,ps('cFL_color3'))+']',ps('cFL_color'))
 		labs={'title': title }
-		_addon.add_directory(pars, labs, img=img, fanart=_artFanart)
+		_addon.add_directory(pars, labs, img=img, fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
 
 def UsersChooseSection(section, url):
 	WhereAmI('@ Users:  Choose Area -- url: %s' % url)
-	#_addon.add_directory({'section':section, 'mode': 'UsersShowUploads',   'url': url+'' 						}, {'title': 'Account' 		}, img=_artSun, fanart=_artFanart)
-	#_addon.add_directory({'section':section, 'mode': 'UsersShowUploads',   'url': url+'blogs/' 			}, {'title': 'Blogs' 			}, img=_artSun, fanart=_artFanart)
+	_addon.add_directory({'section':section, 'mode': 'UsersShowProfileAccountInfo',   'url': url+'' 						}, {'title': 'Account' 		}, img=_artSun, fanart=_artFanart)
+	#_addon.add_directory({'section':section, 'mode': 'UsersShowProfileBlogs',   'url': url+'blogs/' 			}, {'title': 'Blogs' 			}, img=_artSun, fanart=_artFanart)
 	##_addon.add_directory({'section':section, 							'mode': 'UsersShowFavorites', 'url': url+'favorites/' 	}, {'title': 'Favorites' 							}, img=_artSun, fanart=_artFanart) ### Needs Testing
 	_addon.add_directory({'section':section, 							'mode': 'UsersShowUploads', 'url': url+'favorites/' 	}, {'title': 'Favorites' 							}, img=_artSun, fanart=_artFanart) ### Needs Testing
 	_addon.add_directory({'section':ps('section.movie'), 	'mode': 'GetTitles', 					'url': url+'watchlist/' 	}, {'title': 'Watch List (Movies)' 		}, img=_artSun, fanart=_artFanart) ### Tested: Works
 	_addon.add_directory({'section':ps('section.tv'), 		'mode': 'GetTitles', 					'url': url+'watchlist/' 	}, {'title': 'Watch List (TV Shows)'	}, img=_artSun, fanart=_artFanart) ### Needs Testing
 	_addon.add_directory({'section':section, 							'mode': 'UsersShowUploads',   'url': url+'uploads/' 		}, {'title': 'Uploads' 								}, img=_artSun, fanart=_artFanart) ### Needs Testing
+	set_view('list',addst('default-view')); eod()
+
+def UsersShowPersonInfo(mode, section, url):
+	WhereAmI('@ Users:  Show Profile Account Information -- url: %s' % url)
+	pars={'mode':mode,'section':section,'url':url}
+	html=net.http_GET(url).content
+	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
+	deb('html length',str(len(html)))
+	try: 		img=re.compile('<img\ssrc="(http://static\.solarmovie\.so/uploads/users/[0-9A-Za-z]+\.png)"\s/>').findall(html)[0]
+	except:
+		try: 		img=re.compile('<a\sclass="userPic\snohover\s+verifUpic">[\n]\s*<img\ssrc="(.+?)"\s/>').findall(html)[0]
+		except:	img=ps('img.userdefault')
+	try: user_UserName=re.compile('<h2 class="noCapitalize">[\n]\s*[\n]\s*([A-Za-z0-9\-\_]+)').findall(html)[0]
+	except: user_UserName='[Unknown]'
+	if (user_UserName): 
+		_addon.add_directory(pars, { 'title': cFL(user_UserName,ps('cFL_color'))+'\'s Profile' }, img=img, fanart=_artFanart)
+	try: user_Position=re.compile('<span class="position">(\D+)</span>').findall(html)[0]
+	except: t=''
+	if (user_Position): 
+		_addon.add_directory(pars, { 'title': 'Position:  '+cFL(user_Position,ps('cFL_color2')) }, img=img, fanart=_artFanart)
+	try: user_Registered=re.compile('<td><label>Registered:</label></td>[\n]\s+<td>(\D+\s\d+,\s\d\d\d\d,\s\d+:\d+\s\D\D)</td>').findall(html)[0]
+	except: t=''
+	if (user_Registered): 
+		_addon.add_directory(pars, { 'title': 'Registered:  '+user_Registered }, img=img, fanart=_artFanart)
+	try: user_Comments=re.compile('<td><label>Comments:</label></td>[\n]\s+<td>(\d+)</td>').findall(html)[0]
+	except: t=''
+	if (user_Comments): 
+		_addon.add_directory(pars, { 'title': 'Comments:  '+user_Comments }, img=img, fanart=_artFanart)
+	try: user_ProfileViews=re.compile('<td><label>Profile Views:</label></td>[\n]\s+<td>(\d+)</td>').findall(html)[0]
+	except: t=''
+	if (user_ProfileViews): 
+		_addon.add_directory(pars, { 'title': 'Profile Views:  '+user_ProfileViews }, img=img, fanart=_artFanart)
+	try: user_LinksActive=re.compile('<td><label>Links Active:</label></td>[\n]\s+<td>(\d+)</td>').findall(html)[0]
+	except: t=''
+	if (user_LinksActive): 
+		_addon.add_directory(pars, { 'title': 'Links Active:  '+user_LinksActive }, img=img, fanart=_artFanart)
+	try: user_ForumThreads=re.compile('<td><label>Forum Threads:</label></td>[\n]\s+<td>[\n]\s+<a href="/forum/search/login/.+?/">(\d+)</a>[\n]\s+</td>').findall(html)[0]
+	except: user_ForumThreads='0'
+	if (user_ForumThreads): 
+		_addon.add_directory(pars, { 'title': 'Forum Threads:  '+user_ForumThreads }, img=img, fanart=_artFanart)
+	try: user_ForumPosts=re.compile('<td><label>Forum Posts:</label></td>[\n]\s+<td>(\d+)</td>').findall(html)[0]
+	except: t=''
+	if (user_ForumPosts): 
+		_addon.add_directory(pars, { 'title': 'Forum Posts:  '+user_ForumPosts }, img=img, fanart=_artFanart)
+	#matches=re.compile('').findall(html)[0]
+	#if (matches): 
+	#	_addon.add_directory(pars, { 'title': ':  '++'' }, img=img, fanart=_artFanart)
+	#
 	set_view('list',addst('default-view')); eod()
 
 def UsersShowFavorites(section, url):
@@ -1304,7 +1370,7 @@ def UsersShowFavorites(section, url):
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	deb('html length',str(len(html)))
 	#matches=re.compile('<a class="userPic nohover">[\n]\s+<img src="(http.+?\.\D+)" /></a>[\n][\n]\s+<dl\sclass="ratingBoxStatus">[\n]\s+<dt>[\n]\s+<a\shref="(/profile/[0-9A-Za-z]+/)">([0-9A-Za-z]+)</a>,[\n]\s+<span\sclass="commentDate">joined:\s(.+?\sago)</span>[\n]\s+</dt>[\n]\s+</dl>[\n]\s+<div class="carmaRatingGroup">[\n]\s+<div class="ratingCell">(.+?)</div>', re.DOTALL).findall(html)
-	if (not matches): return;
+	if (not matches): return
 	#for img, path, person, joined, rating in matches:
 	#	pars={'section':section, 'mode': 'UsersChooseSection', 'url': _domain_url+path }
 	#	title=cFL(person+'  ('+cFL(joined,ps('cFL_color2'))+')'+'  ['+cFL(rating,ps('cFL_color3'))+']',ps('cFL_color'))
@@ -1319,7 +1385,7 @@ def UsersShowFavorites(section, url):
 #	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 #	deb('html length',str(len(html)))
 #	#matches=re.compile('<a class="userPic nohover">[\n]\s+<img src="(http.+?\.\D+)" /></a>[\n][\n]\s+<dl\sclass="ratingBoxStatus">[\n]\s+<dt>[\n]\s+<a\shref="(/profile/[0-9A-Za-z]+/)">([0-9A-Za-z]+)</a>,[\n]\s+<span\sclass="commentDate">joined:\s(.+?\sago)</span>[\n]\s+</dt>[\n]\s+</dl>[\n]\s+<div class="carmaRatingGroup">[\n]\s+<div class="ratingCell">(.+?)</div>', re.DOTALL).findall(html)
-#	if (not matches): return;
+#	if (not matches): return
 #	#for img, path, person, joined, rating in matches:
 #	#	pars={'section':section, 'mode': 'UsersChooseSection', 'url': _domain_url+path }
 #	#	title=cFL(person+'  ('+cFL(joined,ps('cFL_color2'))+')'+'  ['+cFL(rating,ps('cFL_color3'))+']',ps('cFL_color'))
@@ -1330,16 +1396,14 @@ def UsersShowFavorites(section, url):
 
 def UsersShowUploads(section, url):
 	WhereAmI('@ Users:  Show Uploads -- url: %s' % url)
-	html=net.http_GET(url).content
-	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
-	deb('html length',str(len(html)))
-	#s='<th colspan="\d+" class="commentSummaryName">[\n]\s+<a href="(/.+?)">[\n]\s+(.+?)\s(\(\d\d\d\d\))</a>[\n]\s+</th>'
-	s='<a href="(.+?)">\n\s+(.+?) (\(\d\d\d\d\))</a>'
+	html=net.http_GET(url).content; html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False); deb('html length',str(len(html)))
+	s='<a href="(.+?)">\n\s+(.+?) (\(\d\d\d\d\))</a>' #s='<th colspan="\d+" class="commentSummaryName">[\n]\s+<a href="(/.+?)">[\n]\s+(.+?)\s(\(\d\d\d\d\))</a>[\n]\s+</th>'
 	matches=re.compile(s).findall(html)
-	#matches=re.compile(s, re.DOTALL).findall(html)
-	#matches=re.compile(s, re.MULTILINE | re.DOTALL).findall(html)
 	if (not matches): return;
-	print matches
+	#print matches
+	ItemCount=len(matches) # , total_items=ItemCount
+	#matches=sorted(matches, key=lambda item: item[1],reverse=False)
+	#matches=sorted(matches, key=lambda item: item[2],reverse=True)
 	for path, name, year in matches:
 		if   ('/tv/' in path) and ('/season-' in path) and ('/episode-' in path): ### TV Episode
 			pars={'section': ps('section.tv'   ), 'mode': 'GetLinks', 'url': _domain_url+path, 'title': name, 'year': year }
@@ -1347,30 +1411,100 @@ def UsersShowUploads(section, url):
 			title=' - '+cFL(eptitle,ps('cFL_color4'))
 			title='  '+cFL(season+cFL('x',ps('cFL_color4'))+episode,ps('cFL_color5'))+title
 			title=cFL(showtitle+'  ('+cFL(year,ps('cFL_color2'))+')'+title,ps('cFL_color'))
-			#title=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')'+title,ps('cFL_color'))
-			##title=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-			labs={'title': title }
-			deb('Adding TV Episode - Title',title)
-			deb('Adding Movie - Url',pars['url'])
-			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart)
+			labs={'title': title }; deb('Adding TV Episode - Title',title); deb('Adding TV - Url',pars['url'])
+			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart, total_items=ItemCount)
 		elif ('/watch-' in path) and ('.html' in path): ### Movie
 			pars={'section': ps('section.movie'), 'mode': 'GetLinks', 'url': _domain_url+path, 'title': name, 'year': year }
 			title=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-			labs={'title': title }
-			deb('Adding Movie - Title',title)
-			deb('Adding Movie - Url',pars['url'])
-			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart)
-		#
-	#
+			labs={'title': title }; deb('Adding Movie - Title',title); deb('Adding Movie - Url',pars['url'])
+			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart, total_items=ItemCount)
 	set_view('videos',addst('default-view')); eod()
 
-#					labs['TVShowTitle']=showTitle; labs['title']=cFL(showTitle+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-#					if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],ps('cFL_color3'))+']',ps('cFL_color'))
-#					labs['title']=labs['title']+'[CR]'
-#					if (season_number is not '') and (episode_number is not ''): labs['title']=labs['title']+'  '+cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))
-#					if (episode_name is not ''): labs['title']=labs['title']+' - '+cFL(episode_name,ps('cFL_color4'))
+def listLatestSearches(section, url):
+	url='http://www.solarmovie.so/'; WhereAmI('@ List:  Latest Searches -- url: %s' % url)
+	html=net.http_GET(url).content; html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False); deb('html length',str(len(html)))
+	s='<li>[\n]\s+<a href="(/(movie|tv)/search/.+?/)">[\n]\s+(.+?)</a>[\n]\s+</li>' #'<a href="(.+?)">\n\s+(.+?) (\(\d\d\d\d\))</a>'
+	matches=re.compile(s).findall(html)
+	if (not matches): return;
+	#print matches
+	ItemCount=len(matches) # , total_items=ItemCount
+	#print matches
+	for path, zone, name in matches:
+		title=iFL(cFL(zone.upper()+':  ',ps('cFL_color2')))+cFL(name,ps('cFL_color')); path=_domain_url+path; deb('Adding Item - Title',title); deb('Adding Item - Url',path); labs={'title': title }
+		if   ('tv'   ==zone): ### TV
+			pars={'section': ps('section.tv'   ), 'mode': 'GetTitles', 'url': path, 'title': name }
+			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart, total_items=ItemCount)
+		elif ('movie'==zone): ### Movie
+			pars={'section': ps('section.movie'), 'mode': 'GetTitles', 'url': path, 'title': name }
+			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart, total_items=ItemCount)
+	set_view('list',addst('default-view')); eod()
+	
+def Site__PrivacyPolicy():
+	WhereAmI('@ SolarMovie.so:  Privacy Policy -- url: %s' % 'http://www.solarmovie.so/privacy-policy.html'); 
+	HeaderMessage='[COLOR cornflowerblue]Privacy Policy[/COLOR]'
+	message ='[B]'+cFL('Privacy Policy',ps('cFL_color'))+'[/B][CR][CR]'
+	message+='Please read the following terms and conditions carefully and pay attention to the fact that by '
+	message+='entering this site you completely agree to its terms and conditions. SolarMovie site (& plugin) reserves '
+	message+='the right to change these terms and conditions without any prior notice. To get the changes '
+	message+='check this policy on a regular base.[CR][CR]'
+	message+='This Site (nor this plugin) shall have no responsibilities or liabilities for the content, data, opinions,	'
+	message+='statements and links this site contains.[CR][CR]'
+	message+='YOU HEREBY FURTHER AFFIRM AND WARRANT THAT YOU ARE CURRENTLY OVER THE AGE OF EIGHTEEN ([B]18[/B]) '
+	message+='YEARS (TWENTYONE ([B]21[/B]) IN PLACES WHERE EIGHTEEN ([B]18[/B]) YEARS IS NOT THE AGE OF MAJORITY) '
+	message+='AND ARE CAPABLE OF LAWFULLY ENTERING INTO AND EXECUTING THE TERMS OF THIS AGREEMENT.[CR][CR]'
+	message+='SolarMovie uses the right of "Free Speech".[CR][CR]'
+	message+='This site works in accordance with copyright law. Persons who reproduce or distribute any works '
+	message+='without a copyright owner\'s consent, may be in violation of this law.[CR][CR]'
+	message+='We do not make warranties that this site (nor this plugin) will operate error free. If you see an error, please '
+	message+='contact the webmaster (or author of the plugin if it has to do with the plugin, however please make sure to check that the site is up and running first.).[CR][CR]'
+	message+='By entering this site (and/or this plugin) you agree to hold the owners, employees, advertisers of [B]SolarMovie[/B]	(both the site and this plugin)'
+	message+='free from any and all liability.[CR][CR]'
+	message+='Your membership may not be shared or transferred.[CR][CR]'
+	message+='If you have any questions please feel free to contact us (of the site).[CR][CR]'
+	#########
+	message+='[CR][CR][COLOR grey][I]This has been copied from solarmovie.so on 2013-08-11, with the appropriate text added for this plugin.  Please check out the current '
+	message+='Privacy Policy for the site @ http://www.solarmovie.so/privacy-policy.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
+	message+=cFL('Thank you for taking the time to read this.',ps('cFL_color3'))
+	message=cFL(message,ps('cFL_color5'))
+	print message
+	TextBox2().load_string(message,HeaderMessage)
+	#eod()
 
-
+def Site__TermsOfService():
+	WhereAmI('@ SolarMovie.so:  Terms of Service -- url: %s' % 'http://www.solarmovie.so/terms.html'); 
+	HeaderMessage='[COLOR cornflowerblue]Terms of Service[/COLOR]'
+	message ='[B]'+cFL('Terms of Service',ps('cFL_color'))+'[/B][CR][CR]'
+	#########
+	message+='[B]'+cFL('Using SolarMovie',ps('cFL_color2'))+'[/B][CR][CR]'
+	message+='When you enter SolarMovie (site and/or plugin) you automatically agree to all our rules and regulations![CR][CR][CR]'
+	#########
+	message+='[B]'+cFL('Hosting and Legal Issues',ps('cFL_color2'))+'[/B][CR][CR]'
+	message+='SolarMovie is not hosting or uploading any copyrighted content or media of any kind;  '
+	message+='we only store links to third-party websites that carry their own legal responsibility '
+	message+='for their content.  If you want to remove content from these websites - please contact '
+	message+='these media hosters directly.[CR][CR]'
+	message+='SolarMovie is working according to DMCA, so if you need to remove any content from the '
+	message+='website, you can contact our copyright issues department.  '
+	message+='(http://www.solarmovie.so/contacts.html)[CR][CR][CR]'
+	#########
+	message+='[B]'+cFL('Responsibilities',ps('cFL_color2'))+'[/B][CR][CR]'
+	message+='SolarMovie (site & plugin) is not responsible for anything that might happen on third-party websites.  '
+	message+='We are not responsible for the accuracy, compliance, copyright, legality, decency, or '
+	message+='any other aspect of the content of other linked sites.  Please, be careful when you '
+	message+='install, download or submit any personal or CC information![CR][CR]'
+	message+='SolarMovie (site & plugin) holds no responsibility for any legal or copyright issues that may occur due '
+	message+='to the use of SolarMovie (site and/or plugin).  Please check local copyright laws or the rules of your '
+	message+='provider to avoid legal problems.[CR][CR]'
+	message+='P.S.[CR]As a website we strongly recommend our users to support the makers of the movies '
+	message+='and buy the shows and movies that they like![CR][CR][CR]'
+	#########
+	message+='[CR][CR][COLOR grey][I]This has been copied from solarmovie.so on 2013-08-11, with the appropriate text added for this plugin.  Please check out the current '
+	message+='Terms of Service for the site @ http://www.solarmovie.so/terms.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
+	message+=cFL('Thank you for taking the time to read this.',ps('cFL_color3'))
+	message=cFL(message,ps('cFL_color5'))
+	print message
+	TextBox2().load_string(message,HeaderMessage)
+	#eod()
 
 def News_LatestThreads(url,headermessage):
 	WhereAmI('@ News:  Latest Threads -- url: %s' % url); 
@@ -1450,13 +1584,14 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 	###	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
 	###	#try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(['+season+'])/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
 	###	except:	episodes=''
-	if (not episodes) or (episodes==None) or (episodes==False): deb('Episodes','couldn\'t find episodes'); eod(); return
+	if (not episodes) or (episodes==None) or (episodes==False) or (episodes==''): deb('Episodes','couldn\'t find episodes'); eod(); return
 	if (metadata_tv_episodes==False) or (_param['thetvdb_series_id']=='') or (_param['thetvdb_series_id']=='none') or (_param['thetvdb_series_id']==None) or (_param['thetvdb_series_id']==False): thetvdb_episodes=None
 	else: 
-		if (season=='0') or (season=='') or (season.lower()=='all'):	thetvdb_episodes=thetvdb_com_episodes2(_param['thetvdb_series_id'])
-		else:																				thetvdb_episodes=thetvdb_com_episodes3(_param['thetvdb_series_id'],season)
+		if (season=='0') or (season=='') or (season.lower()=='all'): thetvdb_episodes=thetvdb_com_episodes2(_param['thetvdb_series_id'])
+		else: thetvdb_episodes=thetvdb_com_episodes3(_param['thetvdb_series_id'],season)
 	woot=False
-	print episodes
+	#print episodes
+	ItemCount=len(episodes) # , total_items=ItemCount
 	for ep_url, episode_name, season_number, episode_number, num_links in episodes:
 		if (season==''): t=''
 		elif (season==season_number) or (season.lower()=='all') or (season==''):
@@ -1501,7 +1636,7 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_param['showtitle']), urllib.quote_plus(_param['year']), urllib.quote_plus(ep_url), urllib.quote_plus(labs['thumbnail']), urllib.quote_plus(season_number), urllib.quote_plus(episode_number), urllib.quote_plus(episode_name) )))
 			deb('Episode Name',labs['title']); deb('episode thumbnail',labs['thumbnail'])
-			if (season==season_number) or (season==''): _addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems)
+			if (season==season_number) or (season==''): _addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
 		#
 	set_view('episodes',addst('episode-view')); eod() #set_view('episodes',ps('setview.episodes')); eod()
 
@@ -1518,12 +1653,13 @@ def listSeasons(section, url, img=''): #_param['img']
 	if not seasons: 
 		if (_debugging==True): print 'couldn\'t find seasons'
 		return
+	ItemCount=len(seasons) # , total_items=ItemCount
 	for season_name in seasons:
 		Aimg=''; imgName=season_name
 		if (Aimg==''): Aimg=checkImgUrl('http://icons.iconarchive.com/icons/aaron-sinuhe/series-season-folder/256/season-'+imgName+'-icon.png')
 		if (Aimg==''): Aimg=img
 		season_name=messupText(season_name,False,False,True,True)
-		_addon.add_directory({'mode': 'GetEpisodes', 'url': url+'season-'+season_name+'/', 'title': _param['title'], 'showtitle': _param['showtitle'], 'year': _param['year'], 'section': section, 'img': img, 'season': season_name, 'thetvdb_series_id': _param['thetvdb_series_id'], 'fanart': _param['fanart']}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=_param['fanart'])
+		_addon.add_directory({'mode': 'GetEpisodes', 'url': url+'season-'+season_name+'/', 'title': _param['title'], 'showtitle': _param['showtitle'], 'year': _param['year'], 'section': section, 'img': img, 'season': season_name, 'thetvdb_series_id': _param['thetvdb_series_id'], 'fanart': _param['fanart']}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=_param['fanart'], total_items=ItemCount)
 	set_view('seasons',addst('season-view')); eod() #set_view('seasons',ps('setview.seasons')); eod()
 
 def Menu_LoadCategories(section=_default_section_): #Categories
@@ -1531,15 +1667,15 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 	### ###################################################################################################################################################################################################################################
 	### ###################################################################################################################################################################################################################################
 	if  ( section == ps('section.trailers')): ## Trailers #################################################################################################################################################################################
-		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/date/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'}, 			fanart=_artFanart,img=art('genre','.jpg'))
-		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/popularity/' },	 	{'title':  cFL('G',ps('cFL_color'))+'enre By Popularity'}, 			fanart=_artFanart,img=art('genre','.jpg'))
+		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/date/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'},fanart=_artFanart,img=art('genre','.jpg'))
+		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/popularity/' },	 	{'title':  cFL('G',ps('cFL_color'))+'enre By Popularity'}, 	fanart=_artFanart,img=art('genre','.jpg'))
 	#elif  ( section == ps('sectoin.trailers.popular')): ###### Trailers Popular #############################################################################################################################################################
 	#elif  ( section == ps('sectoin.trailers.releasedate')): ## Trailers Release Date ########################################################################################################################################################
 	elif  ( section == ps('section.users')): ## Users #######################################################################################################################################################################################
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/moderator/' },	 				{'title':  cFL('M',ps('cFL_color'))+'oderators'}, 	fanart=_artFanart,img='http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png')
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('L',ps('cFL_color'))+'inkers'}, 			fanart=_artFanart,img='http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png')
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'ploaders'}, 		fanart=_artFanart,img='http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png')
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'sers'}, 				fanart=_artFanart,img='http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png')
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/moderator/' },	 				{'title':  cFL('M',ps('cFL_color'))+'oderators'}, 	fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('L',ps('cFL_color'))+'inkers'}, 			fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'ploaders'}, 		fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'sers'}, 				fanart=_artFanart,img=ps('img.usersection'))
 	elif  ( section == ps('section.tv')): ######## TV Shows #################################################################################################################################################################################
 		_addon.add_directory({'section': section, 'mode': 'Search', 				'pageno': '1', 'pagecount': addst('pages')},			{'title':  cFL('S',ps('cFL_color'))+'earch'}, 						fanart=_artFanart,img=art('icon-search'))
 		_addon.add_directory({'section': section, 'mode': 'AdvancedSearch', 'pageno': '1', 'pagecount': addst('pages')},	 		{'title':  cFL('A',ps('cFL_color'))+'dvanced Search'}, 		fanart=_artFanart,img=art('icon-search'))
@@ -1569,7 +1705,7 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 		_addon.add_directory({'section': section, 'mode': 'BrowseCountry'},	 			{'title':  cFL('C',ps('cFL_color'))+'ountry'}, 		fanart=_artFanart,img=art('countries','.jpg'))
 		_addon.add_directory({'section': section, 'mode': 'BrowseGenre'},	 				{'title':  cFL('G',ps('cFL_color'))+'enre'}, 			fanart=_artFanart,img=art('genre','.jpg'))
 		_addon.add_directory({'section': section, 'mode': 'BrowseYear'}, 					{'title':  cFL('Y',ps('cFL_color'))+'ear'}, 			fanart=_artFanart,img=art('year','.gif'))
-		_addon.add_directory(  {'section': section, 'mode': 'ComingSoon'},	 											{'title':  cFL('C',ps('cFL_color'))+'oming Soon'},fanart=_artFanart,img='http://www.mirrorservice.org/sites/addons.superrepo.org/Frodo/.metadata/plugin.video.trailer.addict.png')
+		#_addon.add_directory(  {'section': section, 'mode': 'ComingSoon'},	 											{'title':  cFL('C',ps('cFL_color'))+'oming Soon'},fanart=_artFanart,img='http://www.mirrorservice.org/sites/addons.superrepo.org/Frodo/.metadata/plugin.video.trailer.addict.png')
 		_addon.add_directory(  {'section': section, 'mode': 'FavoritesList'},	 										{'title':  cFL('F',ps('cFL_color'))+'avorites '+addst('fav.movies.1.name')},fanart=_artFanart,img=_art404)
 		_addon.add_directory(  {'section': section, 'mode': 'FavoritesList', 	'subfav': '2'},	 		{'title':  cFL('F',ps('cFL_color'))+'avorites '+addst('fav.movies.2.name')},fanart=_artFanart,img=_art404)
 		if (_setting['label-empty-favorites']==True):
@@ -1590,15 +1726,18 @@ def Menu_MainMenu(): #The Main Menu
 	WhereAmI('@ the Main Menu')
 	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.movie')},		{'title':  cFL('M',ps('cFL_color'))+'ovies'}  ,img=art('movies')				,fanart=_artFanart)
 	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.tv')}, 			{'title':  cFL('T',ps('cFL_color'))+'V Shows'},img=art('television')		,fanart=_artFanart)
-	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.trailers')},	{'title':  cFL('C',ps('cFL_color'))+'oming Soon'},img='http://mirror.its.dal.ca/xbmc/addons/frodo/plugin.video.trailer.addict/icon.png'		,fanart=_artFanart)
-	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.users')},		{'title':  cFL('U',ps('cFL_color'))+'sers'}		,img='http://i1.wp.com/www.solarmovie.so/images/gravatar_default.png'		,fanart=_artFanart)
+	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.trailers')},	{'title':  cFL('C',ps('cFL_color'))+'oming Soon'},img=ps('img.comingsoon'),fanart=_artFanart)
+	_addon.add_directory({'mode': 'LoadCategories', 'section': ps('section.users')},		{'title':  cFL('U',ps('cFL_color'))+'sers'}		,img=ps('img.usersection'),fanart=_artFanart)
+	_addon.add_directory({'mode': 'GetLatestSearches', 'section': 'Both'},		{'title':  cFL('L',ps('cFL_color'))+'atest Searches'}		,img=art('icon-search')		,fanart=_artFanart)
 	_addon.add_directory({'mode': 'ResolverSettings'}, {'title':  cFL('U',ps('cFL_color'))+'rl-Resolver Settings'},is_folder=False		,img=art('turtle','.jpg')	,fanart=_artFanart)
 	_addon.add_directory({'mode': 'Settings'}, 				 {'title':  cFL('P',ps('cFL_color'))+'lugin Settings'}			,is_folder=False		,img=_artSun							,fanart=_artFanart)
 	#_addon.add_directory({'mode': 'DownloadStop'}, 		 {'title':  cFL('S',ps('cFL_color'))+'top Current Download'},is_folder=False		,img=_artDead							,fanart=_artFanart)
-	_addon.add_directory({'mode': 'TextBoxFile',  'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': ps('changelog.local')}, 	{'title': cFL('L',ps('cFL_color'))+'ocal Change Log'},					img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
-	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': ps('changelog.url')}, 		{'title': cFL('L',ps('cFL_color'))+'atest Online Change Log'},	img=art('thechangelog','.jpg'),is_folder=False,fanart=_artFanart)
-	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': ps('news.url')}, 				{'title': cFL('L',ps('cFL_color'))+'atest Online News'},				img=_art404										,is_folder=False,fanart=_artFanart)
-	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Threads[/COLOR]", 'url': ps('LatestThreads.url')}, 											{'title': cFL('L',ps('cFL_color'))+'atest Threads'},						img=_art404										,is_folder=False,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxFile',  'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': ps('changelog.local')}, 	{'title': cFL('L',ps('cFL_color'))+'ocal Change Log'},					img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': ps('changelog.url')}, 		{'title': cFL('L',ps('cFL_color'))+'atest Online Change Log'},	img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': ps('news.url')}, 				{'title': cFL('L',ps('cFL_color'))+'atest Online News'},				img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Threads[/COLOR]", 'url': ps('LatestThreads.url')}, 											{'title': cFL('L',ps('cFL_color'))+'atest Threads'},						img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'PrivacyPolicy','title': "", 'url': ''}, 																																												{'title': cFL('P',ps('cFL_color'))+'rivacy Policy'},						img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'TermsOfService','title': "", 'url': ''}, 																																											{'title': cFL('T',ps('cFL_color'))+'erms of Service'},					img=_art404										, is_folder=False ,fanart=_artFanart)
 	### ############ 
 	set_view('list',addst('default-view')); eod()
 	### ############ 
@@ -1640,8 +1779,11 @@ def fav__list(section,subfav=''):
 	WhereAmI('@ Favorites - List - %s%s' % (section,subfav)); saved_favs=cache.get('favs_'+section+subfav+'__'); favs=[]
 	if saved_favs:
 		if (debugging==True): print saved_favs
-		favs=sorted(eval(saved_favs), key=lambda fav: fav[0])
+		favs=sorted(eval(saved_favs), key=lambda fav: (fav[1],fav[0]),reverse=True)
+		ItemCount=len(favs) # , total_items=ItemCount
 		if favs:
+			#if   (section==ps('section.tv')): 		xbmcplugin.setContent( int( sys.argv[1] ), 'tvshows' )
+			#elif (section==ps('section.movie')): 	xbmcplugin.setContent( int( sys.argv[1] ), 'movies' )
 			for (name,year,img,fanart,country,url,plot,genre,dbid) in favs:
 				if (debugging==True): print '----------------------------'
 				if (debugging==True): print name,year,img,fanart,country,url,plot,genre,dbid #,pars,labs
@@ -1650,6 +1792,16 @@ def fav__list(section,subfav=''):
 					labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color')); labs2['ShowTitle']=name; labs2['year']=year; pars2={'mode': 'GetSeasons', 'section': section, 'url': url, 'img': img, 'image': img, 'fanart': fanart, 'title': name, 'year': year, 'thetvdbid': dbid, 'thetvdb_series_id': dbid, 'Country': country, 'plot': plot }
 					if (country is not ''): labs2['title']=labs2['title']+cFL('  ['+cFL(country,ps('cFL_color3'))+']',ps('cFL_color'))
 					labs2['image']=img; labs2['fanart']=fanart; labs2['PlotOutline']=labs2['plot']=plot; labs2['genre']=genre; labs2['country']=country
+					#labs2['Overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
+					#labs2['overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
+					#labs2[u'overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
+					#labs2['Overlay']=7 ### Testing ###  (Watched)  ### 
+					#labs2['overlay']=7 ### Testing ###  (Watched)  ### 
+					#labs2['overlay']=6 ### Testing ### (Unwatched) ### 
+					#labs2[u'watched']=7
+					#labs2[u'watch']=7
+					#
+					#
 					##### Right Click Menu for: TV #####
 					contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 					contextMenuItems.append((ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(name))))
@@ -1660,11 +1812,15 @@ def fav__list(section,subfav=''):
 					if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')):
 						contextMenuItems.append((ps('cMI.primewire.search.name'), 	ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section.tv'), name)))
 					##### Right Click Menu for: TV ##### /\ #####
-					try: _addon.add_directory(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems)
+					#try: _addon.add_directory2(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems, overlay=7) ## Testing Watched/Unwatched ## 
+					try: _addon.add_directory(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems, total_items=ItemCount)
 					except: deb('Error Listing Item',name+'  ('+year+')')
 				elif (section==ps('section.movie')):
 					labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color')); labs2['image']=img; labs2['fanart']=fanart; labs2['ShowTitle']=name; labs2['year']=year; pars2={'mode': 'GetLinks', 'section': section, 'url': url, 'img': img, 'image': img, 'fanart': fanart, 'title': name, 'year': year }
 					#labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')  ['+cFL(country,ps('cFL_color3'))+']',ps('cFL_color'))
+					#labs2[u'overlay']=xbmcgui.ICON_OVERLAY_WATCHED
+					#labs2['overlay']=xbmcgui.ICON_OVERLAY_WATCHED
+					labs2['overlay']=7
 					##### Right Click Menu for: TV #####
 					contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 					#contextMenuItems.append((ps('cMI.favorites.tv.remove.name'), 	   ps('cMI.favorites.movie.remove.url') % (sys.argv[0],ps('cMI.favorites.tv.remove.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(img),urllib.quote_plus(fanart),urllib.quote_plus(country),urllib.quote_plus(plot),urllib.quote_plus(genre),urllib.quote_plus(url), '' )))
@@ -1676,7 +1832,8 @@ def fav__list(section,subfav=''):
 			elif (section==ps('section.movie')): 	set_view('movies' ,ps('setview.movies')	,True)
 		else: sunNote('Favorites:  '+section,'No favorites found *'); set_view('list',addst('default-view')); eod(); return
 	else: sunNote('Favorites:  '+section,'No favorites found **'); set_view('list',addst('default-view')); eod(); return
-	set_view('list',addst('default-view')); eod()
+	#set_view('list',addst('default-view')); 
+	eod()
 ##### /\ ##### Favorites #####
 ### ############################################################################################################
 ### ############################################################################################################
@@ -1835,6 +1992,10 @@ def check_mode(mode=''):
 	elif (mode=='UsersShowFavorites'): 		UsersShowFavorites(_param['section'],_param['url'])
 	#elif (mode=='UsersShowWatchList'): 		UsersShowWatchList(_param['section'],_param['url'])
 	elif (mode=='UsersShowUploads'): 			UsersShowUploads(_param['section'],_param['url'])
+	elif (mode=='PrivacyPolicy'): 				Site__PrivacyPolicy()
+	elif (mode=='TermsOfService'): 				Site__TermsOfService()
+	elif (mode=='GetLatestSearches'): 		listLatestSearches(_param['section'],_param['url'])
+	elif (mode=='UsersShowProfileAccountInfo'): UsersShowPersonInfo(mode, _param['section'],_param['url'])
 	else: deadNote(header='Mode:  "'+mode+'"',msg='[ mode ] not found.'); initDatabase(); Menu_MainMenu()
 
 # {'showyear': '', 'infoLabels': "
