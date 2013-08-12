@@ -1,3 +1,15 @@
+[B]Version 0.2.2[/B]
+- 
+- 
+- 
+- 
+- 
+- 
+
+[B]Version 0.2.1b[/B]
+### Thank you, RickDeckard, for posting a log on this issue.
+- Removed a seemingly unused import that caused a scripterror on load for for Mac OS user(s).
+
 [B]Version 0.2.1[/B]
 ### shows information on pages such as: http://www.solarmovie.so/profile/MasterofMovies120/
 - "Users" section >> * >> Person >> "Account"

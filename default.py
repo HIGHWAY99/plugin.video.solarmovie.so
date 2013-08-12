@@ -2,13 +2,14 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.1
+### # Version:			#		v0.2.1b
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
 ##### Imports #####
-import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,requests
+import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
+#import requests
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
 import urlresolver
 import copy
