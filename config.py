@@ -128,7 +128,7 @@ def ps(x):
 		,'LI.tv.popular.new.split1': 			'<h2>Latest TV Shows</h2>'
 		,'LI.tv.popular.new.split2': 			'<h3>'
 		,'LI.tv.match.items': 						'class="coverImage" title="(.+?)".+?href="(.+?)".+?src="(.+?)".+?<a title=".+?\(([\d]+)\)'
-		,'LI.nextpage.name': 							'  >  Next...'
+		,'LI.nextpage.name': 							'  [COLOR goldenrod]>  [COLOR red]Next[/COLOR]...[/COLOR]'
 		,'LI.nextpage.match': 						'<li class="next"><a href=.+?page=([\d]+)"'
 		,'LI.nextpage.check': 						'<li class="next"><a href="http://www.solarmovie.so/'
 		,'LI.page.param': 								'?page='

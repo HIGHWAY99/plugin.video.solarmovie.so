@@ -13,7 +13,8 @@ plugin_id		=	"plugin.video.solarmovie.so"
 ### ############################################################################################################
 ### ############################################################################################################
 import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
-#import requests
+try: import requests ### <import addon="script.module.requests" version="1.1.0"/> ### 
+except: t=''				 ### See https://github.com/kennethreitz/requests ### 
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
 import urlresolver
 import copy
@@ -855,20 +856,28 @@ def clean_filename(filename):
 
 def ParseDescription(plot): ## Cleans up the dumb number stuff thats ugly.
 	if ('&#' in plot) and (';' in plot):
-		if ("&amp;"  in plot): plot=plot.replace('&amp;','&')#&amp;#x27;
+		if ("&amp;"  in plot):  plot=plot.replace('&amp;'  ,'&')#&amp;#x27;
 		if ("&#8211;" in plot): plot=plot.replace("&#8211;",";") #unknown
 		if ("&#8216;" in plot): plot=plot.replace("&#8216;","'")
 		if ("&#8217;" in plot): plot=plot.replace("&#8217;","'")
 		if ("&#8220;" in plot): plot=plot.replace('&#8220;','"')
 		if ("&#8221;" in plot): plot=plot.replace('&#8221;','"')
-		if ("&#215;"  in plot): plot=plot.replace('&#215;','x')
-		if ("&#x27;"  in plot): plot=plot.replace('&#x27;',"'")
-		if ("&#xF4;"  in plot): plot=plot.replace('&#xF4;',"o")
-		if ("&#xb7;"  in plot): plot=plot.replace('&#xb7;',"-")
-		if ("&#xFB;"  in plot): plot=plot.replace('&#xFB;',"u")
-		if ("&#xE0;"  in plot): plot=plot.replace('&#xE0;',"a")
+		if ("&#215;"  in plot): plot=plot.replace('&#215;' ,'x')
+		if ("&#x27;"  in plot): plot=plot.replace('&#x27;' ,"'")
+		if ("&#xF4;"  in plot): plot=plot.replace('&#xF4;' ,"o")
+		if ("&#xb7;"  in plot): plot=plot.replace('&#xb7;' ,"-")
+		if ("&#xFB;"  in plot): plot=plot.replace('&#xFB;' ,"u")
+		if ("&#xE0;"  in plot): plot=plot.replace('&#xE0;' ,"a")
 		if ("&#0421;" in plot): plot=plot.replace('&#0421;',"")
-		#if ("\xb7"  in plot): plot=plot.replace('\xb7',"-")
+		if ("&#xE9;" in plot):  plot=plot.replace('&#xE9;' ,"e")
+		if ("&#xE2;" in plot):  plot=plot.replace('&#xE2;' ,"a")
+		if ('&#' in plot) and (';' in plot):
+			try:		matches=re.compile('&#(.+?);').findall(plot)
+			except:	matches=''
+			if (matches is not ''):
+				for match in matches:
+					if (match is not '') and (match is not ' ') and ("&#"+match+";" in plot):  plot=plot.replace("&#"+match+";" ,"")
+		#if ("\xb7"  in plot):  plot=plot.replace('\xb7'   ,"-")
 		#if ('&#' in plot) and (';' in plot): plot=unescape_(plot)
 	return plot
 def unescape_(s):

@@ -21,6 +21,7 @@
 		<setting label="Clear Favorites"   type="action" 	enable="!eq(-1,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=)"/>
 		<setting label="Clear Favorites 2" type="action" 	enable="!eq(-2,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=2)"/>
 		<setting label="Clear Favorites 3" type="action" 	enable="!eq(-3,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=3)"/>
+		<setting id="tv-zerolinks-show" type="bool"   		label="Show Episodes with 0 (Zero) Links" default="true"/>
 	</category>
 	<category label="Auto-View">
 		<setting id="auto-view" type="bool"   label="Enable Automatic View" default="false"/>

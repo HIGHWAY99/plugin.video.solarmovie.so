@@ -1,5 +1,21 @@
 
 
+[COLOR grey][Date: 2013.08.16][/COLOR][COLOR black][Post: 4][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.3
+
+[COLOR grey][Date: 2013.08.16][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.2.2
+
+[COLOR grey][Date: 2013.08.15][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Show/Hide TV Episodes with 0 Links.
+
+[COLOR grey][Date: 2013.08.15][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Fixes to Next-Page in listItems()
+### Added missing section variable to Next Page Links in listItems().
+### ### /\ This makes it so that TV listings will stay under TV 
+### ### section when going to the next page.
+### Fixed Next-Page links to not show when on the last page.
+
 [COLOR grey][Date: 2013.08.11][/COLOR][COLOR black][Post: 2][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.2
 

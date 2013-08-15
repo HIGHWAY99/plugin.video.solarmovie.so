@@ -2,14 +2,18 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.1b
+### # Version:			#		v0.2.2
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
 ##### Imports #####
 import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
-#import requests
+#import requests ### (Removed in v0.2.1b to fix scripterror on load on Mac OS.) ### 
+try: import requests ### <import addon="script.module.requests" version="1.1.0"/> ### 
+except: t=''				 ### See https://github.com/kennethreitz/requests ### 
+
+
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
 import urlresolver
 import copy
@@ -982,7 +986,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	try:		last=int(re.compile('<li><a href="http://.+?page=\d+">(\d+)</a></li>[\n]\s+<li class="next">', re.IGNORECASE | re.DOTALL).findall(html_))[0]
 	except:	last=2
 	deb('number of pages',str(last))
-	print min(last,end)
+	#print min(last,end)
 	if ('<h1>Nothing was found by your request</h1>' in html_):
 		deadNote('Results:  '+section,'Nothing was found by your request'); eod(); return
 	pmatch=re.findall(ps('LI.page.find'), html_)
@@ -1009,9 +1013,11 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	if (ps('LI.nextpage.check') in html_last): 
 		if (_debugging==True): print 'A next-page has been found.'
 		nextpage=re.findall(ps('LI.nextpage.match'), html_last)[0] #nextpage=re.compile('<li class="next"><a href="http://www.solarmovie.so/.+?.html?page=(\d+)"></a></li>').findall(html_last)[0]
-		if (int(nextpage) > end) or (end < last): ## Do Show Next Page Link ##
+		if (int(nextpage) <= last) and (end < last) and (start < last) and (start is not int(nextpage)): #(int(nextpage) > end) and (int(nextpage) <= last): # and (end < last): ## Do Show Next Page Link ##
 			if (_debugging==True): print 'A next-page is being added.'
-			_addon.add_directory({'mode': 'GetTitles', 'url': url, 'pageno': nextpage, 'pagecount': numOfPages}, {'title': ps('LI.nextpage.name')}, img=art('icon-next'))
+			#print {'mode': 'GetTitles', 'url': url, 'pageno': nextpage, 'pagecount': numOfPages}
+			_addon.add_directory({'mode': 'GetTitles', 'section': section, 'url': url, 'pageno': nextpage, 'pagecount': numOfPages}, {'title': ps('LI.nextpage.name')}, img=art('icon-next'))
+			print {'start':str(start),'end':str(end),'last':str(last),'nextpage':str(nextpage)}
 	###	### _addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': 'Next...'})
 	###html=nolines(html)
 	html=ParseDescription(html); html=remove_accents(html) #if (_debugging==True): print html
@@ -1593,6 +1599,7 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 	woot=False
 	#print episodes
 	ItemCount=len(episodes) # , total_items=ItemCount
+	ShowZeroLinks=tfalse(addst("tv-zerolinks-show"))
 	for ep_url, episode_name, season_number, episode_number, num_links in episodes:
 		if (season==''): t=''
 		elif (season==season_number) or (season.lower()=='all') or (season==''):
@@ -1613,6 +1620,7 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 						v=(db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage)
 						db_ep_url=ps('meta.tv.domain')+db_ep_url; db_ep_url2=ps('meta.tv.domain')+db_ep_url2
 						if ('Episode #' in episode_name): episode_name=db_ep_name.strip()
+						if ('TBA'==episode_name): episode_name='(To Be Announced)'
 						labs['Premeired']=labs['DateAired']=labs['Date']=db_dateYear+'-'+db_dateMonth+'-'+db_dateDay; labs['year']=db_dateYear; labs['month']=db_dateMonth; labs['day']=db_dateDay
 						deb('db_hasImage',db_hasImage)
 						if ('img' in db_hasImage):	(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2,img)
@@ -1637,7 +1645,9 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_param['showtitle']), urllib.quote_plus(_param['year']), urllib.quote_plus(ep_url), urllib.quote_plus(labs['thumbnail']), urllib.quote_plus(season_number), urllib.quote_plus(episode_number), urllib.quote_plus(episode_name) )))
 			deb('Episode Name',labs['title']); deb('episode thumbnail',labs['thumbnail'])
-			if (season==season_number) or (season==''): _addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
+			if (season==season_number) or (season==''): 
+				if (ShowZeroLinks==True) or (int(num_links) > 0):
+					_addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
 		#
 	set_view('episodes',addst('episode-view')); eod() #set_view('episodes',ps('setview.episodes')); eod()
 

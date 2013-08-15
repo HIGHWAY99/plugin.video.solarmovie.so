@@ -4,7 +4,14 @@
 - 
 - 
 - 
-- 
+- Setup listEpisodes to work with ZeroLinks Setting.
+- Addon Settings >> Show Episodes with 0 (Zero) Links.
+- Fixed Next-Page link to not be added if your on the last page for listItems().
+### re.compile('&#(.+?);').findall() >> .replace("&#"+match+";" ,"").  This should hide any simular ascii thats not already setup to be parsed in the future.
+### .replace('&#xE2;' ,"a")
+### .replace('&#xE9;' ,"e")
+- Additions to ParseDescription().
+- Fixed Next-Page links in listItems() to include the missing section variable to allow for TV shows to display right after clicking Next-Page.
 
 [B]Version 0.2.1b[/B]
 ### Thank you, RickDeckard, for posting a log on this issue.
