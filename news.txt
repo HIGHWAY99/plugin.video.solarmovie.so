@@ -1,5 +1,14 @@
 
 
+[COLOR grey][Date: 2013.08.17][/COLOR][COLOR black][Post: 3][/COLOR]
+[COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.4
+
+[COLOR grey][Date: 2013.08.17][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.2.3
+
+[COLOR grey][Date: 2013.08.17][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  2 jDownloader DL-Methods for Testing.
+
 [COLOR grey][Date: 2013.08.16][/COLOR][COLOR black][Post: 4][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.3
 

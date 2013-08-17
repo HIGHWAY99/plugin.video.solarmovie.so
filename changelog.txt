@@ -1,9 +1,15 @@
+[B]Version 0.2.3[/B]
+- 
+- 
+- 
+- 
+### Currently there is no check to make sure that the jDownloader plugin actually exists on your copy of XBMC, so please make sure you have it installed in the default, usual, folder and have it and jDownloader setup as needed by the jDownloader plugin.
+### It's been a while since I've used jDownloader much and I haven't used the xbmc plugin for it yet.  So, I'm looking into which link is better to use or if I need to adjust the inital links a bit more.  I'm probably thinking things through too much, but I was trying to keep in mind for those who might want to add the link to jdownloader for "later" user rather than imediately downloading it... or those who want to pause and resume later.
+### The 2 DL Methods are: 1.) via Stream_Url, and 2.) via Link.
+### 2 Download Method's added for jDownloader for testing to see which I'll need.  Please give me some feed-back on this.  
+### I wanted to see about adding a ContextMenuItem, but cause of how I got things setup I'd have to make another function just to parse out the links like I've done for a few other things... so, I decided to try adding it to my current download method that has an option for the download method.
+- Add Download to jDownloader via jDownloader plugin.
 [B]Version 0.2.2[/B]
-- 
-- 
-- 
-- 
-- 
 - Setup listEpisodes to work with ZeroLinks Setting.
 - Addon Settings >> Show Episodes with 0 (Zero) Links.
 - Fixed Next-Page link to not be added if your on the last page for listItems().

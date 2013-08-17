@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.2
+### # Version:			#		v0.2.3
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -407,25 +407,37 @@ def DownloadRequest(section, url,img,LabelName):
 			dp=xbmcgui.DialogProgress(); dialogType=12 ## For Frodo and earlier.
 			dp.create('Downloading', LabelFile+ext)
 			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+			myNote('Download Complete',LabelFile+ext,15000)
 		elif (download_method=='ProgressBG'):
 			dp=xbmcgui.DialogProgressBG(); dialogType=13 ## Only works on daily build of XBMC.
 			dp.create('Downloading', LabelFile+ext)
 			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+			myNote('Download Complete',LabelFile+ext,15000)
 		elif (download_method=='Test'):
 			dp=xbmcgui.DialogProgress()
 			myNote('Download Started',LabelFile+ext,15000)
 			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+			myNote('Download Complete',LabelFile+ext,15000)
 		elif (download_method=='Hidden'):
 			dp=xbmcgui.DialogProgress()
 			myNote('Download Started',LabelFile+ext,15000)
 			urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+			myNote('Download Complete',LabelFile+ext,15000)
+		elif (download_method=='jDownloader (StreamURL)'):
+			myNote('Download','sending to jDownloader plugin',15000)
+			xbmc.executebuiltin("XBMC.RunPlugin(plugin://plugin.program.jdownloader/?action=addlink&url=%s)" % stream_url)
+			#return
+		elif (download_method=='jDownloader (Link)'):
+			myNote('Download','sending to jDownloader plugin',15000)
+			xbmc.executebuiltin("XBMC.RunPlugin(plugin://plugin.program.jdownloader/?action=addlink&url=%s)" % link)
+			#return
 		else: deb('Download Error','Incorrect download method.'); myNote('Download Error','Incorrect download method.'); return
-		#
-		#urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
-		#
-		myNote('Download Complete',LabelFile+ext,15000)
-		#
-		### xbmc.translatePath(os.path.join(FolderDest,localfilewithpath+ext))
+		##
+		##urllib.urlretrieve(stream_url, xbmc.translatePath(os.path.join(FolderDest,LabelFile+ext)), lambda nb, bs, fs: DownloadStatus(nb, bs, fs, dp, download_method, start_time, section, url, img, LabelName, ext, LabelFile)) #urllib.urlretrieve(url, localfilewithpath)
+		##
+		#myNote('Download Complete',LabelFile+ext,15000)
+		##
+		#### xbmc.translatePath(os.path.join(FolderDest,localfilewithpath+ext))
 		_addon.resolve_url(url)
 		_addon.resolve_url(stream_url)
 		#
@@ -842,6 +854,7 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 				pars2['Title']=My_infoLabels['Title']
 				#deb('plugin url for download',_addon.build_plugin_url(pars2))
 				contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
+				#contextMenuItems.append(('jDownloader', ps('cMI.jDownloader.addlink.url') % (urllib.quote_plus(url))))
 				pars['mode']='PlayVideo'
 				_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount); count=count+1
 		set_view('list',addst('links-view')); eod()

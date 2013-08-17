@@ -101,6 +101,7 @@ def ps(x):
 		,'cMI.primewire.search.plugin': 	'plugin://plugin.video.primewire/'
 		,'cMI.primewire.search.section': 	'movies'
 		,'cMI.primewire.search.section.tv':	'tv'
+		,'cMI.jDownloader.addlink.url':		'XBMC.RunPlugin(plugin://plugin.program.jdownloader/?action=addlink&url=%s)'
 		,'LI.movies.match.items': 				'class="coverImage" title="(.+?)".+?href="(.+?)".+?src="(.+?)".+?<a title=".+?\(([\d]+)\)'
 		,'LI.movies.match.items2': 				'class="coverImage" title="(.+?)"[\n]\s+href="(.+?)">.+?src="(http://static\.solarmovie\.so/images/movies/\d+_\d+x\d+\.jpg)".+?<a\stitle=".+?\(([\d]+)\)'
 		,'LI.movies.match.items3': 				'class="coverImage" title="(.+?)"[\n]\s+href="(.+?)">.+?src="(http://static\.solarmovie\.so/images/movies/\d+_\d+x\d+\.jpg)".+?<a\stitle=".+?\(([\d]+)\)'
