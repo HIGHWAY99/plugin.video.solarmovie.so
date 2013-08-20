@@ -39,6 +39,7 @@ def ps(x):
 		,'cFL_color5': 					'white'
 		,'cFL_color6': 					'blanchedalmond'
 		,'default_section': 		'movies'
+		,'section.wallpaper':		'wallpapers'
 		,'section.movie': 			'movies'
 		,'section.trailers':		'trailers'
 		,'section.trailers.popular':			'trailerspopular'

@@ -1,14 +1,23 @@
+[B]Version 0.2.4[/B]
+- 
+- 
+- Fixed Plot Descriptions to now display for Movies in the Favorite Folder(s).
+### Once fanart has been saved to the Wallpaper Folder, you then may set it as a background or use it as you wish.  The method for setting the background(s) in skins may very, so I have not setup a method for handling this within the addon/plugin at this time.
+### Movie fanart tend to "currently" be around 300x169.  I might look into getting the larger sized ones at a later time.
+### TV Show fanart tend to be .jpg's around 1280x720.  Some are greater or lesser in size.
+### Wallpaper Folder path added to Settings too.
+### Added to in Favorites Folders as well as the most common other folders that allow for Fanart MetaData.
+- "Download Wallpaper" added to ContextMenuItems for Movies and TV Shows where possible.
+
 [B]Version 0.2.3[/B]
-- 
-- 
-- 
-- 
+### *Feature Dedication* Note: jDownloader Download Method(s) -- HeLikesIt (XBMCHUB Forums) for his request of this feature.
 ### Currently there is no check to make sure that the jDownloader plugin actually exists on your copy of XBMC, so please make sure you have it installed in the default, usual, folder and have it and jDownloader setup as needed by the jDownloader plugin.
 ### It's been a while since I've used jDownloader much and I haven't used the xbmc plugin for it yet.  So, I'm looking into which link is better to use or if I need to adjust the inital links a bit more.  I'm probably thinking things through too much, but I was trying to keep in mind for those who might want to add the link to jdownloader for "later" user rather than imediately downloading it... or those who want to pause and resume later.
 ### The 2 DL Methods are: 1.) via Stream_Url, and 2.) via Link.
 ### 2 Download Method's added for jDownloader for testing to see which I'll need.  Please give me some feed-back on this.  
 ### I wanted to see about adding a ContextMenuItem, but cause of how I got things setup I'd have to make another function just to parse out the links like I've done for a few other things... so, I decided to try adding it to my current download method that has an option for the download method.
 - Add Download to jDownloader via jDownloader plugin.
+
 [B]Version 0.2.2[/B]
 - Setup listEpisodes to work with ZeroLinks Setting.
 - Addon Settings >> Show Episodes with 0 (Zero) Links.
@@ -224,7 +233,18 @@ if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.t
 [B]To-DO List:[/B]
 - 
 - 
+- Larger Movie Fanart Images.
+- Setup and Testing for use of common SQL database method(s).
+- Setup and Testing for use of common MetaHandler and MetaContainer.
 - Users >> Person >> Blogs -- Not sure what might be done with these pages.
+### ....
+### ...
+### ...
+### Online Watchlist Folder
+### Online Favorites Folder
+### View User's own Profile
+### Messages
+### Account Login
 - Register-User Perks
 - Account Info
 ### https://twitter.com/solarmovie
