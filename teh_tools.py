@@ -566,6 +566,8 @@ def Download_PrepExt(url,ext='.flv'):
 	elif  '.png' in url: ext='.png' #images
 	elif  '.jpg' in url: ext='.jpg'
 	elif  '.gif' in url: ext='.gif'
+	elif  '.bmp' in url: ext='.bmp'
+	elif '.jpeg' in url: ext='.jpeg'
 	elif  '.mp4' in url: ext='.mp4' #Videos
 	elif '.mpeg' in url: ext='.mpeg'
 	elif  '.avi' in url: ext='.avi'
@@ -1657,6 +1659,7 @@ def twitter_timeline(person):
 	HTML=getURL('http://mobile.twitter.com/'+person) ### HTML=getURL('http://twitter.com/'+person)
 	#
 	#
+
 
 
 
