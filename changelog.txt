@@ -1,6 +1,11 @@
+[B]Version 0.2.5[/B]
+- 
+- 
+- 
+- 
+- New Graphics: fanart.jpg and icon.png have been updated.
+
 [B]Version 0.2.4[/B]
-- 
-- 
 - Fixed Plot Descriptions to now display for Movies in the Favorite Folder(s).
 ### Once fanart has been saved to the Wallpaper Folder, you then may set it as a background or use it as you wish.  The method for setting the background(s) in skins may very, so I have not setup a method for handling this within the addon/plugin at this time.
 ### Movie fanart tend to "currently" be around 300x169.  I might look into getting the larger sized ones at a later time.
