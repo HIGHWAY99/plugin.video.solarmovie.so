@@ -696,6 +696,8 @@ def set_view(content='none',view_mode=50,do_sort=False):
 	if (debugging==True): print 'content type: ',content
 	if (debugging==True): print 'view mode: ',view_mode
 	h=int(sys.argv[1])
+	#try:		h=int(sys.argv[1])
+	#except:	h=_addon.handle
 	if (content is not 'none'): xbmcplugin.setContent(h, content)
 	#types:									# set_view()
 	# 50		CommonRootView
@@ -1659,9 +1661,6 @@ def twitter_timeline(person):
 	HTML=getURL('http://mobile.twitter.com/'+person) ### HTML=getURL('http://twitter.com/'+person)
 	#
 	#
-
-
-
 
 
 
