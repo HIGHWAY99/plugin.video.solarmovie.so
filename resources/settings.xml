@@ -45,4 +45,12 @@
 		<setting id="metadata_tv_episodes" 	type="bool" label="(TV) >> Episodes" 					default="true" visible="true" enable="!eq(-1,false)" />
 		<setting id="metadata_tv_ep_plot" 	type="bool" label="(TV) >> Episodes >> Plot" 	default="true" visible="true" enable="!eq(-1,false)" />
 	</category>
+	<category label="Context Menu Items">
+		<setting id="CMI_ShowInfo" 								type="bool" label="Show Information" 						default="true" visible="false" />
+		<setting id="CMI_FindAirDates" 						type="bool" label="Find Air Dates" 							default="true" visible="false" />
+		<setting id="CMI_ChangeFanart" 						type="bool" label="Change Fanart" 							default="true" visible="true" />
+		<setting id="CMI_DownloadWallpaper" 			type="bool" label="Download Wallpaper" 					default="true" visible="true" />
+		<setting id="CMI_Search1Channel" 					type="bool" label="Search 1Channel" 						default="true" visible="false" />
+		<setting id="CMI_SearchPrimeWire" 				type="bool" label="(TV) - Search PrimeWire" 		default="true" visible="false" />
+	</category>
 </settings>

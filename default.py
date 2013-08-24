@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.4
+### # Version:			#		v0.2.5
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -72,6 +72,7 @@ _art404='http://www.solarmovie.so/images/404.png' #_art404=art('404')
 _art150='http://www.solarmovie.so/images/thumb150.png' #_art150=art('thumb150')
 _artDead='http://www.solarmovie.so/images/deadplanet.png' #_artDead=art('deadplanet')
 _artSun=art('sun'); COUNTRIES=ps('COUNTRIES'); GENRES=ps('GENRES'); _default_section_=ps('default_section'); net=Net(); DB=_database_file; BASE_URL=_domain_url;
+#_artFanart=xbmc.translatePath(os.path.join(_addonPath,'fanart5.jpg'))
 ##### /\ ##### Variables #####
 deb('Addon Path',_addonPath);  deb('Art Path',_artPath); deb('Addon Icon Path',_artIcon); deb('Addon Fanart Path',_artFanart)
 ### ############################################################################################################
@@ -141,11 +142,18 @@ def PlayVideo(url, infoLabels, listitem):
 		deb('Link URL Was Not Resolved',link); deadNote("urlresolver.HostedMediaFile(link).resolve()","Failed to Resolve Playable URL."); return
 	eod()
 	#xbmc.Player().stop()
+	try: _addon.resolve_url(url)
+	except: t=''
+	try: _addon.resolve_url(stream_url)
+	except: t=''
 	play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
-	play.play(stream_url, li); xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=li)
+	try: play.play(stream_url, li); xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=li)
+	except: t=''
 	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True)
-	_addon.resolve_url(url)
-	_addon.resolve_url(stream_url)
+	try: _addon.resolve_url(url)
+	except: t=''
+	try: _addon.resolve_url(stream_url)
+	except: t=''
 	#xbmc.sleep(7000)
 
 def PlayLibrary(section, url, showtitle='', showyear=''): ### Menu for Listing Hosters (Host Sites of the actual Videos)
@@ -534,9 +542,6 @@ def Trailers_Genres(section, url):
 		else:												url=pathA+pathB+(genre.lower())+pathC
 		_addon.add_directory({'section': section,'mode': 'TrailersList','url': url,'genre': genre,'bygenre': genre }, {'title':  genre},img=img,fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
-
-
-
 
 
 
@@ -1824,6 +1829,7 @@ def fav__list(section,subfav=''):
 					labs2['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color')); labs2['ShowTitle']=name; labs2['year']=year; pars2={'mode': 'GetSeasons', 'section': section, 'url': url, 'img': img, 'image': img, 'fanart': fanart, 'title': name, 'year': year, 'thetvdbid': dbid, 'thetvdb_series_id': dbid, 'Country': country, 'plot': plot }
 					if (country is not ''): labs2['title']=labs2['title']+cFL('  ['+cFL(country,ps('cFL_color3'))+']',ps('cFL_color'))
 					labs2['image']=img; labs2['fanart']=fanart; labs2['PlotOutline']=labs2['plot']=plot; labs2['genre']=genre; labs2['country']=country
+					labs2['poster']=img; labs2['thumb']=img; 
 					#labs2['Overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
 					#labs2['overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
 					#labs2[u'overlay']=xbmcgui.ICON_OVERLAY_WATCHED #'7' ### Testing ###  (Watched)  ### 
@@ -1844,7 +1850,11 @@ def fav__list(section,subfav=''):
 					if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')):
 						contextMenuItems.append((ps('cMI.primewire.search.name'), 	ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section.tv'), name)))
 					if (fanart is not ''):
-						contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+' ('+year+')' , 'img': img , 'url': fanart } ) ))
+						if (tfalse(addst("CMI_DownloadWallpaper"))==True): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+' ('+year+')' , 'img': img , 'url': fanart } ) ))
+						#contextMenuItems.append(('Change Art', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode': 'ChangeFanartList' , 'section': section , 'subfav': subfav, 'studio': name+' ('+year+')' , 'img': img , 'url': dbid , 'fanart': fanart})))
+						if (tfalse(addst("CMI_ChangeFanart"))==True): contextMenuItems.append(('Change Fanart', 'XBMC.Container.Update(%s)' % _addon.build_plugin_url({'mode': 'ChangeFanartList' , 'section': section , 'subfav': subfav, 'studio': name+' ('+year+')' , 'img': img , 'url': dbid , 'fanart': fanart})))
+						#contextMenuItems.append(('Change Art2', 'XBMC.RunPlugin(%s)' % ('plugin://'+sys.argv[0]+'?'{'mode': 'ChangeFanartList' , 'section': section , 'subfav': subfav, 'studio': name+' ('+year+')' , 'img': img , 'url': dbid , 'fanart': fanart})))
+						#contextMenuItems.append(('Change Fanart', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'ChangeFanartList' , 'section': section , 'subfav': subfav, 'studio': name+' ('+year+')' , 'img': img , 'url': dbid , 'fanart': fanart } ) ))
 					##### Right Click Menu for: TV ##### /\ #####
 					#try: _addon.add_directory2(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems, overlay=7) ## Testing Watched/Unwatched ## 
 					try: _addon.add_directory(pars2, labs2, img=img, fanart=fanart, contextmenu_items=contextMenuItems, total_items=ItemCount)
@@ -1870,6 +1880,60 @@ def fav__list(section,subfav=''):
 	else: sunNote('Favorites:  '+section,'No favorites found **'); set_view('list',addst('default-view')); eod(); return
 	#set_view('list',addst('default-view')); 
 	eod()
+
+def ChangeFanartUpdate(section,subfav,fanart,dbid):
+	WhereAmI('@ Favorites - Update Fanart - %s%s' % (section,subfav))
+	saved_favs=cache.get('favs_'+section+subfav+'__'); favs=[]; favs_new=[]; fav_found=False; name=''; year=''
+	if saved_favs:
+		if (debugging==True): print saved_favs
+		favs=eval(saved_favs)
+		if favs:
+			for (_name,_year,_img,_fanart,_country,_url,_plot,_genre,_dbid) in favs:
+				if (dbid==_dbid):	favs_new.append((_name,_year,_img, fanart,_country,_url,_plot,_genre,_dbid)); name=_name; year=_year
+				else:							favs_new.append((_name,_year,_img,_fanart,_country,_url,_plot,_genre,_dbid))
+			cache.set('favs_'+section+subfav+'__', str(favs_new)); sunNote(bFL(name+'  ('+year+')'),bFL('Updated Fanart'))
+	eod(); #xbmc.executebuiltin('XBMC.Container.Update(%s)' % _addon.build_plugin_url({'mode': 'FavoritesList' , 'section': section , 'subfav': subfav}))
+
+def ChangeFanartList(section,subfav,dbid,current,img,title):
+	WhereAmI('@ Favorites - List - %s%s - %s' % (section,subfav,dbid)); 
+	if   (section==ps('section.tv')):
+		url=ps('meta.tv.fanart.all.url') % dbid
+		html=mGetItemPage(url)
+		deb('length of HTML',str(len(html)))
+		try:		iitems=re.compile(ps('meta.tv.fanart.all.match')).findall(html)
+		except:	iitems=None
+		if (iitems==None) or (iitems==''): deb('Error','No Items Found.'); return
+		ItemCount=len(iitems) # , total_items=ItemCount
+		deb('Items Found',str(ItemCount))
+		parsC={'section':section,'subfav':subfav,'mode':'ChangeFanartUpdate','url':current, 'title': dbid}
+		#_addon.add_directory(parsC,{ 'title': title, 'studio': title },img=img,fanart=current)
+		_addon.add_directory(parsC,{ 'title': title, 'studio': title },img=current,fanart=current)
+		#_addon.add_item(parsC,{ 'title': title, 'studio': title },img=img,fanart=current)
+		#_addon.add_directory({'mode':'test'}, {'title':title}, img=img)
+		#_addon.add_directory({'mode':'test'}, {'title':'title'})
+		#_addon.end_of_directory(); return
+		iitems=sorted(iitems, key=lambda item: item[0], reverse=False)
+		#print iitems
+		for fanart_url,fanart_name in iitems:
+			fanart_url=ps('meta.tv.fanart.all.prefix')+fanart_url
+			pars={ 'section': section, 'subfav': subfav, 'mode': 'ChangeFanartUpdate', 'url': fanart_url, 'title': dbid }
+			deb('fanart url ',fanart_url); deb('fanart name',fanart_name); #print pars
+			#_addon.add_directory(pars, {'title':'Fanart No. '+fanart_name}, img=img, fanart=fanart_url, total_items=ItemCount)
+			_addon.add_directory(pars, {'title':'Fanart No. '+fanart_name}, img=fanart_url, fanart=fanart_url, total_items=ItemCount)
+			#_addon.add_directory(pars, {'title':'Fanart No. '+fanart_name}, img=img, fanart=fanart_url)
+			#_addon.add_directory(pars, {'title':'Fanart No. '+str(fanart_name)})
+		#eod()
+		#sunNote('Testing - '+section,'lala a la la la!')
+		set_view('list',addst('default-view')); 
+		eod()
+		#xbmc.executebuiltin("XBMC.Container.Refresh")
+	elif (section==ps('section.movie')):
+		url=''
+		return
+	else: return
+	set_view('list',addst('default-view')); eod()
+
+
 ##### /\ ##### Favorites #####
 ### ############################################################################################################
 ### ############################################################################################################
@@ -2032,6 +2096,8 @@ def check_mode(mode=''):
 	elif (mode=='TermsOfService'): 				Site__TermsOfService()
 	elif (mode=='GetLatestSearches'): 		listLatestSearches(_param['section'],_param['url'])
 	elif (mode=='UsersShowProfileAccountInfo'): UsersShowPersonInfo(mode, _param['section'],_param['url'])
+	elif (mode=='ChangeFanartList'):			ChangeFanartList(_param['section'],_param['subfav'],_param['url'],_param['fanart'],_param['img'],_param['studio'])
+	elif (mode=='ChangeFanartUpdate'):		ChangeFanartUpdate(_param['section'],_param['subfav'],_param['url'],_param['title'])
 	else: deadNote(header='Mode:  "'+mode+'"',msg='[ mode ] not found.'); initDatabase(); Menu_MainMenu()
 
 # {'showyear': '', 'infoLabels': "
