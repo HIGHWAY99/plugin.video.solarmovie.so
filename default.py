@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.5
+### # Version:			#		v0.2.6
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -824,8 +824,14 @@ def mGetData(html,toGet):
 def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hosters (Host Sites of the actual Videos)
 	WhereAmI('@ the Link List: %s' % url); sources=[]; listitem=xbmcgui.ListItem()
 	if (url==''): return
-	html=net.http_GET(url).content; html=html.encode("ascii", "ignore")
+	try: html=net.http_GET(url).content
+	except: html=''
+	if (html==''): return
+	try: html=html.encode("ascii", "ignore")
+	except: t=''
+	html=messupText(html,True,True,True,False)
 	#if (_debugging==True): print html
+	###( , re.MULTILINE | re.IGNORECASE | re.DOTALL)
 	if  ( section == 'tv'): ## TV Show ## Title (Year) - Info
 		match=re.compile(ps('LLinks.compile.show_episode.info'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0] ### <title>Watch The Walking Dead Online for Free - Prey - S03E14 - 3x14 - SolarMovie</title>
 		if (_debugging==True): print match
@@ -840,21 +846,95 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 		if (_debugging==True): print match
 		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+'):  '+Season+'x'+Episode+' - '+EpisodeTitle, "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'Season': Season, 'Episode': Episode, 'EpisodeTitle': EpisodeTitle, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	else:	#################### Movie ## Title (Year) - Info
-		match=re.compile(ps('LLinks.compile.show.title_year'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		match=re.compile(ps('LLinks.compile.show.title_year')).findall(html)[0]
 		if (_debugging==True): print match
 		if (match==None): return
 		ShowYear=match[1].strip(); ShowTitle=match[0].strip(); ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1'); match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
 		if (_debugging==True): print match
 		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+')', "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	### Both -Movies- and -TV Shows- ### Hosters
-	match=re.compile(ps('LLinks.compile.hosters'), re.MULTILINE | re.DOTALL | re.IGNORECASE).findall(html)
+	###( , re.MULTILINE | re.IGNORECASE | re.DOTALL)
+	#html=messupText(html,True,True,True,False)
+	matches=re.compile('(<tr .*?id="link_\d+".*?>.+?</tr>)', re.MULTILINE | re.DOTALL).findall(html)
+	if (len(matches) > 0):
+		count=1; ItemCount=len(matches); #match=sorted(match, key=lambda item: (item[3],item[2],item[1]))
+		deb('No. of matches',str(ItemCount))
+		#print matches
+		MaxNoLinks=int(addst('linksmaxshown'))
+		for link_match in matches:
+			try:		url=re.compile('<a href="(/link/\D+/\d+/)">').findall(link_match)[0]
+			except:	url=''
+			try:		host=re.compile('<a href="/link/\D+/\d+/">\s*\n*\s*(.+?)\s*\n*\s*</a>').findall(link_match)[0]
+			except:	host=''
+			try:		quality=re.compile('<td class="qualityCell">\s*\n*\s*(.+?)\s*\n*\s*</td>').findall(link_match)[0]
+			except:	quality=''
+			try:		age=re.compile('<td class="ageCell.*?">\s*\n*\s*(.+?)\s*\n*\s*</td>').findall(link_match)[0]
+			except:	age=''
+			try:		img=re.compile('<img src="(http://www.google.com/s2/favicons\?domain=.+?)"\s*/>').findall(link_match)[0]
+			except:	img=ps('Hosters.icon.url')+host
+			if (url is not '') and (host is not '') and (url is not None) and (host is not None):
+				deb('url',url); deb('host',host); deb('quality',quality); deb('age',age); deb('img',img); 
+				host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
+				#if (host is not ''):
+				if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
+					contextMenuItems=[]; My_infoLabels['quality']=quality; My_infoLabels['age']=age; My_infoLabels['host']=host
+					pars={'section': section, 'img': _param['img'], 'mode': 'PlayVideo', 'url': url, 'quality': quality, 'age': age, 'infoLabels': My_infoLabels, 'listitem': listitem}
+					pars2=pars; pars2['mode']='Download'; pars2['studio']=My_infoLabels['Studio']; pars2['ShowTitle']=My_infoLabels['ShowTitle']; pars2['Title']=My_infoLabels['Title']
+					contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
+					#contextMenuItems.append(('jDownloader', ps('cMI.jDownloader.addlink.url') % (urllib.quote_plus(url))))
+					pars['mode']='PlayVideo'
+					#_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount); 
+					_addon.add_directory(pars,{'title':name},img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount)
+					count=count+1
+					if (count > MaxNoLinks):
+						set_view('list',addst('links-view')); eod(); return
+		set_view('list',addst('links-view')); eod()
+	else: set_view('list',addst('links-view')); eod(); return
+	### ################################################################
+
+
+def listLinks_old(section, url, showtitle='', showyear=''): ### Menu for Listing Hosters (Host Sites of the actual Videos)
+	WhereAmI('@ the Link List: %s' % url); sources=[]; listitem=xbmcgui.ListItem()
+	if (url==''): return
+	try: html=net.http_GET(url).content
+	except: html=''
+	if (html==''): return
+	try: html=html.encode("ascii", "ignore")
+	except: t=''
+	#if (_debugging==True): print html
+	###( , re.MULTILINE | re.IGNORECASE | re.DOTALL)
+	if  ( section == 'tv'): ## TV Show ## Title (Year) - Info
+		match=re.compile(ps('LLinks.compile.show_episode.info'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0] ### <title>Watch The Walking Dead Online for Free - Prey - S03E14 - 3x14 - SolarMovie</title>
+		if (_debugging==True): print match
+		if (match==None):  return
+		ShowYear=_param['year'] #ShowYear=showyear
+		ShowTitle=match[0].strip(); EpisodeTitle=match[1].strip(); Season=match[2].strip(); Episode=match[3].strip()
+		ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); EpisodeTitle=HTMLParser.HTMLParser().unescape(EpisodeTitle); EpisodeTitle=ParseDescription(EpisodeTitle); EpisodeTitle=EpisodeTitle.encode('ascii', 'ignore'); EpisodeTitle=EpisodeTitle.decode('iso-8859-1')
+		if ('<p id="plot_' in html):
+			ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1')
+		else: ShowPlot=''
+		match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		if (_debugging==True): print match
+		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+'):  '+Season+'x'+Episode+' - '+EpisodeTitle, "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'Season': Season, 'Episode': Episode, 'EpisodeTitle': EpisodeTitle, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
+	else:	#################### Movie ## Title (Year) - Info
+		match=re.compile(ps('LLinks.compile.show.title_year')).findall(html)[0]
+		if (_debugging==True): print match
+		if (match==None): return
+		ShowYear=match[1].strip(); ShowTitle=match[0].strip(); ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1'); match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		if (_debugging==True): print match
+		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+')', "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
+	### Both -Movies- and -TV Shows- ### Hosters
+	###( , re.MULTILINE | re.IGNORECASE | re.DOTALL)
+	match=re.compile(ps('LLinks.compile.hosters'), re.MULTILINE | re.DOTALL).findall(html)
 	if (len(match) > 0):
 		count=1
 		match=sorted(match, key=lambda item: (item[3],item[2],item[1]))
 		ItemCount=len(match) # , total_items=ItemCount
+		#print match
 		for url, host, quality, age in match:
 			host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
-			if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
+			#if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
+			if (host is not ''):
 				img=ps('Hosters.icon.url')+host; My_infoLabels['quality']=quality; My_infoLabels['age']=age; My_infoLabels['host']=host
 				pars={'section': section, 'img': _param['img'], 'mode': 'PlayVideo', 'url': url, 'quality': quality, 'age': age, 'infoLabels': My_infoLabels, 'listitem': listitem}
 				contextMenuItems=[]; 
@@ -1196,6 +1276,15 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		ItemCount=len(iitems) # , total_items=ItemCount
 		#iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
 		for name, item_url, thumbnail, year in iitems:
+			prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
+			#try:		prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
+			#except:	prtItem=''
+			NumOfLinks='?'
+			if (prtItem is not '') and (prtItem is not None):
+				#print prtItem
+				if ('<span class="linkCount">' in prtItem) and ('link' in prtItem):
+					try:		NumOfLinks=re.compile('<span class="linkCount">\s*(\d+)\s*link').findall(prtItem)[0]
+					except:	NumOfLinks='0'
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1') #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
 			try: deb('listItems >> '+section+' >> '+name, item_url)
@@ -1234,6 +1323,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
 			labs['TVShowTitle']=name; labs['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
 			if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],ps('cFL_color3'))+']',ps('cFL_color'))
+			labs['title']+=cFL('  [[I]'+cFL(NumOfLinks,ps('cFL_color3'))+' Links[/I] ]',ps('cFL_color'))
 			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), '' )))
 			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url),'2' )))
 			if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+'  ('+year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
@@ -1945,7 +2035,7 @@ def doSearchNormal (section,title=''):
 	if (title==''):
 		title=showkeyboard(txtMessage=title,txtHeader="Title:  ("+section+")")
 		if (title=='') or (title=='none') or (title==None) or (title==False): return
-	_param['url']=SearchPrefix+title; deb('Searching for',_param['url']); listItems(section, _param['url'], _param['pageno'], addst('pages'), _param['genre'], _param['year'], _param['title'])
+	_param['url']=SearchPrefix+title+'/'; deb('Searching for',_param['url']); listItems(section, _param['url'], _param['pageno'], addst('pages'), _param['genre'], _param['year'], _param['title'])
 
 def doSearchAdvanced (section,title=''):
 	txtHeader='Advanced Search'; options={}; r= -1

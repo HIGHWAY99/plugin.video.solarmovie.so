@@ -96,6 +96,8 @@ def addst(r,s=''): return _addon.get_setting(r)   ## Get Settings
 def addpr(r,s=''): return _addon.queries.get(r,s) ## Get Params
 def cFL(t,c=ps('default_cFL_color')): ### For Coloring Text ###
 	return '[COLOR '+c+']'+t+'[/COLOR]'
+def cFL_(t,c=ps('default_cFL_color')): ### For Coloring Text ###
+	return '[COLOR '+c+']'+t[0:1]+'[/COLOR]'+t[1:]
 ### ############################################################################################################
 ### ############################################################################################################
 url=None; urlbac=None; name=None; name2=None; type2=None; favcmd=None; mode=None; scr=None; imgfan=None; show=None; category=None
