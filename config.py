@@ -150,7 +150,8 @@ def ps(x):
 		,'BrowseByYear.earliestyear': 		1930
 		,'BrowseByYear.range.by': 				-1
 		,'Hosters.icon.url': 							'http://www.google.com/s2/favicons?domain='
-		,'LLinks.compile.hosters': 				'<tr id=.+?href="(.+?)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
+		,'LLinks.compile.hostersA': 			'<tr id=.+?href="(.+?)">(.+?)<.+?class="qualityCell">(.*?)<.+?<td class="ageCell .+?">(.+?)</td>'
+		,'LLinks.compile.hosters': 				'<tr id=.+?href="(.+?)">\n*\s*(.+?)\s*<.+?class="qualityCell">\n*\s*(.*?)\s*<.+?<td class="ageCell .+?">\n*\s*(.+?)\s*</td>'
 		,'LLinks.compile.hosters2': 			'<tr id=.+?href="(/link/show/\d+/)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
 		,'LLinks.compile.imdb.url_id': 		'<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">(\d+)</a>'
 		,'LLinks.compile.show.plot': 			'<p id="plot_\d+">(.+?)</p>'

@@ -1,7 +1,13 @@
+[B]Version 0.2.6[/B]
+### Currently by default this setting's value is set to 9999, which there should hopefully not be any movies and/or episodes that have higher than that.
+- listLinks() - An option in the Settings Window for limiting the number of Host Links displayed.  This is an attempt to speed up the displaying Host Menus which can take a long while when they have a high number like 200 links.
+- listItems() - Movies now show their No. of Links.
+### It also means that the list will be longer, in some cases 130 items even, so its a good thing I don't currently have it slowed down with a urlresolver check.
+### This means some shown host links may not play if they are not supported by urlResolver or are no longer found on the host.
+- listLinks() - Fixes to both speed up and more accurately display as many of the links as possible.
+- listLinks() - Fixes to try to speed up the searching process.
+
 [B]Version 0.2.5[/B]
-- 
-- 
-- 
 ### To see the updated graphic in the Favorites Folder, you currently have to back up a page and re-enter the Favorites Folder that way.
 ### At first I had it set to forward back to the Favorites Folder after changing the fanart (with the updated graphic.  A problem accured when trying to go back from that menu, you'd end up at the update stage, so I did away with the page forward.
 ### I might see about adding this for movies at a later time.
