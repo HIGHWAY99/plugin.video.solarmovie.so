@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.2.6
+### # Version:			#		v0.2.8
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################
@@ -146,7 +146,13 @@ def PlayVideo(url, infoLabels, listitem):
 	except: t=''
 	try: _addon.resolve_url(stream_url)
 	except: t=''
-	play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+	PlayerMethod=addst("core-player")
+	if   (PlayerMethod=='DVDPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_DVDPLAYER
+	elif (PlayerMethod=='MPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_MPLAYER
+	elif (PlayerMethod=='PAPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_PAPLAYER
+	else: PlayerMeth=xbmc.PLAYER_CORE_AUTO
+	play=xbmc.Player(PlayerMeth) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+	#play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
 	try: play.play(stream_url, li); xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=li)
 	except: t=''
 	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True)
@@ -249,7 +255,13 @@ def PlayLibrary(section, url, showtitle='', showyear=''): ### Menu for Listing H
 		##pl.clear()
 		##pl.add(url, liz)
 		##xbmc.Player().play(pl)
-		play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+		PlayerMethod=addst("core-player")
+		if   (PlayerMethod=='DVDPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_DVDPLAYER
+		elif (PlayerMethod=='MPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_MPLAYER
+		elif (PlayerMethod=='PAPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_PAPLAYER
+		else: PlayerMeth=xbmc.PLAYER_CORE_AUTO
+		play=xbmc.Player(PlayerMeth) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+		#play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
 		print url
 		stream_url = urlresolver.HostedMediaFile(url).resolve()
 		print stream_url
@@ -498,7 +510,13 @@ def PlayTrailer(url,_title,_year,_image): ### Not currently used ###
 	liz=xbmcgui.ListItem(_param['showtitle'], iconImage=thumb, thumbnailImage=_image)
 	liz.setInfo( type="Video", infoLabels={ "Title": title, "Studio": _title+'  ('+_year+')' } )
 	liz.setProperty("IsPlayable","true")
-	play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+	PlayerMethod=addst("core-player")
+	if   (PlayerMethod=='DVDPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_DVDPLAYER
+	elif (PlayerMethod=='MPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_MPLAYER
+	elif (PlayerMethod=='PAPLAYER'): PlayerMeth=xbmc.PLAYER_CORE_PAPLAYER
+	else: PlayerMeth=xbmc.PLAYER_CORE_AUTO
+	play=xbmc.Player(PlayerMeth) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+	#play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
 	play.play(url, liz)
 	#liz.setPath(url)
 	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
@@ -875,8 +893,9 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 			if (url is not '') and (host is not '') and (url is not None) and (host is not None):
 				deb('url',url); deb('host',host); deb('quality',quality); deb('age',age); deb('img',img); 
 				host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
-				#if (host is not ''):
-				if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
+				##if (host is not ''):
+				#if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
+				if (len(url) > 0):
 					contextMenuItems=[]; My_infoLabels['quality']=quality; My_infoLabels['age']=age; My_infoLabels['host']=host
 					pars={'section': section, 'img': _param['img'], 'mode': 'PlayVideo', 'url': url, 'quality': quality, 'age': age, 'infoLabels': My_infoLabels, 'listitem': listitem}
 					pars2=pars; pars2['mode']='Download'; pars2['studio']=My_infoLabels['Studio']; pars2['ShowTitle']=My_infoLabels['ShowTitle']; pars2['Title']=My_infoLabels['Title']
@@ -1276,7 +1295,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		ItemCount=len(iitems) # , total_items=ItemCount
 		#iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
 		for name, item_url, thumbnail, year in iitems:
-			prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
+			try: prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
+			except:	prtItem=''
 			#try:		prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
 			#except:	prtItem=''
 			NumOfLinks='?'
@@ -1561,7 +1581,33 @@ def listLatestSearches(section, url):
 			pars={'section': ps('section.movie'), 'mode': 'GetTitles', 'url': path, 'title': name }
 			_addon.add_directory(pars, labs, img=_art150, fanart=_artFanart, total_items=ItemCount)
 	set_view('list',addst('default-view')); eod()
-	
+
+def XBMCHUB__About():
+	WhereAmI('@ SolarMovie.so:  About XBMCHUB'); 
+	HeaderMessage='[COLOR cornflowerblue]#XBMCHUB @ irc.Freenode.net[/COLOR]'
+	message ='[B]'+cFL('#XBMCHUB',ps('cFL_color'))+' @ '+cFL('irc.Freenode.net',ps('cFL_color'))+'[/B][CR][CR]'
+	message+='Feel Free to come visit us'
+	message+=''
+	message+='[CR]'+cFL('Url:  ','yellow')+cFL('http://www.xbmchub.com','orange')
+	message+='[CR]'+cFL('Forum:  ','yellow')+cFL('http://www.xbmchub.com/forums/','orange')
+	message+='[CR]'+cFL('Fusion:  ','yellow')+cFL('http://www.xbmchub.com/fusion/','orange')
+	message+='[CR]'+cFL('Fusion (old):  ','yellow')+cFL('http://fusion.xbmchub.com/','orange')
+	message+='[CR]'+cFL('IRC Chat - Channel:  ','yellow')+cFL('#XBMCHUB','blue')
+	message+='[CR]'+cFL('IRC Chat - Server:  ','yellow')+cFL('irc.freenode.net','orange')
+	message+='[CR]'+cFL('IRC Chat - WebApp:  ','yellow')+cFL('http://webchat.freenode.net/?channels=xbmchub&uio=d4','orange')
+	message+='[CR]'+cFL('IRC Chat - Regular Idlers:  ','yellow')+cFL(cFL('TwiztedZero','green')+' | '+cFL('HIGHWAY99','tan'),'orange')
+	message+=''
+	message+=''
+	message+=''
+	message+=''
+	message+=''
+	message+='[CR][CR][CR][CR][CR][CR]'+'My Refferal Code:  '+cFL('http://www.xbmchub.com/forums/register.php?referrerid=15468','orange')+'  [CR]Please use it to register if you don\'t have an account.  It not\'s not much but it can help me out.  '
+	message+='[CR][CR][CR]'+cFL('Thank you for taking the time to read this.',ps('cFL_color3'))
+	message=cFL(message,ps('cFL_color5'))
+	print message
+	TextBox2().load_string(message,HeaderMessage)
+	#eod()
+
 def Site__PrivacyPolicy():
 	WhereAmI('@ SolarMovie.so:  Privacy Policy -- url: %s' % 'http://www.solarmovie.so/privacy-policy.html'); 
 	HeaderMessage='[COLOR cornflowerblue]Privacy Policy[/COLOR]'
@@ -1636,12 +1682,30 @@ def News_LatestThreads(url,headermessage):
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	ThreadSection=html
 	deb('html length',str(len(html)))
-	try: ThreadSection=ThreadSection.split('<h3>Latest Threads</h3>')[1]
-	except: t=''
-	try: ThreadSection=ThreadSection.split('<div id="footer">')[0]
-	except: t=''
-	try: ThreadSection=ThreadSection.split('<iframe')[0]
-	except: t=''
+	#ThreadSection=spAfterSplit(ThreadSection,'')
+	#ThreadSection=spBeforeSplit(ThreadSection,'')
+	ThreadSection=spAfterSplit(ThreadSection,'<h3>Latest Comments</h3>')
+	ThreadSection=spBeforeSplit(ThreadSection,'</iframe>')
+	ThreadSection=spBeforeSplit(ThreadSection,'<iframe id="facebookIframe"')
+	#ThreadSection=spBeforeSplit(ThreadSection,'')
+	#ThreadSection=spBeforeSplit(ThreadSection,'')
+	
+	#try: ThreadSection=ThreadSection.split('<h3>Latest Threads</h3>')[1]
+	#except: t=''
+	#try: ThreadSection=ThreadSection.split('<div id="footer">')[0]
+	#except: t=''
+	#try: ThreadSection=ThreadSection.split('<iframe')[0]
+	#except: t=''
+	#ThreadSection=ThreadSection.replace('','').strip()
+	ThreadSection=ThreadSection.replace('<!-- span class="js-comment-text commentPreviewBody">','[CR]').strip()
+	ThreadSection=ThreadSection.replace('<div class="js-comment commentPreview oddComment','[CR]').strip()
+	ThreadSection=ThreadSection.replace('<div class="js-comment commentPreview">','[CR]').strip()
+	ThreadSection=ThreadSection.replace('</span -->','[CR]').strip()
+	ThreadSection=ThreadSection.replace(' ">','[CR][CR]').strip()
+	ThreadSection=ThreadSection.replace('[CR]">','[CR][CR]').strip()
+	ThreadSection=ThreadSection.replace('','').strip()
+	ThreadSection=ThreadSection.replace('','').strip()
+	
 	ThreadSection=ThreadSection.replace('<div class="commentPreview ">','').strip()
 	ThreadSection=ThreadSection.replace('<a href="/tv/','[COLOR black] ').strip()
 	ThreadSection=ThreadSection.replace('<a href="/watch-','[COLOR black] ').strip()
@@ -1679,10 +1743,11 @@ def News_LatestThreads(url,headermessage):
 	ThreadSection=ThreadSection.replace(' [COLOR '+ps('cFL_color6')+']',' [CR][COLOR '+ps('cFL_color6')+']').strip()
 	ThreadSection=ThreadSection.replace('[COLOR '+ps('cFL_color')+'] ','[COLOR '+ps('cFL_color')+']').strip()
 	#ThreadSection=ThreadSection.replace(' [COLOR '+ps('cFL_color')+']',' [CR][CR][COLOR '+ps('cFL_color')+']').strip()
-	#ThreadSection=ThreadSection.replace('','').strip()
+	ThreadSection=ThreadSection.replace(') [COLOR yellow]',')[/COLOR] [COLOR yellow]').strip()
 	#ThreadSection=ThreadSection.replace('','').strip()
 	#ThreadSection=ThreadSection.replace('','').strip()
 	_addon.resolve_url(url)
+	debob(ThreadSection)
 	TextBox2().load_string(ThreadSection,headermessage)
 	#_addon.resolve_url(url)
 	######
@@ -1862,9 +1927,10 @@ def Menu_MainMenu(): #The Main Menu
 	_addon.add_directory({'mode': 'TextBoxFile',  'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': ps('changelog.local')}, 	{'title': cFL('L',ps('cFL_color'))+'ocal Change Log'},					img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': ps('changelog.url')}, 		{'title': cFL('L',ps('cFL_color'))+'atest Online Change Log'},	img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': ps('news.url')}, 				{'title': cFL('L',ps('cFL_color'))+'atest Online News'},				img=_art404										, is_folder=False ,fanart=_artFanart)
-	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Threads[/COLOR]", 'url': ps('LatestThreads.url')}, 											{'title': cFL('L',ps('cFL_color'))+'atest Threads'},						img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Comments[/COLOR]", 'url': ps('LatestThreads.url')}, 											{'title': cFL('L',ps('cFL_color'))+'atest Comments'},						img=_art404										, is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'PrivacyPolicy','title': "", 'url': ''}, 																																												{'title': cFL('P',ps('cFL_color'))+'rivacy Policy'},						img=_art404										, is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TermsOfService','title': "", 'url': ''}, 																																											{'title': cFL('T',ps('cFL_color'))+'erms of Service'},					img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'XBMCHUBAbout','title': "", 'url': ''}, 																																												{'title': cFL('#',ps('cFL_color'))+'XBMCHUB @ irc.Freenode.net'},					img='http://s9.postimg.org/uy7tu92jz/1013960_471938356223940_1093377719_n.jpg', is_folder=False ,fanart='http://s9.postimg.org/6izlt73n3/1011445_473021149448994_84427075_n.jpg')
 	### ############ 
 	set_view('list',addst('default-view')); eod()
 	### ############ 
@@ -2183,6 +2249,7 @@ def check_mode(mode=''):
 	#elif (mode=='UsersShowWatchList'): 		UsersShowWatchList(_param['section'],_param['url'])
 	elif (mode=='UsersShowUploads'): 			UsersShowUploads(_param['section'],_param['url'])
 	elif (mode=='PrivacyPolicy'): 				Site__PrivacyPolicy()
+	elif (mode=='XBMCHUBAbout'): 					XBMCHUB__About()
 	elif (mode=='TermsOfService'): 				Site__TermsOfService()
 	elif (mode=='GetLatestSearches'): 		listLatestSearches(_param['section'],_param['url'])
 	elif (mode=='UsersShowProfileAccountInfo'): UsersShowPersonInfo(mode, _param['section'],_param['url'])

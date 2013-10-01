@@ -7,9 +7,13 @@
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
-__plugin__	=	"[COLOR grey][COLOR goldenrod]S[/COLOR]olar[COLOR yellow]M[/COLOR]ovie.so[/COLOR]"
-__authors__	=	"The Highway"
-plugin_id		=	"plugin.video.solarmovie.so"
+from config 			import *
+__plugin__	=	ps('__plugin__')
+__authors__	=	ps('__authors__')
+plugin_id		=	ps('_plugin_id')
+#__plugin__	=	"[COLOR grey][COLOR goldenrod]S[/COLOR]olar[COLOR yellow]M[/COLOR]ovie.so[/COLOR]"
+#__authors__	=	"The Highway"
+#plugin_id		=	"plugin.video.solarmovie.so"
 ### ############################################################################################################
 ### ############################################################################################################
 import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
@@ -26,7 +30,7 @@ cache = StorageServer.StorageServer(plugin_id)
 #import SimpleDownloader as downloader
 from t0mm0.common.net import Net as net
 from t0mm0.common.addon import Addon
-from config 			import *
+#from config 			import *
 ### ############################################################################################################
 ### ############################################################################################################
 ### ### Common Imports ### 
@@ -1665,14 +1669,52 @@ def twitter_timeline(person):
 	#
 
 
+### ############################################################################################################
+### ############################################################################################################
+### XBMC Functions
+def getContainerFolderPath(): 	return xbmc.getInfoLabel('Container.FolderPath')
+def getListItemPath(): 					return xbmc.getInfoLabel('ListItem.Path')
+def getCurrentWindow(): 				return xbmc.getInfoLabel('System.CurrentWindow')
+def getCurrentControl(): 				return xbmc.getInfoLabel('System.CurrentControl')
+def getCurrentWindowXmlFile(): 	return xbmc.getInfoLabel('Window.Property(xmlfile)')
+### Dialog Functions
+def BusyAnimationShow(): 				xbmc.executebuiltin('ActivateWindow(busydialog)')
+def BusyAnimationHide(): 				xbmc.executebuiltin('Dialog.Close(busydialog,true)')
+def closeAllDialogs():   				xbmc.executebuiltin('Dialog.Close(all, true)') 
+def BrowseForImage(title,ext='.jpg|.png|.gif|.jpeg'):
+	dialog=xbmcgui.Dialog(); image=dialog.browse(1,title,'pictures',ext,True); return image
+### File Functions
+def isPath(path): return os.path.exists(path)
+def isFile(filename): return os.path.isfile(filename)
+def getFileExtension(filename):
+	ext_pos = filename.rfind('.')
+	if ext_pos != -1: return filename[ext_pos+1:]
+	else: return ''
+def get_immediate_subdirectories(directory):
+	return [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
+def findInSubdirectory(filename, subdirectory=''):
+	if subdirectory: path = subdirectory
+	else: path = os.getcwd()
+	for root, _, names in os.walk(path):
+		if filename in names: return os.path.join(root, filename)
+	raise 'File not found'
+#def clearDirectory(path):
+#	try:
+#		for root, _, files in os.walk(path , topdown = False):
+#			for name in files: os.remove(os.path.join(root, name))
+#	except: return False
+#	return True
 
+def spAfterSplit(t,ss):
+	if ss in t: t=t.split(ss)[1]
+	return t
+def spBeforeSplit(t,ss):
+	if ss in t: t=t.split(ss)[0]
+	return t
 
 
 ### ############################################################################################################
 ### ############################################################################################################
-
-
-
 
 
 
