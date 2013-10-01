@@ -1,5 +1,6 @@
 <settings>
 	<category label="General">
+		<setting visible="true" id="core-player" type="labelenum" label="Player Core" values="AUTO|DVDPLAYER|MPLAYER|PAPLAYER"             default="AUTO"/>
 		<setting id="pages"    type="labelenum" label="Number of Pages" values="1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|25|30|35|40|45|50|55|60|70|80|90|99|100"             default="1"/>
 		<setting id="linksmaxshown" type="labelenum" label="Number of Links (Host Menu)" values="1|2|3|4|5|10|15|20|25|30|35|40|45|50|55|60|70|80|90|99|100|150|200|250|300|350|400|450|500|550|600|700|800|900|1000|1500|2000|3000|9000|9999"             default="9999"/>
 		<setting id="enableMeta" 		type="bool" label="30203" default="false" visible="false"/>
@@ -11,17 +12,17 @@
 		<setting type="text" default=""  id="fav.movies.1.name" label="Favorites 1: Name" />
 		<setting type="text" default="2" id="fav.movies.2.name" label="Favorites 2: Name" />
 		<setting id="movies-favorites-clear-enable" type="bool"   label="  \/  ( Dummy Proofing )" default="false"/>
-		<setting label="Clear Favorites"   type="action" 	enable="!eq(-1,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=movies&subfav=)"/>
-		<setting label="Clear Favorites 2" type="action" 	enable="!eq(-2,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=movies&subfav=2)"/>
+		<setting label="Clear Favorites"   type="action" 	enable="!eq(-1,false)" action="RunPlugin(plugin://plugin.video.solarmovie.so/default.py?mode=FavoritesEmpty&secction=movies&subfav=)"/>
+		<setting label="Clear Favorites 2" type="action" 	enable="!eq(-2,false)" action="RunPlugin(plugin://plugin.video.solarmovie.so/default.py?mode=FavoritesEmpty&secction=movies&subfav=2)"/>
 	</category>
 	<category label="TV">
 		<setting type="text" default=""  id="fav.tv.1.name" label="Favorites 1: Name" />
 		<setting type="text" default="2" id="fav.tv.2.name" label="Favorites 2: Name" />
 		<setting type="text" default="3" id="fav.tv.3.name" label="Favorites 3: Name" />
 		<setting id="tv-favorites-clear-enable" type="bool"   		label="  \/  ( Dummy Proofing )" default="false"/>
-		<setting label="Clear Favorites"   type="action" 	enable="!eq(-1,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=)"/>
-		<setting label="Clear Favorites 2" type="action" 	enable="!eq(-2,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=2)"/>
-		<setting label="Clear Favorites 3" type="action" 	enable="!eq(-3,false)" action="RunPlugin(plugin://plugin.video.theanimehighway/theanimehighway.py?mode=FavoritesEmpty&secction=tv&subfav=3)"/>
+		<setting label="Clear Favorites"   type="action" 	enable="!eq(-1,false)" action="RunPlugin(plugin://plugin.video.solarmovie.so/default.py?mode=FavoritesEmpty&secction=tv&subfav=)"/>
+		<setting label="Clear Favorites 2" type="action" 	enable="!eq(-2,false)" action="RunPlugin(plugin://plugin.video.solarmovie.so/default.py?mode=FavoritesEmpty&secction=tv&subfav=2)"/>
+		<setting label="Clear Favorites 3" type="action" 	enable="!eq(-3,false)" action="RunPlugin(plugin://plugin.video.solarmovie.so/default.py?mode=FavoritesEmpty&secction=tv&subfav=3)"/>
 		<setting id="tv-zerolinks-show" type="bool"   		label="Show Episodes with 0 (Zero) Links" default="true"/>
 	</category>
 	<category label="Auto-View">
