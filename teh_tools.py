@@ -29,7 +29,9 @@ except: import storageserverdummy as StorageServer
 cache = StorageServer.StorageServer(plugin_id)
 #import SimpleDownloader as downloader
 from t0mm0.common.net import Net as net
+from t0mm0.common.net import Net
 from t0mm0.common.addon import Addon
+net_=Net();
 #from config 			import *
 ### ############################################################################################################
 ### ############################################################################################################
@@ -1716,6 +1718,27 @@ def spBeforeSplit(t,ss):
 ### ############################################################################################################
 ### ############################################################################################################
 
+def nURL(url,method='get',form_data={},headers={},html='',proxy='',User_Agent='',cookie_file='',load_cookie=False,save_cookie=False):
+	if url=='': return ''
+	dhtml=''+html
+	if len(User_Agent) > 0: net_.set_user_agent(User_Agent)
+	else: net_.set_user_agent(ps('User-Agent'))
+	if len(proxy) > 9: net_.set_proxy(proxy)
+	if (len(cookie_file) > 0) and (load_cookie==True): net_.set_cookies(cookie_file)
+	if   method.lower()=='get':
+		try: html=net_.http_GET(url,headers=headers).content
+		except: html=dhtml
+	elif method.lower()=='post':
+		#try: 
+		html=net_.http_POST(url,form_data=form_data,headers=headers).content #,compression=False
+		#except: html=dhtml
+	elif method.lower()=='head':
+		try: html=net_.http_HEAD(url,headers=headers).content
+		except: html=dhtml
+	if (len(html) > 0) and (len(cookie_file) > 0) and (save_cookie==True): net_.save_cookies(cookie_file)
+	#
+	
+	return html
 
 
 ### ############################################################################################################

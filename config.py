@@ -38,6 +38,8 @@ def ps(x):
 		,'cFL_color4': 					'grey'
 		,'cFL_color5': 					'white'
 		,'cFL_color6': 					'blanchedalmond'
+		,'cFL_color7': 					'gainsboro'
+		,'cFL_color8': 					'mediumvioletred'
 		,'default_section': 		'movies'
 		,'section.wallpaper':		'wallpapers'
 		,'section.movie': 			'movies'
@@ -177,6 +179,7 @@ def ps(x):
 		,'AdvSearch.tags.6': 		'year_to'
 		,'AdvSearch.tags.7': 		'genre'
 		,'AdvSearch.tags.8': 		''
+		,'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 ##		,'LLinks.compile.': 							
 #		,'': 		''
 #		,'': 
