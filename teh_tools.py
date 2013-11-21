@@ -27,10 +27,16 @@ except ImportError: import simplejson as json
 try: import StorageServer
 except: import storageserverdummy as StorageServer
 cache = StorageServer.StorageServer(plugin_id)
-#import SimpleDownloader as downloader
-from t0mm0.common.net import Net as net
-from t0mm0.common.net import Net
-from t0mm0.common.addon import Addon
+#from t0mm0.common.net import Net as net
+#from t0mm0.common.net import Net
+#from t0mm0.common.addon import Addon
+try: 		from t0mm0.common.addon 				import Addon
+except: from t0mm0_common_addon 				import Addon
+try: 		from t0mm0.common.net 					import Net
+except: from t0mm0_common_net 					import Net
+try: 		from t0mm0.common.net 					import Net as net
+except: from t0mm0_common_net 					import Net as net
+
 net_=Net();
 #from config 			import *
 ### ############################################################################################################
