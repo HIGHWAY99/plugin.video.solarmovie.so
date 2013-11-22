@@ -1,5 +1,16 @@
 
 
+[COLOR grey][Date: 2013.11.22][/COLOR][COLOR black][Post: 2][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.3.2
+
+[COLOR grey][Date: 2013.11.22][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR red][B]News:[/B][/COLOR]  Many Updates Lately.
+### Custom Domain Setting(s) due to recent ongoing changes.
+### Ongoing Fixes due to Site Changes.
+### Search [API] method(s).
+### nURL() function.
+### Check the changelog for more informatoin.
+
 [COLOR grey][Date: 2013.08.28][/COLOR][COLOR black][Post: 3][/COLOR]
 [COLOR cornflowerblue][B]Private Build:[/B][/COLOR]  v0.2.7
 

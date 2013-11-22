@@ -20,17 +20,24 @@ import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
 try: import requests ### <import addon="script.module.requests" version="1.1.0"/> ### 
 except: t=''				 ### See https://github.com/kennethreitz/requests ### 
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
-import urlresolver
+try: import urlresolver
+except: print "Failed to import urlresolver."; pass
 import copy
 try: import json
 except ImportError: import simplejson as json
 try: import StorageServer
 except: import storageserverdummy as StorageServer
 cache = StorageServer.StorageServer(plugin_id)
-#import SimpleDownloader as downloader
-from t0mm0.common.net import Net as net
-from t0mm0.common.net import Net
-from t0mm0.common.addon import Addon
+#from t0mm0.common.net import Net as net
+#from t0mm0.common.net import Net
+#from t0mm0.common.addon import Addon
+try: 		from t0mm0.common.addon 				import Addon
+except: from t0mm0_common_addon 				import Addon
+try: 		from t0mm0.common.net 					import Net
+except: from t0mm0_common_net 					import Net
+try: 		from t0mm0.common.net 					import Net as net
+except: from t0mm0_common_net 					import Net as net
+
 net_=Net();
 #from config 			import *
 ### ############################################################################################################
