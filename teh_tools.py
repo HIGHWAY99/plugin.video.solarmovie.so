@@ -20,7 +20,8 @@ import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
 try: import requests ### <import addon="script.module.requests" version="1.1.0"/> ### 
 except: t=''				 ### See https://github.com/kennethreitz/requests ### 
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
-import urlresolver
+try: import urlresolver
+except: print "Failed to import urlresolver."; pass
 import copy
 try: import json
 except ImportError: import simplejson as json

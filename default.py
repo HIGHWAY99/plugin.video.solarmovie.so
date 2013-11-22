@@ -2,8 +2,8 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.1
-### # Description: 	#		http://www.solarmovie.so
+### # Version:			#		v0.3.2
+### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
@@ -16,7 +16,7 @@ except: t=''				 ### See https://github.com/kennethreitz/requests ###
 
 import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
 try: import urlresolver
-except: pass
+except: print "Failed to import urlresolver."; pass
 import copy
 ###
 #import cookielib
@@ -33,9 +33,13 @@ except: from t0mm0_common_addon 				import Addon
 try: 		from t0mm0.common.net 					import Net
 except: from t0mm0_common_net 					import Net
 try: 		from sqlite3 										import dbapi2 as sqlite; print "Loading sqlite3 as DB engine"
-except: from pysqlite2 									import dbapi2 as sqlite; print "Loading pysqlite2 as DB engine"
+except: 
+	try: from pysqlite2 									import dbapi2 as sqlite; print "Loading pysqlite2 as DB engine"
+	except: print "Failed to import a Method for SQL Usage."; pass
 try: 		from script.module.metahandler 	import metahandlers
-except: from metahandler 								import metahandlers
+except: 
+	try: from metahandler 								import metahandlers
+	except: print "Failed to import MetaHandler"; pass
 ### 
 from teh_tools 		import *
 from config 			import *
@@ -47,6 +51,9 @@ __plugin__=ps('__plugin__'); __authors__=ps('__authors__'); __credits__=ps('__cr
 _database_file=os.path.join(xbmc.translatePath("special://database"),ps('_database_name')+'.db'); 
 ### 
 _addon=Addon(ps('_addon_id'), sys.argv); addon=_addon; _plugin=xbmcaddon.Addon(id=ps('_addon_id')); cache=StorageServer.StorageServer(ps('_addon_id'))
+### 
+if (tfalse(addst("enableDomain"))==True) and (len(addst("customDomain")) > 10):
+	_domain_url=addst("customDomain")
 ### ############################################################################################################
 ### ############################################################################################################
 ### ############################################################################################################
@@ -69,9 +76,9 @@ CurrentPercent=0; CancelDownload=False
 
 ##### /\ ##### Settings #####
 ##### Variables #####
-_art404='http://www.solarmovie.so/images/404.png' #_art404=art('404')
-_art150='http://www.solarmovie.so/images/thumb150.png' #_art150=art('thumb150')
-_artDead='http://www.solarmovie.so/images/deadplanet.png' #_artDead=art('deadplanet')
+_art404=_domain_url+'/images/404.png' #_art404=art('404')
+_art150=_domain_url+'/images/thumb150.png' #_art150=art('thumb150')
+_artDead=_domain_url+'/images/deadplanet.png' #_artDead=art('deadplanet')
 _artSun=art('sun'); COUNTRIES=ps('COUNTRIES'); GENRES=ps('GENRES'); _default_section_=ps('default_section'); net=Net(); DB=_database_file; BASE_URL=_domain_url;
 #_artFanart=xbmc.translatePath(os.path.join(_addonPath,'fanart5.jpg'))
 ##### /\ ##### Variables #####
@@ -211,7 +218,7 @@ def PlayLibrary(section, url, showtitle='', showyear=''): ### Menu for Listing H
 		if (rt==None) or (rt=='none') or (rt==False) or (rt==''): return
 		hItem=hList[rt]
 		deb('ID',hItem[4])
-		urlB='%s/link/play/%s/' % (ps('_domain_url'),hItem[4])
+		urlB='%s/link/play/%s/' % (_domain_url,hItem[4])
 		html=net.http_GET(urlB).content
 		try: url=re.compile('<iframe.+?src="(.+?)"', re.MULTILINE | re.DOTALL | re.IGNORECASE).findall(html)[0]
 		except: url=''
@@ -543,7 +550,7 @@ def remove_accents(input_str): ### Not even sure rather this one works or not.
 def Trailers_Genres(section, url):
 	WhereAmI('@ the Genre Menu for Trailers')#print 'Browse by genres screen'
 	browsebyImg=checkImgLocal(art('genre','.jpg'))
-	pathA='http://www.solarmovie.so/coming-soon/'; pathC=''#'/#coming-soon'
+	pathA=_domain_url+'/coming-soon/'; pathC=''#'/#coming-soon'
 	if ('popularity' in url):	pathB='popularity/'
 	elif ('date' in url):			pathB='date/'
 	else: eod(); return
@@ -1792,7 +1799,7 @@ def UsersShowUploads(section, url):
 	set_view('videos',addst('default-view')); eod()
 
 def listLatestSearches(section, url):
-	url='http://www.solarmovie.so/'; WhereAmI('@ List:  Latest Searches -- url: %s' % url)
+	url=_domain_url+'/'; WhereAmI('@ List:  Latest Searches -- url: %s' % url)
 	html=net.http_GET(url).content; html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False); deb('html length',str(len(html)))
 	s='<li>[\n]\s+<a href="(/(movie|tv)/search/.+?/)">[\n]\s+(.+?)</a>[\n]\s+</li>' #'<a href="(.+?)">\n\s+(.+?) (\(\d\d\d\d\))</a>'
 	matches=re.compile(s).findall(html)
@@ -2088,15 +2095,15 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 	### ###################################################################################################################################################################################################################################
 	### ###################################################################################################################################################################################################################################
 	if  ( section == ps('section.trailers')): ## Trailers #################################################################################################################################################################################
-		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/date/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'},fanart=_artFanart,img=art('genre','.jpg'))
-		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': 'http://www.solarmovie.so/coming-soon/popularity/' },	 	{'title':  cFL('G',ps('cFL_color'))+'enre By Popularity'}, 	fanart=_artFanart,img=art('genre','.jpg'))
+		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': _domain_url+'/coming-soon/date/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'},fanart=_artFanart,img=art('genre','.jpg'))
+		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': _domain_url+'/coming-soon/popularity/' },	 	{'title':  cFL('G',ps('cFL_color'))+'enre By Popularity'}, 	fanart=_artFanart,img=art('genre','.jpg'))
 	#elif  ( section == ps('sectoin.trailers.popular')): ###### Trailers Popular #############################################################################################################################################################
 	#elif  ( section == ps('sectoin.trailers.releasedate')): ## Trailers Release Date ########################################################################################################################################################
 	elif  ( section == ps('section.users')): ## Users #######################################################################################################################################################################################
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/moderator/' },	 				{'title':  cFL('M',ps('cFL_color'))+'oderators'}, 	fanart=_artFanart,img=ps('img.usersection'))
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('L',ps('cFL_color'))+'inkers'}, 			fanart=_artFanart,img=ps('img.usersection'))
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'ploaders'}, 		fanart=_artFanart,img=ps('img.usersection'))
-		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': 'http://www.solarmovie.so/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'sers'}, 				fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': _domain_url+'/ratings/moderator/' },	 				{'title':  cFL('M',ps('cFL_color'))+'oderators'}, 	fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': _domain_url+'/ratings/linker/' },	 						{'title':  cFL('L',ps('cFL_color'))+'inkers'}, 			fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': _domain_url+'/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'ploaders'}, 		fanart=_artFanart,img=ps('img.usersection'))
+		_addon.add_directory({'section': section, 'mode': 'listUsers', 'url': _domain_url+'/ratings/linker/' },	 						{'title':  cFL('U',ps('cFL_color'))+'sers'}, 				fanart=_artFanart,img=ps('img.usersection'))
 	elif  ( section == ps('section.tv')): ######## TV Shows #################################################################################################################################################################################
 		#
 		_addon.add_directory({'section': section, 'mode': 'ApiSearch', 				'pageno': '1', 'pagecount': addst('pages')},			{'title':  cFL('S',ps('cFL_color'))+'earch  [API]'}, 						fanart=_artFanart,img=art('icon-search'))
