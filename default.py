@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.0
+### # Version:			#		v0.3.1
 ### # Description: 	#		http://www.solarmovie.so
 ###	#	
 ### ############################################################################################################

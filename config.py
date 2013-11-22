@@ -157,7 +157,7 @@ def ps(x):
 		,'LLinks.compile.hosters2': 			'<tr id=.+?href="(/link/show/\d+/)">(.+?)<.+?class="qualityCell">(.+?)<.+?<td class="ageCell .+?">(.+?)</td>'
 		,'LLinks.compile.imdb.url_id': 		'<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">(\d+)</a>'
 		,'LLinks.compile.show.plot': 			'<p id="plot_\d+">(.+?)</p>'
-		,'LLinks.compile.show.title_year': '<title>Watch Full (.+?) \((.+?)\) .+?</title>'
+		,'LLinks.compile.show.title_year': '<title>Watch Full (.+?) \((\d\d\d\d)\).+?</title>'
 		,'LLinks.compile.show_episode.info': '<title>Watch (.+?) Online for Free - (.+?) - .+? - (\d+)x(\d+) - SolarMovie</title>'
 		,'AdvSearch.menu.0': 		'0.) Do Search >>'
 		,'AdvSearch.menu.1': 		'1.) Title       '
