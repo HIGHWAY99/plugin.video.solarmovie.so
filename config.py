@@ -10,7 +10,11 @@
 ### Imports ###
 import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
 import re,os,sys,string,StringIO,logging,random,array,time,datetime
-from t0mm0.common.addon import Addon
+#from t0mm0.common.addon import Addon
+try: 			from addon.common.addon 				import Addon
+except: 
+	try: 		from t0mm0.common.addon 				import Addon
+	except: from t0mm0_common_addon 				import Addon
 
 ### ############################################################################################################
 ### ############################################################################################################

@@ -31,12 +31,25 @@ cache = StorageServer.StorageServer(plugin_id)
 #from t0mm0.common.net import Net as net
 #from t0mm0.common.net import Net
 #from t0mm0.common.addon import Addon
-try: 		from t0mm0.common.addon 				import Addon
-except: from t0mm0_common_addon 				import Addon
-try: 		from t0mm0.common.net 					import Net
-except: from t0mm0_common_net 					import Net
-try: 		from t0mm0.common.net 					import Net as net
-except: from t0mm0_common_net 					import Net as net
+#try: 		from t0mm0.common.addon 				import Addon
+#except: from t0mm0_common_addon 				import Addon
+#try: 		from t0mm0.common.net 					import Net
+#except: from t0mm0_common_net 					import Net
+#try: 		from t0mm0.common.net 					import Net as net
+#except: from t0mm0_common_net 					import Net as net
+try: 			from addon.common.addon 				import Addon
+except: 
+	try: 		from t0mm0.common.addon 				import Addon
+	except: from t0mm0_common_addon 				import Addon
+try: 			from addon.common.net 					import Net
+except: 
+	try: 		from t0mm0.common.net 					import Net
+	except: from t0mm0_common_net 					import Net
+try: 			from addon.common.net 					import Net as net
+except: 
+	try: 		from t0mm0.common.net 					import Net as net
+	except: from t0mm0_common_net 					import Net as net
+
 
 net_=Net();
 #from config 			import *

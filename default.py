@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.2
+### # Version:			#		v0.3.3
 ### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk
 ###	#	
 ### ############################################################################################################
@@ -28,10 +28,14 @@ import copy
 import HTMLParser, htmlentitydefs
 try: 		import StorageServer
 except: import storageserverdummy as StorageServer
-try: 		from t0mm0.common.addon 				import Addon
-except: from t0mm0_common_addon 				import Addon
-try: 		from t0mm0.common.net 					import Net
-except: from t0mm0_common_net 					import Net
+try: 			from addon.common.addon 				import Addon
+except: 
+	try: 		from t0mm0.common.addon 				import Addon
+	except: from t0mm0_common_addon 				import Addon
+try: 			from addon.common.net 					import Net
+except: 
+	try: 		from t0mm0.common.net 					import Net
+	except: from t0mm0_common_net 					import Net
 try: 		from sqlite3 										import dbapi2 as sqlite; print "Loading sqlite3 as DB engine"
 except: 
 	try: from pysqlite2 									import dbapi2 as sqlite; print "Loading pysqlite2 as DB engine"
@@ -117,6 +121,8 @@ _param['subfav']=addpr('subfav',''); _param['episodetitle']=addpr('episodetitle'
 ### ############################################################################################################
 ### ############################################################################################################
 def initDatabase():
+	return
+	#
 	print "Building solarmovie Database"
 	if ( not os.path.isdir( os.path.dirname(_database_file) ) ): os.makedirs( os.path.dirname( _database_file ) )
 	db=sqlite.connect(_database_file); cursor=db.cursor()
@@ -872,10 +878,20 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 		if (_debugging==True): print match
 		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+'):  '+Season+'x'+Episode+' - '+EpisodeTitle, "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'Season': Season, 'Episode': Episode, 'EpisodeTitle': EpisodeTitle, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	else:	#################### Movie ## Title (Year) - Info
-		match=re.compile(ps('LLinks.compile.show.title_year')).findall(html)[0]
+		try: match=re.compile(ps('LLinks.compile.show.title_year')).findall(html)[0]
+		except: match=''
 		if (_debugging==True): print match
 		if (match==None): return
-		ShowYear=match[1].strip(); ShowTitle=match[0].strip(); ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1'); match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		try: ShowYear=match[1].strip(); 
+		except: ShowYear=showyear
+		try: ShowTitle=match[0].strip(); 
+		except: ShowTitle=showtitle.strip(); 
+		ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); 
+		try: ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1'); 
+		except: ShowPlot=''
+		#try: 
+		match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		#except: match=''
 		if (_debugging==True): print match
 		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+')', "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	### Both -Movies- and -TV Shows- ### Hosters
