@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.3
+### # Version:			#		v0.3.5
 ### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk
 ###	#	
 ### ############################################################################################################
@@ -559,7 +559,8 @@ def Trailers_Genres(section, url):
 	pathA=_domain_url+'/coming-soon/'; pathC=''#'/#coming-soon'
 	if ('popularity' in url):	pathB='popularity/'
 	elif ('date' in url):			pathB='date/'
-	else: eod(); return
+	else: pathB=''
+	#else: eod(); return
 	TrailersGNERES=ps('Trailers.GENRES')
 	ItemCount=len(TrailersGNERES) # , total_items=ItemCount
 	for genre in TrailersGNERES:
@@ -874,9 +875,12 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 		if ('<p id="plot_' in html):
 			ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1')
 		else: ShowPlot=''
-		match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		try: match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		except: match=''
 		if (_debugging==True): print match
-		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+'):  '+Season+'x'+Episode+' - '+EpisodeTitle, "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'Season': Season, 'Episode': Episode, 'EpisodeTitle': EpisodeTitle, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
+		if len(match) > 0: (IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); 
+		else: IMDbURL=''; IMDbID=''
+		My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+'):  '+Season+'x'+Episode+' - '+EpisodeTitle, "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'Season': Season, 'Episode': Episode, 'EpisodeTitle': EpisodeTitle, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	else:	#################### Movie ## Title (Year) - Info
 		try: match=re.compile(ps('LLinks.compile.show.title_year')).findall(html)[0]
 		except: match=''
@@ -889,11 +893,12 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 		ShowTitle=HTMLParser.HTMLParser().unescape(ShowTitle); ShowTitle=ParseDescription(ShowTitle); ShowTitle=ShowTitle.encode('ascii', 'ignore'); ShowTitle=ShowTitle.decode('iso-8859-1'); 
 		try: ShowPlot=(re.compile(ps('LLinks.compile.show.plot'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]).strip(); ShowPlot=HTMLParser.HTMLParser().unescape(ShowPlot); ShowPlot=ParseDescription(ShowPlot); ShowPlot=ShowPlot.encode('ascii', 'ignore'); ShowPlot=ShowPlot.decode('iso-8859-1'); 
 		except: ShowPlot=''
-		#try: 
-		match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
-		#except: match=''
+		try: match=re.compile(ps('LLinks.compile.imdb.url_id'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)[0]
+		except: match=''
 		if (_debugging==True): print match
-		(IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+')', "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
+		if len(match) > 0: (IMDbURL,IMDbID)=match; IMDbURL=IMDbURL.strip(); IMDbID=IMDbID.strip(); 
+		else: IMDbURL=''; IMDbID=''
+		My_infoLabels={ "Studio": ShowTitle+'  ('+ShowYear+')', "Title": ShowTitle, "ShowTitle": ShowTitle, "Year": ShowYear, "Plot": ShowPlot, 'IMDbURL': IMDbURL, 'IMDbID': IMDbID, 'IMDb': IMDbID }; listitem.setInfo(type="Video", infoLabels=My_infoLabels )
 	### Both -Movies- and -TV Shows- ### Hosters
 	###( , re.MULTILINE | re.IGNORECASE | re.DOTALL)
 	#html=messupText(html,True,True,True,False)
@@ -916,7 +921,12 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 			except:	img=ps('Hosters.icon.url')+host
 			if (url is not '') and (host is not '') and (url is not None) and (host is not None):
 				deb('url',url); deb('host',host); deb('quality',quality); deb('age',age); deb('img',img); 
-				host=host.strip(); quality=quality.strip(); name=str(count)+". "+host+' - [[B]'+quality+'[/B]] - ([I]'+age+'[/I])'
+				host=host.strip(); quality=quality.strip(); 
+				if urlresolver.HostedMediaFile(host=host,media_id='xxx').valid_url():
+					c3="[COLOR blue]%s[/COLOR]"
+				else:
+					c3="[COLOR red]%s[/COLOR]"
+				name=(c3 % (str(count)+". "))+host+' - [[B]'+(c3 % quality)+'[/B]] - ([I]'+(c3 % age)+'[/I])'
 				##if (host is not ''):
 				#if urlresolver.HostedMediaFile(host=host, media_id='xxx'):
 				if (len(url) > 0):
@@ -927,6 +937,12 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 					#contextMenuItems.append(('jDownloader', ps('cMI.jDownloader.addlink.url') % (urllib.quote_plus(url))))
 					pars['mode']='PlayVideo'
 					#_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount); 
+					#if urlresolver.HostedMediaFile("http://www."+host).valid_url():
+					#	_addon.add_directory(pars,{'title':name},img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount)
+					#	count=count+1
+					#else:
+					#	_addon.add_directory(pars,{'title':"[COLOR blue]"+name+"[/COLOR]"},img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount)
+					#	count=count+1
 					_addon.add_directory(pars,{'title':name},img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount)
 					count=count+1
 					if (count > MaxNoLinks):
@@ -1341,6 +1357,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.')
 		ItemCount=len(iitems) # , total_items=ItemCount
+		#debob(iitems); 
 		for name, item_url, thumbnail, year in iitems:
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1'); name=name.strip() #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
@@ -1398,102 +1415,77 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 						try: uname=name; name='[Unknown]'; _addon.add_directory(pars, labs, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
 						except: t=''
 			else:
-				_enableMeta=False ### Temp Fix to keep people from accidently using it. ###
+				labs={}; 
+				#_enableMeta=False ### Temp Fix to keep people from accidently using it. ###
 				if (_enableMeta==True): ### Doesn't work currently. ###
-					metaget=metahandlers.MetaData(); meta=metaget.get_meta('tvshow', name, year=year)
-					if (meta['imdb_id']=='') and (meta['tvdb_id']==''):
-						meta=metaget.get_meta('tvshow', name)
-						#try: 
-						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems, total_items=ItemCount)
-						#except: 
-						#	uname=name; name='[Unknown]'
-						#	try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': meta['cover_url'], 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=meta['cover_url'], fanart=meta['backdrop_url'], contextmenu_items=contextMenuItems, total_items=ItemCount)
-						#	except: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, total_items=ItemCount)
-					else:
-						#try: 
-						_addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
-						#except: 
-						#	uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, total_items=ItemCount)
+					grab=metahandlers.MetaData(preparezip=False)
+					try: labs=grab.get_meta('tvshow',name,'','',year,overlay=6)
+					except: labs={'title':name,'year':year,'overlay':6}; 
+					labs[u'title']=name
+					if len(year)==4: labs[u'year']=year
 				else: ### Display without MetaData. ###
-					labs={}; pars={'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }; labs['fanart']=''
-					try: metaget=metahandlers.MetaData(); labs=metaget.get_meta('tvshow',name,year=year)
-					except: labs={}; 
-					if ('/season-' in item_url) and ('/episode-' in item_url): pars['mode']='GetLinks'
-					labs['poster']=labs['image']=labs['thumbnail']=thumbnail; labs['year']=year
-					labs['name']=name
-					ihtml=mGetItemPage(_domain_url+item_url)
-					labs['Genre']=mGetDataGenre(ihtml); labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
-					labs['Country']=mGetDataCountry(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
-					labs['plot']=mGetData(ihtml,['plot'])['plot']; labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
-					#drhtml=mGetItemPage(_setting['meta.tv.search']+labs['imdbid']) ## metadata >> movie >> results
-					##dbhtml_url=mdGetTV(drhtml,['result.url'])['result.url']
-					#labs['thetvdbid']=mdGetTV(drhtml,['result.id'])['result.id']
-					#if (labs['thetvdbid']=='') or (labs['thetvdbid']=='none') or (labs['thetvdbid']==None) or (labs['thetvdbid']==False): labs['fanart']=''
-					#else: 
-					#	pars['thetvdb_series_id']=labs['thetvdbid']
-					#	labs['fanart']=ps('meta.tv.fanart.url')+labs['thetvdbid']+ps('meta.tv.fanart.url2')
-					#	if (labs['thumbnail']=='') or (labs['thumbnail']==ps('domain.thumbnail.default')):
-					#		labs['poster']=labs['image']=labs['thumbnail']=ps('meta.tv.poster.url')+labs['thetvdbid']+ps('meta.tv.poster.url2')
-					try: 
-						if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=_artFanart
-					except: pass
-					try: 
-						if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['	+labs['Genre']	+']'
-					except: pass
-					try: 
-						if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+labs['Country']+']'
-					except: pass
-					try: 
-						if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+labs['Director']+']'
-					except: pass
-					try: 
-						if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+labs['Cast']+']'
-					except: pass
-					try: 
-						if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
-					except: pass
-					labs['TVShowTitle']=name
-					labs['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-					try: 
-						if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],ps('cFL_color3'))+']',ps('cFL_color'))
-					except: pass
-					try: 
-						pars['plot']=labs['plot']
-					except: pass
-					try: 
-						pars['Country']=labs['Country']
-					except: pass
-					try: 
-						pars['fanart']=labs['fanart']
-					except: pass
-					try: 
-						if (labs['thetvdbid']=='') or (labs['thetvdbid']=='none') or (labs['thetvdbid']==None) or (labs['thetvdbid']==False): pars['thetvdbid']=''
-						else: pars['thetvdbid']=labs['thetvdbid']
-					except: pass
-					#contextMenuItems.append(('-'+ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(name))))
-					try:
-						contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % ( sys.argv[0],'LibrarySaveTV',section, urllib.quote_plus(_param['title']), urllib.quote_plus(name), urllib.quote_plus(year), urllib.quote_plus(_domain_url + item_url), urllib.quote_plus(labs['thumbnail']) )))
-					except: pass
-					try:
-						contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.1.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(labs['backdrop_url']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), labs['thetvdbid'],'' )))
-					except: pass
-					try:
-						contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.2.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(labs['backdrop_url']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), labs['thetvdbid'],'2' )))
-					except: pass
-					try:
-						contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.3.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(labs['backdrop_url']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), labs['thetvdbid'],'3' )))
-					except: pass
-					try:
-						if (labs['backdrop_url'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+'  ('+year+')' , 'img': labs['cover_url'] , 'url': labs['backdrop_url'] } ) ))
-					except: pass
-					if ('/tv/' in pars['url']):
-						#try: _addon.add_directory(pars, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
-						try: _addon.add_directory(pars, labs, img=labs['cover_url'], fanart=labs['backdrop_url'], contextmenu_items=contextMenuItems, total_items=ItemCount)
-						#try: _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
-						except: 
-							#uname=name; name='[Unknown]'; _addon.add_directory({'mode': 'GetSeasons', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems)
-							try: uname=name; name='[Unknown]'; _addon.add_directory(pars, {'title':  name+'  ('+year+')'}, img=thumbnail, contextmenu_items=contextMenuItems, total_items=ItemCount)
-							except: t=''
+					labs[u'name']=name; labs['year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; 
+					labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
+					labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
+					#ihtml=mGetItemPage(_domain_url+item_url)
+					#labs['Genre']=mGetDataGenre(ihtml); labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
+					#labs['Country']=mGetDataCountry(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
+					#labs['plot']=mGetData(ihtml,['plot'])['plot']; labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
+				#
+				#if labs[u'backdrop_url']=='':	labs[u'backdrop_url']=_artFanart
+				try:
+					if len(labs[u'cover_url'])==0:		print labs[u'cover_url']; labs[u'cover_url']=_art150
+				except: pass
+				pars={'mode':'GetSeasons','section':section,'url':_domain_url+item_url,'img':labs[u'cover_url'],'title':name,'year':year}; 
+				if ('/season-' in item_url) and ('/episode-' in item_url): pars['mode']='GetLinks'
+				if (labs[u'genre'] is not ''):			labs[u'plot']+='[CR]Genre:  ['+labs[u'genre']+']'
+				try: 
+					if (labs[u'Country'] is not ''):	labs[u'plot']+='[CR]Country:  ['+labs[u'country']+']'
+				except: pass
+				try: 
+					if (labs[u'director'] is not ''): labs[u'plot']+='[CR]Director:  ['+labs[u'director']+']'
+				except: pass
+				try: 
+					if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
+				except: pass
+				try: 
+					if (labs[u'rating'] is not '') and (labs[u'votes'] is not ''): labs[u'plot']+='[CR]Rating:  ['+labs[u'rating']+' ('+labs[u'votes']+' Votes)]'
+				except: pass
+				labs[u'TVShowTitle']=name; 
+				labs[u'title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
+				try: 
+					if (labs[u'country'] is not ''): labs[u'title']+=cFL('  ['+cFL(labs[u'country'],ps('cFL_color3'))+']',ps('cFL_color'))
+				except: pass
+				labs[u'plot']=messupText(labs[u'plot'],True,True,True)
+				try: pars['plot']=labs[u'plot']
+				except: pass
+				try: pars['country']=labs[u'country']
+				except: pars[u'country']=''; labs[u'country']=''
+				try: pars['fanart']=labs[u'backdrop_url']
+				except: pass
+				#
+				try: 
+					if (labs['tvdb_id']=='') or (labs['tvdb_id']=='none') or (labs['tvdb_id']==None) or (labs['tvdb_id']==False): pars['thetvdbid']=''
+					else: pars['thetvdbid']=labs['tvdb_id']
+				except: pass
+				#contextMenuItems.append(('-'+ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(name))))
+				try: contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % (sys.argv[0],'LibrarySaveTV',section,urllib.quote_plus(_param[u'title']),urllib.quote_plus(name),urllib.quote_plus(year),urllib.quote_plus(_domain_url+item_url),urllib.quote_plus(labs[u'cover_url']) )))
+				except: pass
+				#try: 
+				contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.1.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(labs[u'backdrop_url']),urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url + item_url), labs[u'tvdb_id'],'' )))
+				#except: pass
+				try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.2.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(labs[u'backdrop_url']),urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url + item_url), labs[u'tvdb_id'],'2' )))
+				except: pass
+				try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.3.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(labs[u'backdrop_url']),urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url + item_url), labs[u'tvdb_id'],'3' )))
+				except: pass
+				try:
+					if (labs['backdrop_url'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'Download','section':ps('section.wallpaper'),'studio':name+'  ('+year+')','img':labs[u'cover_url'],'url':labs[u'backdrop_url']}) ))
+				except: pass
+				if ('/tv/' in pars['url']):
+					try: _addon.add_directory(pars,labs,img=labs[u'cover_url'],fanart=labs[u'backdrop_url'],contextmenu_items=contextMenuItems,total_items=ItemCount)
+					except: 
+						try: uname=name; name='[Unknown]'; _addon.add_directory(pars,{'title':name+'  ('+year+')'},img=thumbnail,contextmenu_items=contextMenuItems,total_items=ItemCount)
+						except: t=''
 		if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')): 		set_view('episodes' ,addst('episode-view'),True) #set_view('episodes' ,ps('setview.tv.latestepisodes'),True)
 		else: 																																							set_view('tvshows'	,addst('tvshows-view'),True) #set_view('tvshows'	,ps('setview.tv'),True)
 		eod(); return
@@ -1503,9 +1495,6 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	#	set_view('episodes',515); _addon.end_of_directory(); return
 	elif (section==ps('section.movie')): ## Movie
 		deb('listItems >> ',section); deb('listItems >> chck',chck)
-		##set_view('movies',515)
-		####xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
-		##xbmc.executebuiltin("Container.SetSortMethod(%s)" % xbmcplugin.SORT_METHOD_LABEL)
 		if   (chck==ps('LI.movies.popular.new.check')): 	html=(html.split(ps('LI.movies.popular.new.split1'	))[1]).split(ps('LI.movies.popular.new.split2'	))[0]
 		elif (chck==ps('LI.movies.popular.hd.check')): 		html=(html.split(ps('LI.movies.popular.hd.split1'		))[1]).split(ps('LI.movies.popular.hd.split2'		))[0]
 		elif (chck==ps('LI.movies.popular.other.check')): html=(html.split(ps('LI.movies.popular.other.split1'))[1]).split(ps('LI.movies.popular.other.split2'))[0]
@@ -1515,12 +1504,11 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		except:		
 			try:		iitems=re.compile(ps('LI.movies.match.items2'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
 			except:	iitems=None
-			#iitems=re.compile(ps('LI.movies.match.items3'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.'); return
-		ItemCount=len(iitems) # , total_items=ItemCount
-		#iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
-		for name, item_url, thumbnail, year in iitems:
+		ItemCount=len(iitems) # , total_items=ItemCount #iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
+		#debob(iitems)
+		for name,item_url,thumbnail,year in iitems:
 			try: prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
 			except:	prtItem=''
 			#try:		prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
@@ -1543,53 +1531,45 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')):
 				contextMenuItems.append((ps('cMI.primewire.search.name'), 		ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section'), name)))
 			##### Right Click Menu for: MOVIE ##### /\ #####
-			ihtml=mGetItemPage(_domain_url+item_url)
+			#ihtml=mGetItemPage(_domain_url+item_url)
 			##debob(ihtml)
-			##plot=mGetData(ihtml,['plot'])['plot']
-			##plot=mGetDataTest(ihtml,['plot'])['plot']
-			#plot=mGetDataPlot(ihtml)
-			#if (plot==None) or (plot=='none') or (plot==False): plot=''
 			labs={}; pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }
- 			#try: 
- 			metaget=metahandlers.MetaData(); labs=metaget.get_meta('movie',name,year=year)
-			#except: labs={}; 
-			#labs['poster']=labs['image']=labs['thumbnail']=thumbnail; 
-			labs['year']=year; labs['Country']=mGetDataCountry(ihtml)
-			labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / '+ps('rating.max')+' ('+labs['Votes']+' Votes)'
-			labs['Genre']=mGetDataGenre(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
-			labs['PlotOutline']=labs['plot']=mGetData(ihtml,['plot'])['plot']; labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
-			#drhtml=mGetItemPage(_setting['meta.movie.search']+labs['imdbid']) ## metadata >> movie >> results
-			#dbhtml_url=mdGetMovie(drhtml,['result.url'])['result.url']; dbhtml=mGetItemPage(dbhtml_url) ## metadata >> movie >> results >> page
-			#if (labs['plot']==''): labs['plot']=mdGetMovie(dbhtml,['og.plot'])['og.plot']
-			##if (labs['image']==ps('domain.thumbnail.default')):  ## Default // No - Image. ##
-			#if (labs['thumbnail']=='') or (labs['thumbnail']=='none') or (labs['thumbnail']==None) or (labs['thumbnail']==ps('domain.thumbnail.default')): 
-			#	labs['poster']=labs['image']=labs['thumbnail']=mdGetMovie(dbhtml,['og.image'])['og.image']
-			#labs['fanart']=mdGetMovie(dbhtml,['og.image2'])['og.image2']
-			#if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=mdGetMovie(dbhtml,['og.image'])['og.image']
-			#if (labs['fanart']=='') or (labs['fanart']=='none') or (labs['fanart']==None): labs['fanart']=_artFanart
+ 			if (_enableMeta==True):
+ 				metaget=metahandlers.MetaData(); labs=metaget.get_meta('movie',name,year=year)
+ 			else:
+ 				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; 
+ 				labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
+ 				labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
+			labs[u'name']=name; labs[u'year']=year; 
+			#labs['Country']=mGetDataCountry(ihtml)
+			#labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / '+ps('rating.max')+' ('+labs['Votes']+' Votes)'
+			#labs['Genre']=mGetDataGenre(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
+			#labs['PlotOutline']=labs['plot']=mGetData(ihtml,['plot'])['plot']; labs['imdbid']=mGetData(ihtml,['imdbid'])['imdbid']
+			if len(labs[u'backdrop_url'])==0: labs[u'backdrop_url']=_artFanart
 			try: 
-				if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['	+labs['Genre']	+']'
-			except: pass
+				if (labs[u'genre'] is not ''): 		labs[u'plot']+='[CR]Genre:  ['	+labs[u'genre']	+']'
+			except: labs[u'genre']=''
 			try: 
-				if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+labs['Country']+']'
-			except: pass
+				if (labs[u'country'] is not ''): 	labs[u'plot']+='[CR]Country:  ['+labs[u'country']+']'
+			except: labs[u'country']=''
 			try: 
-				if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+labs['Director']+']'
-			except: pass
+				if (labs[u'director'] is not ''): labs[u'plot']+='[CR]Director:  ['+labs[u'director']+']'
+			except: labs[u'director']=''
 			try: 
-				if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+labs['Cast']+']'
-			except: pass
+				if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
+			except: labs[u'cast']=''
 			try: 
-				if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
-			except: pass
-			labs['TVShowTitle']=name; labs['title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
-			if (labs['Country'] is not ''): labs['title']=labs['title']+cFL('  ['+cFL(labs['Country'],ps('cFL_color3'))+']',ps('cFL_color'))
+				if (labs[u'rating'] is not '') and (labs[u'votes'] is not ''): 			labs[u'plot']+='[CR]Rating:  ['+labs[u'rating']+' ('+labs[u'votes']+' Votes)]'
+			except: labs[u'rating']=''; labs[u'votes']=''
+			labs[u'plot']=messupText(labs[u'plot'],True,True,True)
+			labs[u'TVShowTitle']=name; labs[u'title']=cFL(name+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
+			if (labs[u'country'] is not ''): labs[u'title']+=cFL('  ['+cFL(labs[u'country'],ps('cFL_color3'))+']',ps('cFL_color'))
 			labs['title']+=cFL('  [[I]'+cFL(NumOfLinks,ps('cFL_color3'))+' Links[/I] ]',ps('cFL_color'))
 			#if not labs['backdrop']: labs['backdrop']=_artFanart
-			try:    contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(labs['backdrop_url']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), '' )))
-			except: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(_artFanart)          ,urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), '' )))
-			try:    contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(labs['backdrop_url']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url),'2' )))
-			except: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['cover_url']),urllib.quote_plus(_artFanart)          ,urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url),'2' )))
+			try:    contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(labs[u'backdrop_url']),urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url+item_url), '' )))
+			except: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(_artFanart)           ,urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url+item_url), '' )))
+			try:    contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(labs[u'backdrop_url']),urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url+item_url),'2' )))
+			except: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs[u'cover_url']),urllib.quote_plus(_artFanart)           ,urllib.quote_plus(labs[u'country']),urllib.quote_plus(labs[u'plot']),urllib.quote_plus(labs[u'genre']),urllib.quote_plus(_domain_url+item_url),'2' )))
 			try: 
 				if (labs['backdrop'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+'  ('+year+')' , 'img': labs['thumbnail'] , 'url': labs['backdrop'] } ) ))
 			except: labs['backdrop']=_artFanart
@@ -1619,50 +1599,54 @@ def Trailers_List(section, url, genre):
 	#try: Trailers=re.compile('<div class="movieListSingleFilm">', re.DOTALL).findall(html)
 	#except: Trailers=''
 	#print html
-	if ('<div class="movieListDetailed">' not in html): eod(); return
-	html=html.split('<div class="movieListDetailed">')[1]
-	if ('class="js-tab"' in html): html=html.split('class="js-tab"')[0]
-	Trailers=html.split('<div class="movieListSingleFilm">')
+	deb('length of html',str(len(html))); 
+	if ('<div class="movieListDetailed' not in html): eod(); return
+	html=html.split('<div class="movieListDetailed')[1]
+	if ('<div class="SearchesBlock">' in html): html=html.split('<div class="SearchesBlock">')[0]
+	Trailers=html.split('<div class="newMovieBlock full moviePage transparent clearfix">')
+	#debob(html)
 	#print Trailers
 	ItemCount=len(Trailers) # , total_items=ItemCount
+	#debob(Trailers)
 	for Trailer in Trailers:
 		if ('<img' in Trailer):
 			Trailer=Trailer.strip()
 			contextMenuItems=[]; labs={}; pars={}; pars['section']=section; pars['genre']=genre; labs['fanart']=pars['fanart']=_artFanart; labs['plot']=''
-			try: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=re.compile('><img width="\d+"[\n]\s+src="(http://static.solarmovie.so/images/movies/[0-9]+_150x220.jpg)"[\n]\s+class="cover" alt="" /></a>', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=re.compile('><img .+?data-original="(http://static\d*.solarmovie.so/images/movies/[0-9]+_150x220.jpg)"[\n]\s+alt="" /></a>', re.DOTALL).findall(Trailer)[0].strip(); deb('img',labs['img']); 
 			except: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=''
-			try: pars['title']=re.compile('<h2>[\n]\s+<a href="/watch-.+?-\d+.html">(.+?)</a>', re.DOTALL).findall(Trailer)[0].strip()
-			except: pars['title']=''
-			try: labs['year']=pars['year']=re.compile('<h2>[\n]\s+<a href="/watch-.+?-(\d+).html">', re.DOTALL).findall(Trailer)[0].strip()
+			try: pars[u'title']=re.compile('<h2><a\shref="/watch-.+?-\d+.html">(.+?)</a').findall(Trailer)[0].strip(); pars[u'title']=messupText(pars[u'title'],True,True,True); deb('title',pars[u'title']); 
+			except: pars[u'title']=''
+			try: labs['year']=pars['year']=re.compile('<h2><a href="/watch-.+?-(\d+).html">').findall(Trailer)[0].strip()
 			except: labs['year']=pars['year']=''
-			try: labs['peopleWaitForIt']=re.compile('<span class="peopleWaitForIt">[\n]\s+(\d+) people wait for it', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['peopleWaitForIt']=re.compile('<span title="Users waiting">[\n]\s+<span class="fontIcon ding-User"></span>\s*(\d+)\s*</span>').findall(Trailer)[0].strip()
 			except: labs['peopleWaitForIt']=''
-			try: labs['Director']=re.compile('<span class="movieListDirector">[\n]\s+by[\n]\s+(.*?)\s+</span>', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['Director']=re.compile('<a href="/watch-movies-by-.+?.html">[\n]*\s*(.+?)</a>').findall(Trailer)[0].strip()
 			except: labs['Director']=''
-			try: labs['plot']=labs['Description']=labs['PlotOutline']=re.compile('<p>(.+?)</p>', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['plot']=labs['Description']=labs['PlotOutline']=re.compile('<p class="description">(.+?)</p>').findall(Trailer)[0].strip()
 			except: labs['plot']=labs['Description']=labs['PlotOutline']=''
-			try: pars['url']=re.compile('<h2>[\n]\s+<a href="(/watch-.+?-\d+.html)"', re.DOTALL).findall(Trailer)[0].strip()
+			try: pars['url']=re.compile('<h2><a href="(/watch-.+?-\d+.html)"', re.DOTALL).findall(Trailer)[0].strip(); deb('url',pars['url']); 
 			except: pars['url']=''
 			if (pars['url'] is not ''): pars['url']=_domain_url+pars['url']
-			try: labs['Premiere']=labs['DateReleased']=labs['DateAired']=labs['Aired']=labs['date']=re.compile('<span class="timeToRelease">[\n]\s+in \d+ \D+;[\n]\s+<span>(\D+ \d+, \d\d\d\d)</span>[\n]\s+</span>', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['Premiere']=labs['DateReleased']=labs['DateAired']=labs['Aired']=labs['date']=re.compile('<h3 class="releaseIn">Release in \d+ \D+\s*<span class="fullDate"> - (\D+ \d+, \d\d\d\d)</span></h3>').findall(Trailer)[0].strip()
 			except: labs['date']=''
-			try: labs['ToBeReleasedIn']=re.compile('<span class="timeToRelease">[\n]\s+in (\d+ \D+);[\n]\s+<span>\D+ \d+, \d\d\d\d</span>[\n]\s+</span>', re.DOTALL).findall(Trailer)[0].strip()
+			try: labs['ToBeReleasedIn']=re.compile('<h3 class="releaseIn">Release in (\d+ \D+)\s*<span class="fullDate">').findall(Trailer)[0].strip()
 			except: labs['ToBeReleasedIn']=''
-			#try: labs['title']=re.compile('', re.DOTALL).findall(Trailer)[0].strip()
-			#except: labs['title']=''
+			#try: labs[u'title']=re.compile('', re.DOTALL).findall(Trailer)[0].strip()
+			#except: labs[u'title']=''
 			#labs['url']=_domain_url+tUrl
-			#labs['title']=tTitle
+			#labs[u'title']=tTitle
 			labs['Director']=labs['Director'].strip(); labs['peopleWaitForIt']=labs['peopleWaitForIt'].strip()
+			#labs['plot']+=pars['title']
 			if (labs['date'] is not ''): 
 				labs['plot']+='[CR]Premiere:  '+labs['date']
 				if (labs['ToBeReleasedIn'] is not ''): labs['plot']+='  (in '+labs['ToBeReleasedIn']+')'
 			if (labs['Director'] is not ''): labs['plot']+='[CR]Director:  '+labs['Director']
 			if (labs['peopleWaitForIt'] is not ''): labs['plot']+='[CR]People waiting for it:  '+labs['peopleWaitForIt']
-			labs['title']=pars['title']
-			if (pars['year'] is not ''): labs['title']+='  ('+cFL(pars['year'],ps('cFL_color2'))+')'
-			if (labs['ToBeReleasedIn'] is not ''): labs['title']+='  {'+cFL('in '+labs['ToBeReleasedIn'],ps('cFL_color6'))+'}'
+			labs[u'title']=pars['title']
+			if (pars['year'] is not ''): labs[u'title']+='  ('+cFL(pars['year'],ps('cFL_color2'))+')'
+			if (labs['ToBeReleasedIn'] is not ''): labs[u'title']+='  {'+cFL('in '+labs['ToBeReleasedIn'],ps('cFL_color6'))+'}'
 			#
-			labs['title']=cFL(labs['title'],ps('cFL_color'))
+			labs[u'title']=cFL(labs[u'title'],ps('cFL_color'))
 			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
 			deb('Trailer',labs['title']+' | '+labs['img']+' | '+pars['url'])
 			pars['mode']='PlayTrailer'
@@ -2111,7 +2095,7 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 	### ###################################################################################################################################################################################################################################
 	### ###################################################################################################################################################################################################################################
 	if  ( section == ps('section.trailers')): ## Trailers #################################################################################################################################################################################
-		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': _domain_url+'/coming-soon/date/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'},fanart=_artFanart,img=art('genre','.jpg'))
+		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': _domain_url+'/coming-soon/' },	 				{'title':  cFL('G',ps('cFL_color'))+'enre By Release Date'},fanart=_artFanart,img=art('genre','.jpg'))
 		_addon.add_directory({'section': section, 'mode': 'TrailersGenres', 'url': _domain_url+'/coming-soon/popularity/' },	 	{'title':  cFL('G',ps('cFL_color'))+'enre By Popularity'}, 	fanart=_artFanart,img=art('genre','.jpg'))
 	#elif  ( section == ps('sectoin.trailers.popular')): ###### Trailers Popular #############################################################################################################################################################
 	#elif  ( section == ps('sectoin.trailers.releasedate')): ## Trailers Release Date ########################################################################################################################################################
@@ -2127,7 +2111,7 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 		_addon.add_directory({'section': section, 'mode': 'Search', 				'pageno': '1', 'pagecount': addst('pages')},			{'title':  cFL('S',ps('cFL_color'))+'earch'}, 						fanart=_artFanart,img=art('icon-search'))
 		_addon.add_directory({'section': section, 'mode': 'AdvancedSearch', 'pageno': '1', 'pagecount': addst('pages')},	 		{'title':  cFL('A',ps('cFL_color'))+'dvanced Search'}, 		fanart=_artFanart,img=art('icon-search'))
 		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatestWatched', 'url': _domain_url+'/latest-watched-movies.html', 'pageno': '1','pagecount': '1'}, 			{'title':  cFL('L',ps('cFL_color'))+'atest Watched'}, 		img=_art150,fanart=_artFanart)
-		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 				'url': _domain_url+'/', 'pageno': '1','pagecount': '1'}, 																{'title':  cFL('L',ps('cFL_color'))+'atest Added'}, 			img=_art150,fanart=_artFanart)
+		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 				'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 																{'title':  cFL('L',ps('cFL_color'))+'atest Added'}, 			img=_art150,fanart=_artFanart)
 		_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 			'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (ALL TIME)'}, img=_art150,fanart=_artFanart)
 		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 		'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (NEW)'}, 			img=_art150,fanart=_artFanart)
 		_addon.add_directory({'section': section, 'mode': 'BrowseCountry'},	 			{'title':  cFL('C',ps('cFL_color'))+'ountry'}, 		fanart=_artFanart,img=art('countries','.jpg'))

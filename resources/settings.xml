@@ -3,7 +3,6 @@
 		<setting visible="true" id="core-player" type="labelenum" label="Player Core" values="AUTO|DVDPLAYER|MPLAYER|PAPLAYER"             default="AUTO"/>
 		<setting id="pages"    type="labelenum" label="Number of Pages" values="1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|25|30|35|40|45|50|55|60|70|80|90|99|100"             default="1"/>
 		<setting id="linksmaxshown" type="labelenum" label="Number of Links (Host Menu)" values="1|2|3|4|5|10|15|20|25|30|35|40|45|50|55|60|70|80|90|99|100|150|200|250|300|350|400|450|500|550|600|700|800|900|1000|1500|2000|3000|9000|9999"             default="9999"/>
-		<setting id="enableMeta" 		type="bool" label="Enable Metadata" default="false" visible="false"/>
 		<setting id="enableDomain" 	type="bool" label="Enable Custom Domain" default="false" visible="true"/>
 		<setting id="customDomain" 	type="text" label="Custom Domain" default="http://solarmovie.occupyuk.co.uk" enable="!eq(-1,false)" />
 		<setting id="debug-enable" 	type="bool" label="Enable Debugging to File" default="false" visible="true"/>
@@ -43,6 +42,7 @@
 		<setting id="download_folder_wallpapers" 	type="folder" label="Download Folder (Wallpapers)  "  default="" visible="true"/>
 	</category>
 	<category label="Metadata">
+		<setting id="enableMeta" 						type="bool" label="Enable Metadata" 					default="true" visible="true"/>
 		<setting id="metadata_movies" 			type="bool" label="(Movies)" 									default="true" visible="false" />
 		<setting id="metadata_tv" 					type="bool" label="(TV)" 											default="true" visible="false" />
 		<setting id="metadata_tv_shows" 		type="bool" label="(TV) >> Shows" 						default="true" visible="false" enable="!eq(-1,false)" />
