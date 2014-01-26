@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.6
+### # Version:			#		v0.3.7
 ### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk
 ###	#	
 ### ############################################################################################################
@@ -167,8 +167,18 @@ def PlayVideo(url, infoLabels, listitem):
 	else: PlayerMeth=xbmc.PLAYER_CORE_AUTO
 	play=xbmc.Player(PlayerMeth) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
 	#play=xbmc.Player(xbmc.PLAYER_CORE_AUTO) ### xbmc.PLAYER_CORE_AUTO | xbmc.PLAYER_CORE_DVDPLAYER | xbmc.PLAYER_CORE_MPLAYER | xbmc.PLAYER_CORE_PAPLAYER
+	
+	imdb_id=addpr("imdbid",""); show_title=addpr("showtitle",""); s=addpr("s",""); e=addpr("e",""); year=addpr("year",""); vtype=addpr("type",""); 
+	if len(vtype)==0: vtype='movie'
+	if (_enableMeta==True):
+		try: ChangeWatched(imdb_id=imdb_id,video_type=vtype,name=show_title,season=s,episode=e,year=year,watched=7,refresh=False)
+		except: pass
+	
 	try: play.play(stream_url, li); xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=li)
-	except: t=''
+	except: 
+		if (_enableMeta==True):
+			try: ChangeWatched(imdb_id=imdb_id,video_type=vtype,name=show_title,season=s,episode=e,year=year,watched=6,refresh=False)
+			except: pass
 	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True)
 	try: _addon.resolve_url(url)
 	except: t=''
@@ -774,8 +784,8 @@ def mGetData(html,toGet):
 			parseMethod='re.compile'; parseTag='<p id="plot_\d+">(.+?)</p>'
 			if ('<p id="plot_' in html): rCheck=True
 		elif (item=='imdbid'): ### 0816711
-			parseMethod='re.compile'; parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href=".+?">(\d+)</a>'
-			if ('<strong>IMDb ID:</strong>' in html): rCheck=True
+			parseMethod='re.compile'; parseTag='www.imdb.com%2Ftitle%2F(tt\d+)%2F">'
+			if ('www.imdb.com%2Ftitle%2Ftt' in html): rCheck=True
 		elif (item=='imdburl'): ### http://anonym.to/?http%3A%2F%2Fwww.imdb.com%2Ftitle%2Ftt0816711%2F
 			parseMethod='re.compile'; parseTag='<strong>IMDb ID:</strong>[\n]\s+<a href="(.+?)">\d+</a>'
 			if ('<strong>IMDb ID:</strong>' in html): rCheck=True
@@ -867,6 +877,7 @@ def mGetData(html,toGet):
 def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hosters (Host Sites of the actual Videos)
 	WhereAmI('@ the Link List: %s' % url); sources=[]; listitem=xbmcgui.ListItem()
 	if (url==''): return
+	if _domain_url not in url: url=_domain_url+url
 	try: html=net.http_GET(url).content
 	except: html=''
 	if (html==''): return
@@ -946,6 +957,7 @@ def listLinks(section, url, showtitle='', showyear=''): ### Menu for Listing Hos
 					contextMenuItems.append(('Download', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url(pars2)))
 					#contextMenuItems.append(('jDownloader', ps('cMI.jDownloader.addlink.url') % (urllib.quote_plus(url))))
 					pars['mode']='PlayVideo'
+					pars[u'imdbid']=addpr("imdbid",""); pars[u'showtitle']=addpr("showtitle",""); pars[u'year']=addpr("year",""); pars[u'type']=addpr("type",""); pars[u's']=addpr("s",""); pars[u'e']=addpr("e",""); 
 					#_addon.add_directory(pars, {'title':  name}, img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount); 
 					#if urlresolver.HostedMediaFile("http://www."+host).valid_url():
 					#	_addon.add_directory(pars,{'title':name},img=img, is_folder=False, contextmenu_items=contextMenuItems, total_items=ItemCount)
@@ -1459,7 +1471,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				else: ### Display without MetaData. ###
 					labs[u'name']=name; labs['year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; 
 					labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
-					labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
+					labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; labs['overlay']=6
 					#ihtml=mGetItemPage(_domain_url+item_url)
 					#labs['Genre']=mGetDataGenre(ihtml); labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
 					#labs['Country']=mGetDataCountry(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
@@ -1499,8 +1511,9 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				#
 				try: 
 					if (labs['tvdb_id']=='') or (labs['tvdb_id']=='none') or (labs['tvdb_id']==None) or (labs['tvdb_id']==False): pars['thetvdbid']=''
-					else: pars['thetvdbid']=labs['tvdb_id']
+					else: pars[u'thetvdbid']=labs[u'tvdb_id']
 				except: pass
+				pars[u'imdb_id']=labs[u'imdb_id']
 				#contextMenuItems.append(('-'+ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(name))))
 				try: contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % (sys.argv[0],'LibrarySaveTV',section,urllib.quote_plus(_param[u'title']),urllib.quote_plus(name),urllib.quote_plus(year),urllib.quote_plus(_domain_url+item_url),urllib.quote_plus(labs[u'cover_url']) )))
 				except: pass
@@ -1514,7 +1527,13 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				try:
 					if (labs['backdrop_url'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'Download','section':ps('section.wallpaper'),'studio':name+'  ('+year+')','img':labs[u'cover_url'],'url':labs[u'backdrop_url']}) ))
 				except: pass
-				if ('/tv/' in pars['url']):
+				#if (_enableMeta==True):
+				#	try:
+				#		if int(labs['overlay'])==6: NewOverlay=7; NewOlayText='Watched'
+				#		else: NewOverlay=6; NewOlayText='Unwatched'
+				#		contextMenuItems.append(('Mark as '+NewOlayText,'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'ChangeWatched','imdbid':labs['imdb_id'],'type':'tvshow','name':name,'season':'','episode':'','year':year,'watched':str(NewOverlay)}) ))
+				#	except: pass
+				if ('/tv/' in pars[u'url']):
 					try: _addon.add_directory(pars,labs,img=labs[u'cover_url'],fanart=labs[u'backdrop_url'],contextmenu_items=contextMenuItems,total_items=ItemCount)
 					except: 
 						try: uname=name; name='[Unknown]'; _addon.add_directory(pars,{'title':name+'  ('+year+')'},img=thumbnail,contextmenu_items=contextMenuItems,total_items=ItemCount)
@@ -1570,10 +1589,11 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
  			if (_enableMeta==True):
  				metaget=metahandlers.MetaData(); labs=metaget.get_meta('movie',name,year=year)
  			else:
- 				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; 
+ 				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; labs['overlay']=6
  				labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
  				labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
 			labs[u'name']=name; labs[u'year']=year; 
+			pars['imdbid']=labs['imdb_id']
 			#labs['Country']=mGetDataCountry(ihtml)
 			#labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / '+ps('rating.max')+' ('+labs['Votes']+' Votes)'
 			#labs['Genre']=mGetDataGenre(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
@@ -1606,6 +1626,12 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			try: 
 				if (labs['backdrop'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+'  ('+year+')' , 'img': labs['thumbnail'] , 'url': labs['backdrop'] } ) ))
 			except: labs['backdrop']=_artFanart
+ 			if (_enableMeta==True):
+ 				try:
+ 					if int(labs['overlay'])==6: NewOverlay=7; NewOlayText='Watched'
+ 					else: NewOverlay=6; NewOlayText='Unwatched'
+ 					contextMenuItems.append(('Mark as '+NewOlayText,'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'ChangeWatched','imdbid':labs['imdb_id'],'type':'movie','name':name,'season':'','episode':'','year':year,'watched':str(NewOverlay)}) ))
+ 				except: pass
 			#contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url), '' )))
 			#contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(name),year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['Country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['Genre']),urllib.quote_plus(_domain_url + item_url),'2' )))
 			#if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': name+'  ('+year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
@@ -2028,78 +2054,90 @@ def listEpisodes(section, url, img='', season=''): #_param['img']
 	if (html=='') or (html=='none') or (html==None): deb('Html','is empty.' ); return
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	if (img==''): match=re.search( 'coverImage">.+?src="(.+?)"', html, re.IGNORECASE | re.MULTILINE | re.DOTALL); img=match.group(1)
-	###if (season=='') or (season.lower()=='all'):	
-	###try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
-	##if (int(season) > 2):
-	##	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(['+season+']*)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>').findall(html)
-	##	except:	episodes=''
-	##else: 
-	#episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
 	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) link', re.DOTALL).findall(html)
 	except:	episodes=''
-	###else:
-	###	try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(\d+)/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
-	###	#try:		episodes=re.compile('<span class="epname">[\n].+?<a href="(.+?)"[\n]\s+title=".+?">(.+?)</a>[\n]\s+<a href="/.+?/season-(['+season+'])/episode-(\d+)/" class=".+?">[\n]\s+(\d+) links</a>', re.DOTALL).findall(html)
-	###	except:	episodes=''
 	if (not episodes) or (episodes==None) or (episodes==False) or (episodes==''): deb('Episodes','couldn\'t find episodes'); eod(); return
 	if (metadata_tv_episodes==False) or (_param['thetvdb_series_id']=='') or (_param['thetvdb_series_id']=='none') or (_param['thetvdb_series_id']==None) or (_param['thetvdb_series_id']==False): thetvdb_episodes=None
 	else: 
 		if (season=='0') or (season=='') or (season.lower()=='all'): thetvdb_episodes=thetvdb_com_episodes2(_param['thetvdb_series_id'])
 		else: thetvdb_episodes=thetvdb_com_episodes3(_param['thetvdb_series_id'],season)
 	woot=False
-	#print episodes
+	#debob(episodes)
 	ItemCount=len(episodes) # , total_items=ItemCount
 	ShowZeroLinks=tfalse(addst("tv-zerolinks-show"))
+	#
+	if (_enableMeta==True): metaget=metahandlers.MetaData(); 
+	thetvdb_id=addpr("thetvdb_series_id",""); imdb_id=addpr('imdbid',""); show_title=addpr("showtitle",""); 
+	#
 	for ep_url, episode_name, season_number, episode_number, num_links in episodes:
 		if (season==''): t=''
 		elif (season==season_number) or (season.lower()=='all') or (season==''):
 			labs={}; s_no=season_number; e_no=episode_number
 			if (int(episode_number) > -1) and (int(episode_number) < 10): episode_number='0'+episode_number
-			labs['thumbnail']=img; labs['fanart']=_param['fanart']
-			labs['EpisodeTitle']=episode_name #; labs['ShowTitle']=''
-			episode_name=messupText(episode_name,_html=True,_ende=True,_a=False,Slashes=False)
-			#labs['title']=season_number+'x'+episode_number+' - '+episode_name+'  [[I]'+num_links+' Links [/I]]'
-			labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
-			ep_url=_domain_url+ep_url; episode_name=messupText(episode_name,True,True,True,True)
-			if (metadata_tv_episodes==False): t=''
-			#elif (season=='0') (s_no=='0') or (season=='') or (season.lower()=='all'): t=''
-			elif (thetvdb_episodes) and (thetvdb_episodes is not None) and (thetvdb_episodes is not '') and (thetvdb_episodes is not 'none'):
-				#for thetvdb_episode in thetvdb_episodes:
-				for db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage in thetvdb_episodes:
-					if (db_sxe_no.strip()==(s_no+' x '+e_no)):
-						v=(db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage)
-						db_ep_url=ps('meta.tv.domain')+db_ep_url; db_ep_url2=ps('meta.tv.domain')+db_ep_url2
-						if ('Episode #' in episode_name): episode_name=db_ep_name.strip()
-						if ('TBA'==episode_name): episode_name='(To Be Announced)'
-						labs['Premeired']=labs['DateAired']=labs['Date']=db_dateYear+'-'+db_dateMonth+'-'+db_dateDay; labs['year']=db_dateYear; labs['month']=db_dateMonth; labs['day']=db_dateDay
-						deb('db_hasImage',db_hasImage)
-						if ('img' in db_hasImage):	(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2,img)
-						else:												(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = (img,'','')
-						#(db_thumb,labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2.strip(),img)
-						#if (check_ifUrl_isHTML(db_thumb)==True): labs['thumbnail']=db_thumb
-						labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
-						####################
-						if (metadata_tv_ep_plot==False):	labs['PlotOutline']=labs['plot']=''
-						else:
-							try:		ep_html=mGetItemPage(db_ep_url2)
-							except:	ep_html=''
-							deb('thetvdb - episode - url',db_ep_url2); deb('Length of ep_html',str(len(ep_html)))
-							if (ep_html is not None) or (ep_html is not False) or (ep_html is not '') or (ep_html is not 'none'):
-								labs['PlotOutline']=labs['plot']=mdGetTV(ep_html,['thetvdb.episode.overview1'])['thetvdb.episode.overview1']
-						####################
-						thetvdb_episodes.remove(v)
-					#
-				#
-			#
+			if (_enableMeta==True): 
+				labs=metaget.get_episode_meta(tvshowtitle=show_title,imdb_id=imdb_id,season=s_no,episode=e_no,air_date='',episode_title='',overlay=6)
+				debob(labs); 
+				labs[u'title']=messupText(labs[u'title'],True,True,True); labs[u'plot']=messupText(labs[u'plot'],True,True,True); 
+				labs[u'title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(labs[u'title'],ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
+				##
+			else:
+				labs['cover_url']=img; labs['backdrop_url']=addpr('fanart',""); labs['overlay']=6; 
+				labs['EpisodeTitle']=episode_name #; labs['ShowTitle']=''
+				episode_name=messupText(episode_name,_html=True,_ende=True,_a=False,Slashes=False)
+				labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
+				ep_url=_domain_url+ep_url; episode_name=messupText(episode_name,True,True,True,True)
+				if (metadata_tv_episodes==False): t=''
+				elif (thetvdb_episodes) and (thetvdb_episodes is not None) and (thetvdb_episodes is not '') and (thetvdb_episodes is not 'none'):
+					#for thetvdb_episode in thetvdb_episodes:
+					for db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage in thetvdb_episodes:
+						if (db_sxe_no.strip()==(s_no+' x '+e_no)):
+							v=(db_ep_url, db_sxe_no, db_ep_url2, db_ep_name, db_dateYear, db_dateMonth, db_dateDay, db_hasImage)
+							db_ep_url=ps('meta.tv.domain')+db_ep_url; db_ep_url2=ps('meta.tv.domain')+db_ep_url2
+							if ('Episode #' in episode_name): episode_name=db_ep_name.strip()
+							if ('TBA'==episode_name): episode_name='(To Be Announced)'
+							labs['Premeired']=labs['DateAired']=labs['Date']=db_dateYear+'-'+db_dateMonth+'-'+db_dateDay; labs['year']=db_dateYear; labs['month']=db_dateMonth; labs['day']=db_dateDay
+							deb('db_hasImage',db_hasImage)
+							if ('img' in db_hasImage):	(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2,img)
+							else:												(labs['thumbnail'],labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = (img,'','')
+							#(db_thumb,labs['thetvdb_series_id'],labs['thetvdb_episode_id']) = Episode__get_thumb(db_ep_url2.strip(),img)
+							#if (check_ifUrl_isHTML(db_thumb)==True): labs['thumbnail']=db_thumb
+							labs['title']=cFL(season_number+cFL('x',ps('cFL_color4'))+episode_number,ps('cFL_color5'))+' - '+cFL(episode_name,ps('cFL_color4'))+cFL('  [[I]'+cFL(num_links+' Links ',ps('cFL_color3'))+'[/I]]',ps('cFL_color'))
+							####################
+							if (metadata_tv_ep_plot==False):	labs['PlotOutline']=labs['plot']=''
+							else:
+								try:		ep_html=mGetItemPage(db_ep_url2)
+								except:	ep_html=''
+								deb('thetvdb - episode - url',db_ep_url2); deb('Length of ep_html',str(len(ep_html)))
+								if (ep_html is not None) or (ep_html is not False) or (ep_html is not '') or (ep_html is not 'none'):
+									labs['PlotOutline']=labs['plot']=mdGetTV(ep_html,['thetvdb.episode.overview1'])['thetvdb.episode.overview1']
+							####################
+							thetvdb_episodes.remove(v)
+			###
 			contextMenuItems=[]; labs['season']=season_number; labs['episode']=episode_number
-			contextMenuItems.append((ps('cMI.showinfo.name'),ps('cMI.showinfo.url')))
-			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_param['showtitle']), urllib.quote_plus(_param['year']), urllib.quote_plus(ep_url), urllib.quote_plus(labs['thumbnail']), urllib.quote_plus(season_number), urllib.quote_plus(episode_number), urllib.quote_plus(episode_name) )))
-			deb('Episode Name',labs['title']); deb('episode thumbnail',labs['thumbnail'])
+			contextMenuItems.append(('Episode Information',ps('cMI.showinfo.url')))
+			if (_enableMeta==True):
+				if int(labs['overlay'])==6: NewOverlay=7; NewOlayText='Watched'
+				else: NewOverlay=6; NewOlayText='Unwatched'
+				contextMenuItems.append(('Mark as '+NewOlayText,'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'ChangeWatched','imdbid':imdb_id,'type':'episode','name':show_title,'season':s_no,'episode':e_no,'year':addpr("year",""),'watched':str(NewOverlay)}) ))
+			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s&season=%s&episode=%s&episodetitle=%s)' % ( sys.argv[0],'LibrarySaveEpisode',section,urllib.quote_plus(_param['title']),urllib.quote_plus(_param['showtitle']),urllib.quote_plus(_param['year']),urllib.quote_plus(ep_url),urllib.quote_plus(labs['cover_url']),urllib.quote_plus(season_number),urllib.quote_plus(episode_number),urllib.quote_plus(episode_name) )))
+			deb('Episode Name',labs['title']); deb('episode thumbnail',labs['cover_url'])
 			if (season==season_number) or (season==''): 
 				if (ShowZeroLinks==True) or (int(num_links) > 0):
-					_addon.add_directory({'mode': 'GetLinks', 'year': _param['year'], 'section': section, 'img': img, 'url': ep_url, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name}, labs, img=labs['thumbnail'], fanart=labs['fanart'], contextmenu_items=contextMenuItems, total_items=ItemCount)
+					pars={'mode':'GetLinks','type':'episode','showtitle':show_title,'imdbid':imdb_id,'year':_param['year'],'section':section,'img':img,'url':ep_url,'s':str(s_no),'e':str(e_no),'season':season_number,'episode':episode_number,'episodetitle':episode_name}
+					try: _addon.add_directory(pars,labs,img=labs['cover_url'],fanart=labs['backdrop_url'],contextmenu_items=contextMenuItems,total_items=ItemCount)
+					except: pass
 		#
 	set_view('episodes',addst('episode-view')); eod() #set_view('episodes',ps('setview.episodes')); eod()
+
+def ChangeWatched(imdb_id,video_type,name,season,episode,year='',watched='',refresh=False):
+	#if (_enableMeta==True):
+	#	if int(labs['overlay'])==6: NewOverlay=7; NewOlayText='Watched'
+	#	else: NewOverlay=6; NewOlayText='Unwatched'
+	#	contextMenuItems.append(('Mark as '+NewOlayText,'XBMC.RunPlugin(%s)' % _addon.build_plugin_url({'mode':'ChangeWatched','imdbid':imdb_id,'type':'episode','name':show_title,'season':s_no,'episode':e_no,'year':addpr("year",""),'watched':str(NewOverlay)}) ))
+	##ChangeWatched(imdbid=addpr("imdbid",""),video_type=addpr("type",""),name=addpr("name",""),season=addpr("season",""),episode=addpr("episode",""),year=addpr("year",""),watched=addpr("watched",""),refresh=True)
+	###if (_enableMeta==True): 
+	metaget=metahandlers.MetaData(); metaget.change_watched(video_type,name,imdb_id,season=season,episode=episode,year=year,watched=int(watched))
+	if refresh: xbmc.executebuiltin("XBMC.Container.Refresh")
 
 def listSeasons(section, url, img=''): #_param['img']
 	xbmcplugin.setContent(int(sys.argv[1]),'seasons'); WhereAmI('@ the Seasons List for TV Show -- url: %s' % url); html=net.http_GET(url).content
@@ -2115,12 +2153,24 @@ def listSeasons(section, url, img=''): #_param['img']
 		if (_debugging==True): print 'couldn\'t find seasons'
 		return
 	ItemCount=len(seasons) # , total_items=ItemCount
+	if (_enableMeta==True): metaget=metahandlers.MetaData(); 
+	thetvdb_id=addpr("thetvdb_series_id",""); imdb_id=addpr('imdb_id',""); show_title=addpr("showtitle",""); 
+	deb("thetvdb_series_id",thetvdb_id); 
+	deb("imdb_id",imdb_id); 
+	if len(imdb_id)==0: imdb_id=mGetData(html,["imdbid"])["imdbid"]
+	deb("imdb_id",imdb_id); 
 	for season_name in seasons:
-		Aimg=''; imgName=season_name
+		season_name=messupText(season_name,False,False,True,True); labs={'cover_url':'','backdrop_url':''}; FA=''; Aimg=''; imgName=season_name; 
+		if (_enableMeta==True) and (len(imdb_id) > 0): 
+			labs=metaget.get_seasons(tvshowtitle=show_title,imdb_id=imdb_id,seasons=season_name,overlay=6); debob(labs); 
+			for lab in labs:
+				if (str(lab['season'])==season_name.strip()) and (len(lab['cover_url']) > 0): 
+					if (Aimg==''): Aimg=lab['cover_url']
+					if (FA==''): FA=lab['backdrop_url']
 		if (Aimg==''): Aimg=checkImgUrl('http://icons.iconarchive.com/icons/aaron-sinuhe/series-season-folder/256/season-'+imgName+'-icon.png')
 		if (Aimg==''): Aimg=img
-		season_name=messupText(season_name,False,False,True,True)
-		_addon.add_directory({'mode': 'GetEpisodes', 'url': url+'season-'+season_name+'/', 'title': _param['title'], 'showtitle': _param['showtitle'], 'year': _param['year'], 'section': section, 'img': img, 'season': season_name, 'thetvdb_series_id': _param['thetvdb_series_id'], 'fanart': _param['fanart']}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=_param['fanart'], total_items=ItemCount)
+		if (FA==''): FA=addpr("fanart","")
+		_addon.add_directory({'mode':'GetEpisodes','url':url+'season-'+season_name+'/','imdbid':imdb_id,'showimg':img,'seasonimg':Aimg,'title':_param['title'],'showtitle':show_title,'year':_param['year'],'section':section,'img':img,'season':season_name,'thetvdb_series_id':_param['thetvdb_series_id'],'fanart':FA}, {'title':  ps('listSeasons.prefix.seasons')+cFL(season_name,ps('cFL_color5'))}, img=Aimg, fanart=FA, total_items=ItemCount)
 	set_view('seasons',addst('season-view')); eod() #set_view('seasons',ps('setview.seasons')); eod()
 
 def Menu_LoadCategories(section=_default_section_): #Categories
@@ -2550,6 +2600,7 @@ def check_mode(mode=''):
 	elif (mode=='ChangeFanartUpdate'):		ChangeFanartUpdate(_param['section'],_param['subfav'],_param['url'],_param['title'])
 	#
 	elif (mode=='ApiSearch'):  						API_doSearchNormal(_param['section'],_param['title'])
+	elif (mode=='ChangeWatched'):  				ChangeWatched(imdb_id=addpr("imdbid",""),video_type=addpr("type",""),name=addpr("name",""),season=addpr("season",""),episode=addpr("episode",""),year=addpr("year",""),watched=addpr("watched",""),refresh=True)
 	#
 	else: deadNote(header='Mode:  "'+mode+'"',msg='[ mode ] not found.'); initDatabase(); Menu_MainMenu()
 
