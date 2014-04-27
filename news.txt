@@ -1,5 +1,8 @@
 
 
+[COLOR grey][Date: 2014.04.26][/COLOR][COLOR black][Post: 1][/COLOR]
+[COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.3.8
+
 [COLOR grey][Date: 2013.12.13][/COLOR][COLOR black][Post: 1][/COLOR]
 [COLOR cornflowerblue][B]Release:[/B][/COLOR]  v0.3.3
 

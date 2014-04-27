@@ -2,29 +2,19 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.7
-### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk
+### # Version:			#		v0.3.8
+### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk | http://www.solarmovie.tl
 ###	#	
 ### ############################################################################################################
 ### ############################################################################################################
 ##### Imports #####
-import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs
+import xbmc,xbmcplugin,xbmcgui,xbmcaddon,xbmcvfs,urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime,copy
 #import requests ### (Removed in v0.2.1b to fix scripterror on load on Mac OS.) ### 
 try: import requests ### <import addon="script.module.requests" version="1.1.0"/> ### 
 except: t=''				 ### See https://github.com/kennethreitz/requests ### 
-
-
-import urllib,urllib2,re,os,sys,htmllib,string,StringIO,logging,random,array,time,datetime
 try: import urlresolver
 except: print "Failed to import urlresolver."; pass
-import copy
 ###
-#import cookielib
-#import base64
-#import threading
-###
-#import unicodedata ### I don't want to use unless I absolutely have to. ### 
-#import zipfile ### Removed because it caused videos to not play. ### 
 import HTMLParser, htmlentitydefs
 try: 		import StorageServer
 except: import storageserverdummy as StorageServer
@@ -1218,7 +1208,7 @@ def API_Browse(section,query):
 		if (_tv=='true'): ToSection=ps('section.tv')
 		else: ToSection=ps('section.movie')
 		labs['fanart']=_artFanart
-		labs['thumbnail']=ps('domain.thumbnail.default') #_artIcon
+		labs['thumbnail']=ps('domain.thumbnail.default').replace('http://www.solarmovie.so',_domain_url) #_artIcon
 		if (_tv=='true'): labs['title']+=cFL('['+cFL('TV',ps('cFL_color7'))+']  ',ps('cFL_color'))
 		else: labs['title']+=cFL('['+cFL('MOVIE',ps('cFL_color8'))+']  ',ps('cFL_color'))
 		labs['title']+=cFL(_label+'  ('+cFL(_year,ps('cFL_color2'))+')',ps('cFL_color'))
@@ -1292,7 +1282,7 @@ def API_Browse(section,query):
 		#		if (labs['Director'] is not ''): 	labs['plot']+='[CR]Director:  ['+labs['Director']+']'
 		#		if (labs['Cast'] is not ''): 			labs['plot']+='[CR]Cast:  ['+labs['Cast']+']'
 		#		if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']+='[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
-		if (labs['thumbnail']==''): labs['thumbnail']=ps('domain.thumbnail.default')
+		if (labs['thumbnail']==''): labs['thumbnail']=ps('domain.thumbnail.default').replace('http://www.solarmovie.so',_domain_url)
 		### 
 		#######################
 		if (labs['country'] is not ''): labs['title']+=cFL('  ['+cFL(labs['country'],ps('cFL_color3'))+']',ps('cFL_color'))
@@ -1382,7 +1372,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			else: html=html+'\r\n'+html_last
 			##if (_debugging==True): print html_last
 		except: t=''
-	if (ps('LI.nextpage.check') in html_last): 
+	if (ps('LI.nextpage.check').replace('http://www.solarmovie.so',_domain_url) in html_last): 
 		if (_debugging==True): print 'A next-page has been found.'
 		nextpage=re.findall(ps('LI.nextpage.match'), html_last)[0] #nextpage=re.compile('<li class="next"><a href="http://www.solarmovie.so/.+?.html?page=(\d+)"></a></li>').findall(html_last)[0]
 		if (int(nextpage) <= last) and (end < last) and (start < last) and (start is not int(nextpage)): #(int(nextpage) > end) and (int(nextpage) <= last): # and (end < last): ## Do Show Next Page Link ##
@@ -1658,11 +1648,11 @@ def Trailers_List(section, url, genre):
 	#try: Trailers=re.compile('<div class="movieListSingleFilm">', re.DOTALL).findall(html)
 	#except: Trailers=''
 	#print html
-	deb('length of html',str(len(html))); 
-	if ('<div class="movieListDetailed' not in html): eod(); return
-	html=html.split('<div class="movieListDetailed')[1]
-	if ('<div class="SearchesBlock">' in html): html=html.split('<div class="SearchesBlock">')[0]
-	Trailers=html.split('<div class="newMovieBlock full moviePage transparent clearfix">')
+	Spl1='>Movies Coming Soon</h1>'; Spl2='<div class="SearchesBlock">'; Spl3='<div class="newMovieBlock full moviePage transparent clearfix">'; deb('length of html',str(len(html))); 
+	if (Spl1 not in html): eod(); return
+	html=html.split(Spl1)[1]; deb('Split 1',Spl1); 
+	if (Spl2 in html): html=html.split(Spl2)[0]; deb('Split 2',Spl2); 
+	Trailers=html.split(Spl3); deb('Split 3 (for items)',Spl3); 
 	#debob(html)
 	#print Trailers
 	ItemCount=len(Trailers) # , total_items=ItemCount
@@ -1671,19 +1661,19 @@ def Trailers_List(section, url, genre):
 		if ('<img' in Trailer):
 			Trailer=Trailer.strip()
 			contextMenuItems=[]; labs={}; pars={}; pars['section']=section; pars['genre']=genre; labs['fanart']=pars['fanart']=_artFanart; labs['plot']=''
-			try: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=re.compile('><img .+?data-original="(http://static\d*.solarmovie.so/images/movies/[0-9]+_150x220.jpg)"[\n]\s+alt="" /></a>', re.DOTALL).findall(Trailer)[0].strip(); deb('img',labs['img']); 
+			try: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=re.compile('<img .+?data-original="(http://static\d*.solarmovie.\D+/images/\D+/[0-9]+_\d+x\d+.jpg)"\s*\n*\s*alt="" /></a>', re.DOTALL).findall(Trailer)[0].strip(); deb('img',labs['img']); 
 			except: labs['thumbnail']=pars['thumbnail']=labs['img']=pars['img']=''
-			try: pars[u'title']=re.compile('<h2><a\shref="/watch-.+?-\d+.html">(.+?)</a').findall(Trailer)[0].strip(); pars[u'title']=messupText(pars[u'title'],True,True,True); deb('title',pars[u'title']); 
+			try: pars[u'title']=re.compile('<a\shref="/watch-.+?-\d+.html">\s*(.+?)\s*</a>\s*\n*\s*<a\sclass="year"').findall(Trailer)[0].strip(); pars[u'title']=messupText(pars[u'title'],True,True,True); deb('title',pars[u'title']); 
 			except: pars[u'title']=''
-			try: labs['year']=pars['year']=re.compile('<h2><a href="/watch-.+?-(\d+).html">').findall(Trailer)[0].strip()
+			try: labs['year']=pars['year']=re.compile('<a\shref="/watch-.+?-(\d+).html">.+?</a>\s*\n*\s*<a\sclass="year"').findall(Trailer)[0].strip()
 			except: labs['year']=pars['year']=''
 			try: labs['peopleWaitForIt']=re.compile('<span title="Users waiting">[\n]\s+<span class="fontIcon ding-User"></span>\s*(\d+)\s*</span>').findall(Trailer)[0].strip()
 			except: labs['peopleWaitForIt']=''
-			try: labs['Director']=re.compile('<a href="/watch-movies-by-.+?.html">[\n]*\s*(.+?)</a>').findall(Trailer)[0].strip()
+			try: labs['Director']=re.compile('<a\shref="/watch-movies-by-.+?.html">\s*\n*\s*(.+?)\s*</a>').findall(Trailer)[0].strip()
 			except: labs['Director']=''
 			try: labs['plot']=labs['Description']=labs['PlotOutline']=re.compile('<p class="description">(.+?)</p>').findall(Trailer)[0].strip()
 			except: labs['plot']=labs['Description']=labs['PlotOutline']=''
-			try: pars['url']=re.compile('<h2><a href="(/watch-.+?-\d+.html)"', re.DOTALL).findall(Trailer)[0].strip(); deb('url',pars['url']); 
+			try: pars['url']=re.compile('<a\shref="(/watch-.+?-\d+.html)">.+?</a>\s*\n*\s*<a\sclass="year"', re.DOTALL).findall(Trailer)[0].strip(); deb('url',pars['url']); 
 			except: pars['url']=''
 			if (pars['url'] is not ''): pars['url']=_domain_url+pars['url']
 			try: labs['Premiere']=labs['DateReleased']=labs['DateAired']=labs['Aired']=labs['date']=re.compile('<h3 class="releaseIn">Release in \d+ \D+\s*<span class="fullDate"> - (\D+ \d+, \d\d\d\d)</span></h3>').findall(Trailer)[0].strip()
@@ -1729,9 +1719,9 @@ def UsersList(section, url):
 	html=net.http_GET(url).content
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	deb('html length',str(len(html)))
-	matches=re.compile('<a class="userPic nohover">[\n]\s+<img src="(http.+?\.\D+)" /></a>[\n][\n]\s+<dl\sclass="ratingBoxStatus">[\n]\s+<dt>[\n]\s+<a\shref="(/profile/[0-9A-Za-z]+/)">([0-9A-Za-z]+)</a>,[\n]\s+<span\sclass="commentDate">joined:\s(.+?\sago)</span>[\n]\s+</dt>[\n]\s+</dl>[\n]\s+<div class="carmaRatingGroup">[\n]\s+<div class="ratingCell">(.+?)</div>', re.DOTALL).findall(html)
+	matches=re.compile('<a class="userPic nohover">\s*\n*\s*<img src="(http.+?\.\D+)" /></a>\s*\n*\s*\n*\s*<dl\sclass="ratingBoxStatus">\s*\n*\s*<dt>\s*\n*\s*<a\shref="(/u/[0-9A-Za-z]+/)">([0-9A-Za-z]+)</a>,\s*\n*\s*<span\sclass="commentDate">\s*joined:\s*(.+?\sago)\s*</span>\s*\n*\s*</dt>\s*\n*\s*</dl>\s*\n*\s*<div class="carmaRatingGroup">\s*\n*\s*<div class="ratingCell">\s*(.+?)\s*</div>', re.DOTALL).findall(html)
 	if (not matches): return
-	try:		nextpage=re.compile('<li class="next"><a href="(http.+?solarmovie\.so/\D+/.+?page=\d+)"></a></li>', re.DOTALL).findall(html)[0]
+	try:		nextpage=re.compile('<li class="next"><a href="(http.+?solarmovie\.\D+/\D+/.+?page=\d+)"></a></li>', re.DOTALL).findall(html)[0]
 	except:	nextpage=''
 	if (nextpage is not ''): _addon.add_directory({ 'section':section, 'mode': 'listUsers', 'url': nextpage }, {'title': ps('LI.nextpage.name')}, img=art('icon-next'), fanart=_artFanart)
 	ItemCount=len(matches) # , total_items=ItemCount
@@ -1759,7 +1749,7 @@ def UsersShowPersonInfo(mode, section, url):
 	html=net.http_GET(url).content
 	html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False)
 	deb('html length',str(len(html)))
-	try: 		img=re.compile('<img\ssrc="(http://static\.solarmovie\.so/uploads/users/[0-9A-Za-z]+\.png)"\s/>').findall(html)[0]
+	try: 		img=re.compile('<img\ssrc="(http://static\.solarmovie\.\D+/uploads/users/[0-9A-Za-z]+\.png)"\s/>').findall(html)[0]
 	except:
 		try: 		img=re.compile('<a\sclass="userPic\snohover\s+verifUpic">[\n]\s*<img\ssrc="(.+?)"\s/>').findall(html)[0]
 		except:	img=ps('img.userdefault')
@@ -1904,7 +1894,7 @@ def XBMCHUB__About():
 	#eod()
 
 def Site__PrivacyPolicy():
-	WhereAmI('@ SolarMovie.so:  Privacy Policy -- url: %s' % 'http://www.solarmovie.so/privacy-policy.html'); 
+	WhereAmI('@ SolarMovie.so:  Privacy Policy -- url: %s' % (_domain_url+'/privacy-policy.html')); 
 	HeaderMessage='[COLOR cornflowerblue]Privacy Policy[/COLOR]'
 	message ='[B]'+cFL('Privacy Policy',ps('cFL_color'))+'[/B][CR][CR]'
 	message+='Please read the following terms and conditions carefully and pay attention to the fact that by '
@@ -1927,7 +1917,7 @@ def Site__PrivacyPolicy():
 	message+='If you have any questions please feel free to contact us (of the site).[CR][CR]'
 	#########
 	message+='[CR][CR][COLOR grey][I]This has been copied from solarmovie.so on 2013-08-11, with the appropriate text added for this plugin.  Please check out the current '
-	message+='Privacy Policy for the site @ http://www.solarmovie.so/privacy-policy.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
+	message+='Privacy Policy for the site @ '+_domain_url+'/privacy-policy.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
 	message+=cFL('Thank you for taking the time to read this.',ps('cFL_color3'))
 	message=cFL(message,ps('cFL_color5'))
 	print message
@@ -1935,7 +1925,7 @@ def Site__PrivacyPolicy():
 	#eod()
 
 def Site__TermsOfService():
-	WhereAmI('@ SolarMovie.so:  Terms of Service -- url: %s' % 'http://www.solarmovie.so/terms.html'); 
+	WhereAmI('@ SolarMovie.so:  Terms of Service -- url: %s' % (_domain_url+'/terms.html')); 
 	HeaderMessage='[COLOR cornflowerblue]Terms of Service[/COLOR]'
 	message ='[B]'+cFL('Terms of Service',ps('cFL_color'))+'[/B][CR][CR]'
 	#########
@@ -1949,7 +1939,7 @@ def Site__TermsOfService():
 	message+='these media hosters directly.[CR][CR]'
 	message+='SolarMovie is working according to DMCA, so if you need to remove any content from the '
 	message+='website, you can contact our copyright issues department.  '
-	message+='(http://www.solarmovie.so/contacts.html)[CR][CR][CR]'
+	message+='('+_domain_url+'/contacts.html)[CR][CR][CR]'
 	#########
 	message+='[B]'+cFL('Responsibilities',ps('cFL_color2'))+'[/B][CR][CR]'
 	message+='SolarMovie (site & plugin) is not responsible for anything that might happen on third-party websites.  '
@@ -1963,7 +1953,7 @@ def Site__TermsOfService():
 	message+='and buy the shows and movies that they like![CR][CR][CR]'
 	#########
 	message+='[CR][CR][COLOR grey][I]This has been copied from solarmovie.so on 2013-08-11, with the appropriate text added for this plugin.  Please check out the current '
-	message+='Terms of Service for the site @ http://www.solarmovie.so/terms.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
+	message+='Terms of Service for the site @ '+_domain_url+'/terms.html for any changes.[/I][/COLOR][CR][CR][CR][CR]'
 	message+=cFL('Thank you for taking the time to read this.',ps('cFL_color3'))
 	message=cFL(message,ps('cFL_color5'))
 	print message
@@ -2258,7 +2248,7 @@ def Menu_MainMenu(): #The Main Menu
 	_addon.add_directory({'mode': 'TextBoxFile',  'title': "[COLOR cornflowerblue]Local Change Log:[/COLOR]  %s"  % (__plugin__), 'url': ps('changelog.local')}, 	{'title': cFL('L',ps('cFL_color'))+'ocal Change Log'},					img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest Change Log:[/COLOR]  %s" % (__plugin__), 'url': ps('changelog.url')}, 		{'title': cFL('L',ps('cFL_color'))+'atest Online Change Log'},	img=art('thechangelog','.jpg'), is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TextBoxUrl',   'title': "[COLOR cornflowerblue]Latest News:[/COLOR]  %s"       % (__plugin__), 'url': ps('news.url')}, 				{'title': cFL('L',ps('cFL_color'))+'atest Online News'},				img=_art404										, is_folder=False ,fanart=_artFanart)
-	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Comments[/COLOR]", 'url': ps('LatestThreads.url')}, 											{'title': cFL('L',ps('cFL_color'))+'atest Comments'},						img=_art404										, is_folder=False ,fanart=_artFanart)
+	_addon.add_directory({'mode': 'LatestThreads','title': "[COLOR cornflowerblue]Latest Comments[/COLOR]", 'url': ps('LatestThreads.url').replace('http://www.solarmovie.so',_domain_url)}, 											{'title': cFL('L',ps('cFL_color'))+'atest Comments'},						img=_art404										, is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'PrivacyPolicy','title': "", 'url': ''}, 																																												{'title': cFL('P',ps('cFL_color'))+'rivacy Policy'},						img=_art404										, is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'TermsOfService','title': "", 'url': ''}, 																																											{'title': cFL('T',ps('cFL_color'))+'erms of Service'},					img=_art404										, is_folder=False ,fanart=_artFanart)
 	_addon.add_directory({'mode': 'XBMCHUBAbout','title': "", 'url': ''}, 																																												{'title': cFL('#',ps('cFL_color'))+'XBMCHUB @ irc.Freenode.net'},					img='http://i.imgur.com/0zsWiGB.png', is_folder=False ,fanart='http://i.imgur.com/UtL1F8j.png')
@@ -2428,8 +2418,8 @@ def ChangeFanartList(section,subfav,dbid,current,img,title):
 ### ############################################################################################################
 ##### Search #####
 def API_doSearchNormal (section,title=''):
-	if (section=='tv'): SearchPrefix=ps('domain.search.tv')
-	else: SearchPrefix=ps('domain.search.movie')
+	if (section=='tv'): SearchPrefix=ps('domain.search.tv').replace('http://www.solarmovie.so',_domain_url)
+	else: SearchPrefix=ps('domain.search.movie').replace('http://www.solarmovie.so',_domain_url)
 	if (title==''):
 		title=showkeyboard(txtMessage=title,txtHeader="Title:  ("+section+")")
 		if (title=='') or (title=='none') or (title==None) or (title==False): return
@@ -2439,8 +2429,8 @@ def API_doSearchNormal (section,title=''):
 	#listItems(section, _param['url'], _param['pageno'], addst('pages'), _param['genre'], _param['year'], _param['title'])
 
 def doSearchNormal (section,title=''):
-	if (section=='tv'): SearchPrefix=ps('domain.search.tv')
-	else: SearchPrefix=ps('domain.search.movie')
+	if (section=='tv'): SearchPrefix=ps('domain.search.tv').replace('http://www.solarmovie.so',_domain_url)
+	else: SearchPrefix=ps('domain.search.movie').replace('http://www.solarmovie.so',_domain_url)
 	if (title==''):
 		title=showkeyboard(txtMessage=title,txtHeader="Title:  ("+section+")")
 		if (title=='') or (title=='none') or (title==None) or (title==False): return
@@ -2460,9 +2450,9 @@ def doSearchAdvanced (section,title=''):
 	options['startPage']		='1'
 	options['numOfPages']		=addst('pages') #'1'
 	#########################
-	if   (section==ps('section.tv')   ): options[ps('AdvSearch.tags.0')]='1'; options['url']=ps('AdvSearch.url.tv')
-	elif (section==ps('section.movie')): options[ps('AdvSearch.tags.0')]='0'; options['url']=ps('AdvSearch.url.movie')
-	else: 															 options[ps('AdvSearch.tags.0')]='0'; options['url']=ps('AdvSearch.url.movie')
+	if   (section==ps('section.tv')   ): options[ps('AdvSearch.tags.0')]='1'; options['url']=ps('AdvSearch.url.tv').replace('http://www.solarmovie.so',_domain_url)
+	elif (section==ps('section.movie')): options[ps('AdvSearch.tags.0')]='0'; options['url']=ps('AdvSearch.url.movie').replace('http://www.solarmovie.so',_domain_url)
+	else: 															 options[ps('AdvSearch.tags.0')]='0'; options['url']=ps('AdvSearch.url.movie').replace('http://www.solarmovie.so',_domain_url)
 	options['url']+='['+ps('AdvSearch.tags.0')+']='+options[ps('AdvSearch.tags.0')]; _param['url']=options['url']
 	#options['']=''
 	#options['']=''
