@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.8
+### # Version:			#		v0.3.9
 ### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk | http://www.solarmovie.tl
 ###	#	
 ### ############################################################################################################
@@ -1418,7 +1418,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					ihtml=mGetItemPage(_domain_url+item_url)
 					labs['Country']=mGetDataCountry(ihtml)
 					labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / '+'rating.max'+' ('+labs['Votes']+' Votes)'
-					labs['Genre']=mGetDataGenre(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Cast']=mGetDataCast(ihtml); labs['Keywords']=mGetDataKeywords(ihtml)
+					labs['Genre']=mGetDataGenre(ihtml); labs['Director']=mGetDataDirector(ihtml); labs['Keywords']=mGetDataKeywords(ihtml); #labs['Cast']=mGetDataCast(ihtml); 
 					##labs['plot']=mGetData(ihtml,['plot'])['plot']
 					labs['TVShowPlot']=mGetData(ihtml,['plot'])['plot']
 					labs['EpisodePlot']=mGetData(ihtml,['episodeplot'])['episodeplot']
@@ -1431,7 +1431,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					if (labs['Genre'] is not ''): 		labs['plot']=labs['plot']+'[CR]Genre:  ['+		labs['Genre']	+']'
 					if (labs['Country'] is not ''): 	labs['plot']=labs['plot']+'[CR]Country:  ['+	labs['Country']+']'
 					if (labs['Director'] is not ''): 	labs['plot']=labs['plot']+'[CR]Director:  ['+	labs['Director']+']'
-					if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+			labs['Cast']+']'
+					#if (labs['Cast'] is not ''): 			labs['plot']=labs['plot']+'[CR]Cast:  ['+			labs['Cast']+']'
 					if (labs['Premiered'] is not ''): 			labs['plot']=labs['plot']+'[CR]Premiered:  ['+labs['Premiered']+']'
 					if (labs['Rating'] is not '') and (labs['Votes'] is not ''): 			labs['plot']=labs['plot']+'[CR]Rating:  ['+labs['Rating']+' ('+labs['Votes']+' Votes)]'
 					labs['TVShowTitle']=showTitle; labs['title']=cFL(showTitle+'  ('+cFL(year,ps('cFL_color2'))+')',ps('cFL_color'))
@@ -1460,7 +1460,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 					if len(year)==4: labs[u'year']=year
 				else: ### Display without MetaData. ###
 					labs[u'name']=name; labs['year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; 
-					labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
+					labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'banner_url']=''; labs[u'status']=''; #labs[u'cast']=''; 
 					labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; labs['overlay']=6
 					#ihtml=mGetItemPage(_domain_url+item_url)
 					#labs['Genre']=mGetDataGenre(ihtml); labs['Rating']=mGetData(ihtml,['imdbrating'])['imdbrating']; labs['Votes']=mGetData(ihtml,['imdbvotes'])['imdbvotes']; labs['RatingAndVotes']=labs['Rating']+' / 10 ('+labs['Votes']+' Votes)'
@@ -1480,9 +1480,9 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				try: 
 					if (labs[u'director'] is not ''): labs[u'plot']+='[CR]Director:  ['+labs[u'director']+']'
 				except: pass
-				try: 
-					if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
-				except: pass
+				#try: 
+				#	if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
+				#except: pass
 				try: 
 					if (labs[u'rating'] is not '') and (labs[u'votes'] is not ''): labs[u'plot']+='[CR]Rating:  ['+labs[u'rating']+' ('+labs[u'votes']+' Votes)]'
 				except: pass
@@ -1542,9 +1542,9 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 		elif (chck==ps('LI.movies.popular.other.check')): html=(html.split(ps('LI.movies.popular.other.split1'))[1]).split(ps('LI.movies.popular.other.split2'))[0]
 		elif (chck==ps('LI.movies.latest.check')): 				html=(html.split(ps('LI.movies.latest.split1'				))[1]).split(ps('LI.movies.latest.split2'				))[0]
 		#elif (chck=='Popular'): ## I guess this isnt used for movies atm.
-		try:			iitems=re.compile(ps('LI.movies.match.items' ), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+		try:			iitems=re.compile(ps('LI.movies.match.items' ), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
 		except:		
-			try:		iitems=re.compile(ps('LI.movies.match.items2'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
+			try:		iitems=re.compile(ps('LI.movies.match.items2'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
 			except:	iitems=None
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.'); return
@@ -1580,7 +1580,7 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
  				metaget=metahandlers.MetaData(); labs=metaget.get_meta('movie',name,year=year)
  			else:
  				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; labs['overlay']=6
- 				labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'cast']=''; labs[u'banner_url']=''; labs[u'status']=''; 
+ 				labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'banner_url']=''; labs[u'status']=''; #labs[u'cast']=''; 
  				labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
 			labs[u'name']=name; labs[u'year']=year; 
 			pars['imdbid']=labs['imdb_id']
@@ -1598,9 +1598,9 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			try: 
 				if (labs[u'director'] is not ''): labs[u'plot']+='[CR]Director:  ['+labs[u'director']+']'
 			except: labs[u'director']=''
-			try: 
-				if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
-			except: labs[u'cast']=''
+			#try: 
+			#	if (labs[u'cast'] is not ''): 		labs[u'plot']+='[CR]Cast:  ['+labs[u'cast']+']'
+			#except: labs[u'cast']=''
 			try: 
 				if (labs[u'rating'] is not '') and (labs[u'votes'] is not ''): 			labs[u'plot']+='[CR]Rating:  ['+labs[u'rating']+' ('+labs[u'votes']+' Votes)]'
 			except: labs[u'rating']=''; labs[u'votes']=''
