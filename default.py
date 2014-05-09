@@ -2,7 +2,7 @@
 ###	#	
 ### # Project: 			#		SolarMovie.so - by The Highway 2013.
 ### # Author: 			#		The Highway
-### # Version:			#		v0.3.9
+### # Version:			#		v0.4.1
 ### # Description: 	#		http://www.solarmovie.so | http://solarmovie.occupyuk.co.uk | http://www.solarmovie.tl
 ###	#	
 ### ############################################################################################################
@@ -1291,25 +1291,41 @@ def API_Browse(section,query):
 		##labs={}; pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }
 		##pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': showTitle, 'year': year, 'season': season_number, 'episode': episode_number, 'episodetitle': episode_name, 'fanart': labs['fanart'] }
 		if (_tv=='true') and (_episode=='false'): #Show
-			if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.1ch.search.folder')): contextMenuItems.append((ps('cMI.1ch.search.name'), 				ps('cMI.1ch.search.url') 				% (ps('cMI.1ch.search.plugin')			, ps('cMI.1ch.search.section.tv'), _label)))
-			if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')): contextMenuItems.append((ps('cMI.primewire.search.name'), 	ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section.tv'), _label)))
-			contextMenuItems.append((ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(_label))))
+			try: 
+				if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.1ch.search.folder')): contextMenuItems.append((ps('cMI.1ch.search.name'), 				ps('cMI.1ch.search.url') 				% (ps('cMI.1ch.search.plugin')			, ps('cMI.1ch.search.section.tv'), _label)))
+				if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')): contextMenuItems.append((ps('cMI.primewire.search.name'), 	ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section.tv'), _label)))
+			except: pass
+			try: contextMenuItems.append((ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(_label))))
+			except: pass
 			#
-			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % ( sys.argv[0],'LibrarySaveTV',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_label), urllib.quote_plus(_year), urllib.quote_plus(_domain_url + _url), urllib.quote_plus(labs['thumbnail']) )))
-			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.1.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'' )))
-			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.2.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'2' )))
-			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.3.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'3' )))
-			if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': _label+'  ('+_year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
+			try: contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % ( sys.argv[0],'LibrarySaveTV',section, urllib.quote_plus(_param['title']), urllib.quote_plus(_label), urllib.quote_plus(_year), urllib.quote_plus(_domain_url + _url), urllib.quote_plus(labs['thumbnail']) )))
+			except: pass
+			try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.1.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'' )))
+			except: pass
+			try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.2.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'2' )))
+			except: pass
+			try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.tv.3.name'), 	 ps('cMI.favorites.tv.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),labs['thetvdbid'],'3' )))
+			except: pass
+			try: 
+				if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': _label+'  ('+_year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
+			except: pass
 		#elif (_tv=='false') or (_episode=='true'): #Episode
 		#	#
 		else: #Movie
-			if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.1ch.search.folder')): contextMenuItems.append((ps('cMI.1ch.search.name'), 					ps('cMI.1ch.search.url') 				% (ps('cMI.1ch.search.plugin'), 			ps('cMI.1ch.search.section'), 			_label)))
-			if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')): contextMenuItems.append((ps('cMI.primewire.search.name'), 		ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section'), _label)))
-			contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % ( sys.argv[0],'LibrarySaveMovie',section, urllib.quote_plus(_label), urllib.quote_plus(_label), urllib.quote_plus(_year), urllib.quote_plus(_domain_url+_url), urllib.quote_plus(labs['thumbnail']))))
+			try: 
+				if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.1ch.search.folder')): contextMenuItems.append((ps('cMI.1ch.search.name'), 					ps('cMI.1ch.search.url') 				% (ps('cMI.1ch.search.plugin'), 			ps('cMI.1ch.search.section'), 			_label)))
+				if os.path.exists(xbmc.translatePath(ps('special.home.addons'))+ps('cMI.primewire.search.folder')): contextMenuItems.append((ps('cMI.primewire.search.name'), 		ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section'), _label)))
+			except: pass
+			try: contextMenuItems.append(('Add - Library','XBMC.RunPlugin(%s?mode=%s&section=%s&title=%s&showtitle=%s&showyear=%s&url=%s&img=%s)' % ( sys.argv[0],'LibrarySaveMovie',section, urllib.quote_plus(_label), urllib.quote_plus(_label), urllib.quote_plus(_year), urllib.quote_plus(_domain_url+_url), urllib.quote_plus(labs['thumbnail']))))
+			except: pass
 			#
-			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url), '' )))
-			contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),'2' )))
-			if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': _label+'  ('+_year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
+			try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.1.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url), '' )))
+			except: pass
+			try: contextMenuItems.append((ps('cMI.favorites.tv.add.name')+' '+addst('fav.movies.2.name'),ps('cMI.favorites.movie.add.url') % (sys.argv[0],ps('cMI.favorites.tv.add.mode'),section,urllib.quote_plus(_label),_year,urllib.quote_plus(labs['thumbnail']),urllib.quote_plus(labs['fanart']),urllib.quote_plus(labs['country']),urllib.quote_plus(labs['plot']),urllib.quote_plus(labs['genre']),urllib.quote_plus(_domain_url+_url),'2' )))
+			except: pass
+			try: 
+				if (labs['fanart'] is not ''): contextMenuItems.append(('Download Wallpaper', 'XBMC.RunPlugin(%s)' % _addon.build_plugin_url( { 'mode': 'Download' , 'section': ps('section.wallpaper') , 'studio': _label+'  ('+_year+')' , 'img': labs['thumbnail'] , 'url': labs['fanart'] } ) ))
+			except: pass
 		###
 		try: _addon.add_directory(pars,labs,img=labs['thumbnail'],fanart=labs['fanart'],contextmenu_items=contextMenuItems,total_items=MatchCount)
 		except:
@@ -1537,15 +1553,22 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	#	set_view('episodes',515); _addon.end_of_directory(); return
 	elif (section==ps('section.movie')): ## Movie
 		deb('listItems >> ',section); deb('listItems >> chck',chck)
-		if   (chck==ps('LI.movies.popular.new.check')): 	html=(html.split(ps('LI.movies.popular.new.split1'	))[1]).split(ps('LI.movies.popular.new.split2'	))[0]
-		elif (chck==ps('LI.movies.popular.hd.check')): 		html=(html.split(ps('LI.movies.popular.hd.split1'		))[1]).split(ps('LI.movies.popular.hd.split2'		))[0]
-		elif (chck==ps('LI.movies.popular.other.check')): html=(html.split(ps('LI.movies.popular.other.split1'))[1]).split(ps('LI.movies.popular.other.split2'))[0]
-		elif (chck==ps('LI.movies.latest.check')): 				html=(html.split(ps('LI.movies.latest.split1'				))[1]).split(ps('LI.movies.latest.split2'				))[0]
-		#elif (chck=='Popular'): ## I guess this isnt used for movies atm.
+		try:
+			if   (chck==ps('LI.movies.popular.new.check')): 	html=(html.split(ps('LI.movies.popular.new.split1'	))[1]).split(ps('LI.movies.popular.new.split2'	))[0]
+			elif (chck==ps('LI.movies.popular.hd.check')): 		html=(html.split(ps('LI.movies.popular.hd.split1'		))[1]).split(ps('LI.movies.popular.hd.split2'		))[0]
+			elif (chck==ps('LI.movies.popular.other.check')): html=(html.split(ps('LI.movies.popular.other.split1'))[1]).split(ps('LI.movies.popular.other.split2'))[0]
+			elif (chck==ps('LI.movies.latest.check')): 				html=(html.split(ps('LI.movies.latest.split1'				))[1]).split(ps('LI.movies.latest.split2'				))[0]
+			#elif (chck=='Popular'): ## I guess this isnt used for movies atm.
+		except: pass
+		try: debob(html)
+		except: pass
 		try:			iitems=re.compile(ps('LI.movies.match.items' ), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
 		except:		
+			#try:		iitems=re.compile(ps('LI.movies.match.items2').replace('solarmovie\.so',(_domain_url.replace('\.','.'))), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
 			try:		iitems=re.compile(ps('LI.movies.match.items2'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
-			except:	iitems=None
+			except:		
+				try:		iitems=re.compile(ps('b2LI.movies.match.items2').replace('solarmovie\.so',(_domain_url.replace('\.','.'))), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(nolines(html)); debob(iitems); 
+				except:	iitems=None
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.'); return
 		ItemCount=len(iitems) # , total_items=ItemCount #iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
@@ -1673,9 +1696,9 @@ def Trailers_List(section, url, genre):
 			except: labs['Director']=''
 			try: labs['plot']=labs['Description']=labs['PlotOutline']=re.compile('<p class="description">(.+?)</p>').findall(Trailer)[0].strip()
 			except: labs['plot']=labs['Description']=labs['PlotOutline']=''
-			try: pars['url']=re.compile('<a\shref="(/watch-.+?-\d+.html)">.+?</a>\s*\n*\s*<a\sclass="year"', re.DOTALL).findall(Trailer)[0].strip(); deb('url',pars['url']); 
+			try: pars['url']=re.compile('<a\shref="(/watch-.+?-\d+.html)"', re.DOTALL).findall(Trailer)[0].strip(); deb('url',pars['url']); 
 			except: pars['url']=''
-			if (pars['url'] is not ''): pars['url']=_domain_url+pars['url']
+			if (pars['url'] is not ''): pars['url']=_domain_url+pars['url']; deb('url',pars['url']); 
 			try: labs['Premiere']=labs['DateReleased']=labs['DateAired']=labs['Aired']=labs['date']=re.compile('<h3 class="releaseIn">Release in \d+ \D+\s*<span class="fullDate"> - (\D+ \d+, \d\d\d\d)</span></h3>').findall(Trailer)[0].strip()
 			except: labs['date']=''
 			try: labs['ToBeReleasedIn']=re.compile('<h3 class="releaseIn">Release in (\d+ \D+)\s*<span class="fullDate">').findall(Trailer)[0].strip()
