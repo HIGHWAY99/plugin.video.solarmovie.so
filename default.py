@@ -16,8 +16,20 @@ try: import urlresolver
 except: print "Failed to import urlresolver."; pass
 ###
 import HTMLParser, htmlentitydefs
-try: 		import StorageServer
-except: import storageserverdummy as StorageServer
+#try: 		import StorageServer
+#except: import storageserverdummy as StorageServer
+try:
+	try: import StorageServer as StorageServer
+	except: 
+		try: import z_StorageServer as StorageServer
+		except:
+			try: import storageserverdummy as StorageServer
+			except:
+				try: import z_storageserverdummy as StorageServer
+				except: pass
+	#cache=StorageServer.StorageServer(plugin_id)
+except: pass
+## ### ## 
 try: 			from addon.common.addon 				import Addon
 except: 
 	try: 		from t0mm0.common.addon 				import Addon
@@ -36,7 +48,9 @@ except:
 	except: print "Failed to import MetaHandler"; pass
 ### 
 from teh_tools 		import *
+import teh_tools as teh_tools
 from config 			import *
+import config as config
 ##### /\ ##### Imports #####
 ### ############################################################################################################
 ### ############################################################################################################
@@ -1400,15 +1414,30 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 	###html=nolines(html)
 	html=ParseDescription(html); html=remove_accents(html) #if (_debugging==True): print html
 	if (section==ps('section.tv')) and (season=='') and (episode==''): ## TV Show
-		deb('listItems >> ',section); deb('listItems >> chck',chck)
-		if   (chck==ps('LI.tv.popular.new.check')): 	html=(html.split(ps('LI.tv.latest.split1'			))[1]).split(ps('LI.tv.latest.split2'))[0]
-		elif (chck==ps('LI.tv.popular.all.check')): 	html=(html.split(ps('LI.tv.popular.all.split1'))[1]).split(ps('LI.tv.popular.all.split2'))[0]
-		elif (chck==ps('LI.tv.latest.check')): 				html=(html.split(ps('LI.tv.popular.new.split1'))[1]).split(ps('LI.tv.popular.new.split2'))[0]
+		deb('listItems >> ',section); deb('listItems >> chck',chck); deb('length',str(len(html))); 
+		#teh_tools._SaveFile(xbmc.translatePath(os.path.join(addonPath,'html.txt')),html); 
+		enableMeta2=True
+		if   (chck==ps('LI.tv.popular.new.check')): 	
+			html=(html.split(ps('LI.tv.popular.new.split1'))[1])
+			html=html.split(ps('LI.tv.popular.new.split2'))[0]
+			enableMeta2=False
+		elif (chck==ps('LI.tv.popular.all.check')): 	
+			html=(html.split(ps('LI.tv.popular.all.split1'))[1])
+			html=html.split(ps('LI.tv.popular.all.split2'))[0]
+			enableMeta2=False
+		elif (chck==ps('LI.tv.latest.check')): 				
+			html=(html.split(ps('LI.tv.latest.split1'			))[1])
+			html=html.split(ps('LI.tv.latest.split2'))[0]
+			enableMeta2=False
 		iitems=re.compile(ps('LI.tv.match.items'), re.MULTILINE | re.IGNORECASE | re.DOTALL).findall(html)
 		if (iitems==None):
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.')
 		ItemCount=len(iitems) # , total_items=ItemCount
 		#debob(iitems); 
+		if (_enableMeta==True) and (enableMeta2==True): ### Doesn't work currently. ###
+			try:
+					grab=metahandlers.MetaData(preparezip=False)
+			except: pass
 		for name, item_url, thumbnail, year in iitems:
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1'); name=name.strip() #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
@@ -1422,7 +1451,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 				contextMenuItems.append((ps('cMI.primewire.search.name'), 	ps('cMI.primewire.search.url') 	% (ps('cMI.primewire.search.plugin'), ps('cMI.primewire.search.section.tv'), name)))
 			contextMenuItems.append((ps('cMI.airdates.find.name'), 			ps('cMI.airdates.find.url') % (sys.argv[0],ps('cMI.airdates.find.mode'),urllib.quote_plus(name))))
 			##### Right Click Menu for: TV ##### /\ #####
-			if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')):
+			#if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')):
+			if (chck==ps('LI.tv.latest.check')) or (chck==ps('LI.tv.latest.watched.check')) or (chck==ps('LI.tv.popular.all.check')) or (chck==ps('LI.tv.popular.new.check')):
 				if ('/tv/' in item_url):
 					showTitle, season_number, episode_number, episode_name = re.compile(ps('LI.tv.latest.match.items'), re.IGNORECASE | re.DOTALL).findall('__'+name+'__')[0] #Unsealed: Conspiracy Files s01e14 Fake World Leaders
 					showTitle=showTitle.strip(); season_number=season_number.strip(); episode_number=episode_number.strip(); episode_name=episode_name.strip()
@@ -1468,8 +1498,8 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			else:
 				labs={}; 
 				#_enableMeta=False ### Temp Fix to keep people from accidently using it. ###
-				if (_enableMeta==True): ### Doesn't work currently. ###
-					grab=metahandlers.MetaData(preparezip=False)
+				if (_enableMeta==True) and (enableMeta2==True): ### Doesn't work currently. ###
+					#grab=metahandlers.MetaData(preparezip=False)
 					try: labs=grab.get_meta('tvshow',name,'','',year,overlay=6)
 					except: labs={'title':name,'year':year,'overlay':6}; 
 					labs[u'title']=name
@@ -1573,16 +1603,21 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			deb('Item Results','None Found'); deadNote('Results:  '+section,'No results were found.'); return
 		ItemCount=len(iitems) # , total_items=ItemCount #iitems=sorted(iitems, key=lambda item: (item[0],item[3]))
 		#debob(iitems)
+ 		if (_enableMeta==True):
+ 			try:
+ 				metaget=metahandlers.MetaData(); 
+ 			except: pass
 		for name,item_url,thumbnail,year in iitems:
-			try: prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
+			try: prtItem=re.compile('(<a class="coverImage" title="'+name+'(?: \(\d\d\d\d\))?".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
 			except:	prtItem=''
+			#debob(prtItem); 
 			#try:		prtItem=re.compile('(<a class="coverImage" title="'+name+'".+?</div>)', re.MULTILINE | re.DOTALL).findall(html)[0]
 			#except:	prtItem=''
 			NumOfLinks='?'
 			if (prtItem is not '') and (prtItem is not None):
 				#print prtItem
-				if ('<span class="linkCount">' in prtItem) and ('link' in prtItem):
-					try:		NumOfLinks=re.compile('<span class="linkCount">\s*(\d+)\s*link').findall(prtItem)[0]
+				if ('<span class="fontIcon ding-Link"></span>' in prtItem) and ('link' in prtItem):
+					try:		NumOfLinks=re.compile('<span class="fontIcon ding-Link"></span>\s*(\d+)\s+link').findall(prtItem)[0]
 					except:	NumOfLinks='0'
 			contextMenuItems=[]; name=ParseDescription(HTMLParser.HTMLParser().unescape(name)); name=name.encode('ascii', 'ignore'); name=name.decode('iso-8859-1') #; name = remove_accents(name)
 			name=_addon.decode(name); name=_addon.unescape(name)
@@ -1600,11 +1635,13 @@ def listItems(section=_default_section_, url='', startPage='1', numOfPages='1', 
 			##debob(ihtml)
 			labs={}; pars={'mode': 'GetLinks', 'section': section, 'url': _domain_url + item_url, 'img': thumbnail, 'title': name, 'year': year }
  			if (_enableMeta==True):
- 				metaget=metahandlers.MetaData(); labs=metaget.get_meta('movie',name,year=year)
+ 				try:
+ 					#metaget=metahandlers.MetaData(); 
+ 					labs=metaget.get_meta('movie',name,year=year)
+ 				except:
+ 					labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; labs['overlay']=6; labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'banner_url']=''; labs[u'status']=''; #labs[u'cast']=''; 
  			else:
- 				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; labs['overlay']=6
- 				labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'banner_url']=''; labs[u'status']=''; #labs[u'cast']=''; 
- 				labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; 
+ 				labs[u'name']=name; labs[u'year']=year; labs[u'cover_url']=thumbnail; labs[u'backdrop_url']=''; labs[u'imdb_id']=''; labs[u'tvdb_id']=''; labs['overlay']=6; labs[u'premiered']=''; labs[u'duration']=''; labs[u'studio']=''; labs[u'country']=''; labs[u'genre']=''; labs[u'plot']=''; labs[u'rating']=''; labs[u'mpaa']=''; labs[u'studio']=''; labs[u'banner_url']=''; labs[u'status']=''; #labs[u'cast']=''; 
 			labs[u'name']=name; labs[u'year']=year; 
 			pars['imdbid']=labs['imdb_id']
 			#labs['Country']=mGetDataCountry(ihtml)
@@ -1847,7 +1884,7 @@ def UsersShowFavorites(section, url):
 def UsersShowUploads(section, url):
 	WhereAmI('@ Users:  Show Uploads -- url: %s' % url)
 	html=net.http_GET(url).content; html=messupText(html,_html=True,_ende=True,_a=False,Slashes=False); deb('html length',str(len(html)))
-	s='<a href="(.+?)">\n\s+(.+?) (\(\d\d\d\d\))</a>' #s='<th colspan="\d+" class="commentSummaryName">[\n]\s+<a href="(/.+?)">[\n]\s+(.+?)\s(\(\d\d\d\d\))</a>[\n]\s+</th>'
+	s='<a href="(.+?)">\n\s+(.+?) \((\d\d\d\d)\)</a>' #s='<th colspan="\d+" class="commentSummaryName">[\n]\s+<a href="(/.+?)">[\n]\s+(.+?)\s(\(\d\d\d\d\))</a>[\n]\s+</th>'
 	matches=re.compile(s).findall(html)
 	if (not matches): return;
 	#print matches
@@ -2207,9 +2244,12 @@ def Menu_LoadCategories(section=_default_section_): #Categories
 		_addon.add_directory({'section': section, 'mode': 'Search', 				'pageno': '1', 'pagecount': addst('pages')},			{'title':  cFL('S',ps('cFL_color'))+'earch'}, 						fanart=_artFanart,img=art('icon-search'))
 		_addon.add_directory({'section': section, 'mode': 'AdvancedSearch', 'pageno': '1', 'pagecount': addst('pages')},	 		{'title':  cFL('A',ps('cFL_color'))+'dvanced Search'}, 		fanart=_artFanart,img=art('icon-search'))
 		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatestWatched', 'url': _domain_url+'/latest-watched-movies.html', 'pageno': '1','pagecount': '1'}, 			{'title':  cFL('L',ps('cFL_color'))+'atest Watched'}, 		img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 				'url': _domain_url+'/latest-tv-shows.html', 'pageno': '1','pagecount': '1'}, 																{'title':  cFL('L',ps('cFL_color'))+'atest Added'}, 			img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 			'url': _domain_url+'/popular-tv-shows.html', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (ALL TIME)'}, img=_art150,fanart=_artFanart)
+		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 		'url': _domain_url+'/popular-new-tv-shows.html', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (NEW)'}, 			img=_art150,fanart=_artFanart)
 		#_addon.add_directory({'section': section, 'mode': 'GetTitlesLatest', 				'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 																{'title':  cFL('L',ps('cFL_color'))+'atest Added'}, 			img=_art150,fanart=_artFanart)
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 			'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (ALL TIME)'}, img=_art150,fanart=_artFanart)
-		_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 		'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (NEW)'}, 			img=_art150,fanart=_artFanart)
+		#_addon.add_directory({'section': section, 'mode': 'GetTitlesPopular', 			'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (ALL TIME)'}, img=_art150,fanart=_artFanart)
+		#_addon.add_directory({'section': section, 'mode': 'GetTitlesNewPopular', 		'url': _domain_url+ps('domain.url.tv')+'/', 'pageno': '1','pagecount': '1'}, 						{'title':  cFL('P',ps('cFL_color'))+'opular (NEW)'}, 			img=_art150,fanart=_artFanart)
 		_addon.add_directory({'section': section, 'mode': 'BrowseCountry'},	 			{'title':  cFL('C',ps('cFL_color'))+'ountry'}, 		fanart=_artFanart,img=art('countries','.jpg'))
 		_addon.add_directory({'section': section, 'mode': 'BrowseGenre'},	 				{'title':  cFL('G',ps('cFL_color'))+'enre'}, 			fanart=_artFanart,img=art('genre','.jpg'))
 		_addon.add_directory({'section': section, 'mode': 'BrowseYear'}, 					{'title':  cFL('Y',ps('cFL_color'))+'ear'}, 			fanart=_artFanart,img=art('year','.gif'))

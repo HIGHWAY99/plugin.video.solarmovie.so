@@ -1,3 +1,17 @@
+[B]Version 0.4.5[/B] 2014-07-10
+- metadata error handling fall-back to non-metadata labs.
+- metadata code method adjustment(s).
+- Changes to TV Section.
+- Latest Added Episodes is BACK!
+
+[B]Version 0.4.4[/B]
+- Fixed (YEAR) in titles and got metadata working again.
+- Fixed () brackets on year for movies in Uploads for User Section.
+
+[B]Version 0.4.3[/B]
+- Improved error logging on getURL(url) function.
+- StorageServer modules files... import fix.
+
 [B]Version 0.4.2[/B]
 - Pagination Fix.
 

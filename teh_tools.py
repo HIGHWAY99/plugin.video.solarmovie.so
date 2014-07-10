@@ -25,9 +25,21 @@ except: print "Failed to import urlresolver."; pass
 import copy
 try: import json
 except ImportError: import simplejson as json
-try: import StorageServer
-except: import storageserverdummy as StorageServer
-cache = StorageServer.StorageServer(plugin_id)
+#try: import StorageServer
+#except: import storageserverdummy as StorageServer
+#cache = StorageServer.StorageServer(plugin_id)
+try:
+	try: import StorageServer as StorageServer
+	except: 
+		try: import z_StorageServer as StorageServer
+		except:
+			try: import storageserverdummy as StorageServer
+			except:
+				try: import z_storageserverdummy as StorageServer
+				except: pass
+	cache=StorageServer.StorageServer(plugin_id)
+except: pass
+## ### ## 
 #from t0mm0.common.net import Net as net
 #from t0mm0.common.net import Net
 #from t0mm0.common.addon import Addon
@@ -207,30 +219,32 @@ MyColorsV=	['lime',					'red',					'silver',				'green',						'cyan',					'grey'
 ### ############################################################################################################
 def getURLr(url,dReferer):
 	try:
-		req = urllib2.Request(url,dReferer)
-		req.add_header(MyBrowser[0], MyBrowser[1]) 
-		req.add_header('Referer', dReferer)
-		response = urllib2.urlopen(req)
+		req=urllib2.Request(url,dReferer)
+		req.add_header(MyBrowser[0],MyBrowser[1]) 
+		req.add_header('Referer',dReferer)
+		response=urllib2.urlopen(req)
 		link=response.read()
 		response.close()
 		return(link)
-	except:
-		return('none')
+	except urllib2.URLError, e: debob(e); debob(url); return('none'); 
+	except Exception, e: debob(e); debob(url); return('none'); 
+	except: return('none')
 def getURL(url):
 	try:
-		req = urllib2.Request(url)
-		req.add_header(MyBrowser[0], MyBrowser[1]) 
-		response = urllib2.urlopen(req)
+		req=urllib2.Request(url)
+		req.add_header(MyBrowser[0],MyBrowser[1]) 
+		response=urllib2.urlopen(req)
 		link=response.read()
 		response.close()
 		return(link)
-	except:
-		return('none')
+	except urllib2.URLError, e: debob(e); debob(url); return('none'); 
+	except Exception, e: debob(e); debob(url); return('none'); 
+	except: return('none'); 
 def postURL(url,postStr):
 		postData=urllib.urlencode(postStr)
-		req = urllib2.Request(url,postData)
-		req.add_header(MyBrowser[0], MyBrowser[1]) 
-		response = urllib2.urlopen(req)
+		req=urllib2.Request(url,postData)
+		req.add_header(MyBrowser[0],MyBrowser[1]) 
+		response=urllib2.urlopen(req)
 		link=response.read()
 		response.close()
 		return(link)
